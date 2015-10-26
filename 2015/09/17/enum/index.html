@@ -13,7 +13,7 @@
 <meta property="og:site_name" content="陈双的博客">
 <meta property="og:description" content="日常java编程中，常见用一些静态常量表示一些状态码，特殊含义的标志等，例如：
 12345public class A &amp;#123;	public static final int STATUS_SUCCESS = 1;	public static final int STATUS_FAIL = 2;	public static final int STATUS_CANCEL = 3;&amp;#125;">
-<meta property="og:updated_time" content="2015-10-26T08:23:31.000Z">
+<meta property="og:updated_time" content="2015-10-26T09:03:28.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="java中的枚举类型——Enum">
 <meta name="twitter:description" content="日常java编程中，常见用一些静态常量表示一些状态码，特殊含义的标志等，例如：
@@ -91,14 +91,13 @@
       
         <p>日常java编程中，常见用一些静态常量表示一些状态码，特殊含义的标志等，例如：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">A</span> </span>&#123;</span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> STATUS_SUCCESS = <span class="number">1</span>;</span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> STATUS_FAIL = <span class="number">2</span>;</span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> STATUS_CANCEL = <span class="number">3</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>或者</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">B</span> </span>&#123;</span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> SCHEME_HTTP = <span class="number">1</span>;</span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> SCHEME_FTP = <span class="number">2</span>;</span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> SCHEME_FILE = <span class="number">3</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>这样使用，虽然看上去很好，但是有不少隐形的问题:</p>
 <ul>
 <li>类型不安全；</li>
 <li>必须确保int范围；</li>
 <li>如果打印的话，只能看到int的值，查看含义的话，需要人工比对</li>
 </ul>
+<a id="more"></a>
 <p>其实这种情况，java的Enum往往是更好的选择。<br>现在结合Android开源图片下载项目<a href="https://github.com/nostra13/Android-Universal-Image-Loader" target="_blank" rel="external">Android-Universal-Image-Loader</a>，我们来简略分析一下Enum的用法。<br>Enum的基本使用如下：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> Enum Scheme &#123;</span><br><span class="line">	HTTP, HTTPS, FILE, CONTENT, ASSETS, DRAWABLE, UNKNOWN;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>使用Enum后，立竿见影的好处是使用switch很方便：</p>
@@ -122,7 +121,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2015/09/17/enum/" data-id="cig7pm3mr0000tzuzcvt1bxr9" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2015/09/17/enum/" data-id="cig7qrc0o0000xsuz2sko3yd8" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/java-android-enum/">java android enum</a></li></ul>
