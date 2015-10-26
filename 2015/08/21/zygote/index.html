@@ -3,17 +3,36 @@
 <head>
   <meta charset="utf-8">
   
-  <title>Archives: 2015/9 | 陈双的博客</title>
+  <title>Android启动初探 | 陈双的博客</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description">
-<meta property="og:type" content="website">
-<meta property="og:title" content="陈双的博客">
-<meta property="og:url" content="http://yoursite.com/archives/2015/09/index.html">
+  <meta name="description" content="init进程
+
+ServiceManager
+zygote
+…
+
+Android系统基于Linux内核，而在Linux系统中，所有的进程都是init进程的子孙进程，都是直接或间接由init进程fork出来的。Zygote是在系统启动的过程中，由init进程创建的。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android启动初探">
+<meta property="og:url" content="http://yoursite.com/2015/08/21/zygote/index.html">
 <meta property="og:site_name" content="陈双的博客">
-<meta property="og:description">
+<meta property="og:description" content="init进程
+
+ServiceManager
+zygote
+…
+
+Android系统基于Linux内核，而在Linux系统中，所有的进程都是init进程的子孙进程，都是直接或间接由init进程fork出来的。Zygote是在系统启动的过程中，由init进程创建的。">
+<meta property="og:updated_time" content="2015-10-26T10:14:36.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="陈双的博客">
-<meta name="twitter:description">
+<meta name="twitter:title" content="Android启动初探">
+<meta name="twitter:description" content="init进程
+
+ServiceManager
+zygote
+…
+
+Android系统基于Linux内核，而在Linux系统中，所有的进程都是init进程的子孙进程，都是直接或间接由init进程fork出来的。Zygote是在系统启动的过程中，由init进程创建的。">
   
     <link rel="alternative" href="/atom.xml" title="陈双的博客" type="application/atom+xml">
   
@@ -63,77 +82,92 @@
   </div>
 </header>
       <div class="outer">
-        <section id="main">
-  
-  
-    
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2015" class="archive-year">2015</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2015/09/23/activityLaunchMode/" class="archive-article-date">
-  <time datetime="2015-09-22T16:00:00.000Z" itemprop="datePublished">Sep 23</time>
+        <section id="main"><article id="post-zygote" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/08/21/zygote/" class="article-date">
+  <time datetime="2015-08-20T16:00:00.000Z" itemprop="datePublished">2015-08-21</time>
 </a>
-      
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2015/09/23/activityLaunchMode/">Activity启动模式——standard，singleTop，singleTop，singleInstance（译）</a>
+    <h1 class="article-title" itemprop="name">
+      Android启动初探
     </h1>
   
 
-    </header>
-  </div>
-</article>
-  
+      </header>
     
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2015/09/18/context/" class="archive-article-date">
-  <time datetime="2015-09-17T16:00:00.000Z" itemprop="datePublished">Sep 18</time>
-</a>
+    <div class="article-entry" itemprop="articleBody">
       
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2015/09/18/context/">Android中的Context浅析</a>
-    </h1>
-  
+        <p>init进程</p>
+<ul>
+<li>ServiceManager</li>
+<li>zygote</li>
+<li>…</li>
+</ul>
+<p>Android系统基于Linux内核，而在Linux系统中，所有的进程都是init进程的子孙进程，都是直接或间接由init进程fork出来的。<br>Zygote是在系统启动的过程中，由init进程创建的。</p>
+<a id="more"></a>
+<h3 id="zygoet">zygoet</h3><p>zygote本身是一个应用层的程序，和驱动，内核模块之类的没任何关系。<br>zygote是Android系统中创建Java世界的盘古，它创建了第一个Java虚拟机，同时它又是女娲，它成功繁殖了framework的核心system_server进程。</p>
+<p>zygote主要包含两个模块：</p>
+<ol>
+<li>Socket服务端，主要用来接收启动新的Dalvik进程的命令。</li>
+<li>Framework共享类及共享资源。<strong>每一个进程都是一个Dalvik虚拟机</strong>。当zygote进程启动时，会装载一些共享当类和资源，其中共享类在proload-classes文件中被定义，共享资源在preload-resources中被定义。<strong>这些类和资源实际上就是SDK中定义的大部分类和资源</strong>。因为zygotez进程用于孵化出其他Dalvik进程，所以，这些类和资源装载后，新的Dalvik进程就不需要再装载这些类和资源类，只需要去装载APK自身包含的类和资源即可，这也就是所谓的共享。</li>
+</ol>
+<p>zygote创建java世界的步骤：</p>
+<ol>
+<li>创建AppRuntime对象，并调用它的start，此后的活动由AppRuntime来控制。</li>
+<li>调用startVm创建java虚拟机，然后调用startReg来注册JNI函数</li>
+<li>通过JNI调用com.android.internal.os.ZygoteInit类的main函数，从此进入了java的世界。</li>
+<li>调用registerZygoteSocket。通过这个函数，它可以响应子孙后代的请求。同时zygote调用preloadClassed和preloadResources，为java世界添砖加瓦。</li>
+<li>zygote觉得自己压力太大，通过调用startSystemServer分裂类一个子进程system_server来为Java世界服务。</li>
+<li>zygote完成来初创java世界的工作，调用runSelectLoopMode后，沉沉睡去。之后，一直守护着，接到子孙后代的请求时，随时被唤醒。</li>
+</ol>
+<h3 id="ActivityManagerService">ActivityManagerService</h3><p>一个Activity所属进程的创建过程，是由ActivityManagerService发请求给zygote，然后由zygote通过fork子进程的方式创建。同时，zygote的本身设置信息会被子进程全部继承。</p>
+<h3 id="总结">总结</h3><ol>
+<li>系统启动init进程会创建zygote进程，zygote进程负责后续Android应用程序框架层的其他进程的创建和启动工作</li>
+<li>zygote进程会首先创建一个SystemServer进程，SystemServer进程负责启动系统的关键服务，如包管理服务PackageManagerService和应用程序组件管理服务ActivityManagerService</li>
+<li>当我们需要启动一个Android程序时，ActivityManagerService会通过Socket进程间通信机制，通知Zygote进程为这个应用程序创建一个新的进程</li>
+</ol>
 
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2015/09/16/multiProcessSharedPreferences/" class="archive-article-date">
-  <time datetime="2015-09-15T16:00:00.000Z" itemprop="datePublished">Sep 16</time>
-</a>
       
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2015/09/16/multiProcessSharedPreferences/">多进程SharedPreferences</a>
-    </h1>
-  
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2015/08/21/zygote/" data-id="cig7t3aan00006kuzfgxlyvpa" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/android-ServiceManager-zygote/">android ServiceManager zygote</a></li></ul>
 
-    </header>
+    </footer>
   </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2015/09/16/multiProcessSharedPreferences/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          多进程SharedPreferences
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2015/08/10/enum/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">java中的枚举类型——Enum</div>
+    </a>
+  
+</nav>
+
+  
 </article>
-  
-  
-    </div></section>
-  
+
 </section>
         
           <aside id="sidebar">

@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Activity启动模式——standard，singleTop，singleTop，singleInstance（译） | 陈双的博客</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="原文：Understand Android Activity’s launchMode: standard, singleTop, singleTask and singleInstance
+声明启动模式可以在AndroidManifest.xml文件中声明启动模式。1234&amp;lt;activity	android:name=&quot;.SingleTaskActivity&quot;	android:label=">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Activity启动模式——standard，singleTop，singleTop，singleInstance（译）">
+<meta property="og:url" content="http://yoursite.com/2015/09/23/activityLaunchMode/index.html">
+<meta property="og:site_name" content="陈双的博客">
+<meta property="og:description" content="原文：Understand Android Activity’s launchMode: standard, singleTop, singleTask and singleInstance
+声明启动模式可以在AndroidManifest.xml文件中声明启动模式。1234&amp;lt;activity	android:name=&quot;.SingleTaskActivity&quot;	android:label=">
+<meta property="og:image" content="http://yoursite.com/ActivityLaunchMode/standard_pre_lollipop.jpg">
+<meta property="og:image" content="http://yoursite.com/ActivityLaunchMode/standard_pre_lollipop_share.jpg">
+<meta property="og:image" content="http://yoursite.com/ActivityLaunchMode/standard_pre_lollipop_task_manager.jpg">
+<meta property="og:image" content="http://yoursite.com/ActivityLaunchMode/standard_after_lollipop.jpg">
+<meta property="og:image" content="http://yoursite.com/ActivityLaunchMode/standard_after_lollipop_different_app.jpg">
+<meta property="og:image" content="http://yoursite.com/ActivityLaunchMode/standard_after_lollipop_task_manager.jpg">
+<meta property="og:image" content="http://yoursite.com/ActivityLaunchMode/singletop.jpg">
+<meta property="og:image" content="http://yoursite.com/ActivityLaunchMode/singleTask_default.jpg">
+<meta property="og:image" content="http://yoursite.com/ActivityLaunchMode/singleTask_exist.jpg">
+<meta property="og:image" content="http://yoursite.com/ActivityLaunchMode/singleTask_task_affinity.jpg">
+<meta property="og:image" content="http://yoursite.com/ActivityLaunchMode/singleTask_task_affinity_task_manager.jpg">
+<meta property="og:image" content="http://yoursite.com/ActivityLaunchMode/singleTaskAnotherApp.jpg">
+<meta property="og:image" content="http://yoursite.com/ActivityLaunchMode/singleTaskAnotherApp2.jpg">
+<meta property="og:image" content="http://yoursite.com/ActivityLaunchMode/singleTaskAnotherAppExist.jpg">
+<meta property="og:image" content="http://yoursite.com/ActivityLaunchMode/singleTaskAnotherAppExist2.jpg">
+<meta property="og:image" content="http://yoursite.com/ActivityLaunchMode/singleInstance.jpg">
+<meta property="og:updated_time" content="2015-10-26T10:31:18.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Activity启动模式——standard，singleTop，singleTop，singleInstance（译）">
+<meta name="twitter:description" content="原文：Understand Android Activity’s launchMode: standard, singleTop, singleTask and singleInstance
+声明启动模式可以在AndroidManifest.xml文件中声明启动模式。1234&amp;lt;activity	android:name=&quot;.SingleTaskActivity&quot;	android:label=">
+  
+    <link rel="alternative" href="/atom.xml" title="陈双的博客" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="/css/style.css" type="text/css">
+  
+
+</head>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">陈双的博客</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">你也可以叫我double chen</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-activityLaunchMode" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/09/23/activityLaunchMode/" class="article-date">
+  <time datetime="2015-09-22T16:00:00.000Z" itemprop="datePublished">2015-09-23</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Activity启动模式——standard，singleTop，singleTop，singleInstance（译）
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>原文：<a href="http://inthecheesefactory.com/blog/understand-android-activity-launchmode/en" target="_blank" rel="external">Understand Android Activity’s launchMode: standard, singleTop, singleTask and singleInstance</a></p>
+<h3 id="声明启动模式">声明启动模式</h3><p>可以在AndroidManifest.xml文件中声明启动模式。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&lt;activity</span><br><span class="line">	android:name=<span class="string">".SingleTaskActivity"</span></span><br><span class="line">	android:label=<span class="string">"singleTask launchMode"</span></span><br><span class="line">	android:launchMode=<span class="string">"singleTask"</span>&gt;</span><br></pre></td></tr></table></figure></p>
+<a id="more"></a>
+<h3 id="standard">standard</h3><p>默认的启动模式。<br>这种模式下，随着intent传入，会新建一个Activity实例，无论之前是否已经有该Activity的实例。<br>但注意，android5.0-Lollipop前后，这种模式下，task的表现有区别。</p>
+<h5 id="android5-0之前">android5.0之前</h5><p>新建的Activity会放在同一个task下Activity栈的顶部。<br><img src="/ActivityLaunchMode/standard_pre_lollipop.jpg" alt="standard_pre_lollipop"><br>比如我们希望分享一个图片的时候，即使前后两个Activity是来自不同的应用，也会放在同一个task中。<br><img src="/ActivityLaunchMode/standard_pre_lollipop_share.jpg" alt="standard_pre_lollipop_share"><br>同时在task管理器中可以看到：<br><img src="/ActivityLaunchMode/standard_pre_lollipop_task_manager.jpg" alt="standard_pre_lollipop_task_manager"></p>
+<h5 id="android5-0之后">android5.0之后</h5><p>如果两个Activity来自不同的应用，那就跟之前相同。<br><img src="/ActivityLaunchMode/standard_after_lollipop.jpg" alt="standard_after_lollipop"><br>但如果两个Activity来自不同的应用，就会新建一个task了。<br><img src="/ActivityLaunchMode/standard_after_lollipop_different_app.jpg" alt="standard_after_lollipop_different_app"><br>这个时候再看task管理器：<br><img src="/ActivityLaunchMode/standard_after_lollipop_task_manager.jpg" alt="standard_after_lollipop_task_manager"><br>这是因为android5.0以后的task管理器有修改以更直观有效。</p>
+<h3 id="singleTop">singleTop</h3><p>这个模式，几乎与standard类似，就是可以无限创建Activity。唯一的区别就是，如果Activity实例已经在栈顶了，那么就不会创建新的Activity实例了，而是会将intent传入已有的Activity的实例的onNewIntent()方法。<br><img src="/ActivityLaunchMode/singletop.jpg" alt="singletop"><br>所以，在singleTop模式下，必须在onCreate()和onNewIntent()中都处理传入的intent。</p>
+<h3 id="singeTask">singeTask</h3><p><strong>singleTask只允许一个Activity实例</strong>。如果已经存在Activity实例，那么task中的这个实例会被置顶，这个过程中，Activity栈中在其上的Activity都会被销毁，并且intent会被传给onNewIntent()。如果不存在Activity实例，新的Activity实例会被创建并放在合适的task中。</p>
+<h5 id="同一个应用中的情景">同一个应用中的情景</h5><p>如果之前没有Activity实例，那就会创建一个新的并放在栈顶。<br><img src="/ActivityLaunchMode/singleTask_default.jpg" alt="singleTask_default"><br>但如果已经存在Activity实例，那么task中的这个实例会被置顶，这个过程中，Activity栈中在其上的Activity都会被销毁，并且intent会被传给onNewIntent()。<br><img src="/ActivityLaunchMode/singleTask_exist.jpg" alt="singleTask_exist"><br>要注意的是，官方文档中有这么一句话<br><figure class="highlight livecodeserver"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">The <span class="keyword">system</span> creates <span class="operator">a</span> <span class="built_in">new</span> task <span class="operator">and</span> instantiates <span class="operator">the</span> activity <span class="keyword">at</span> <span class="operator">the</span> root <span class="operator">of</span> <span class="operator">the</span> <span class="built_in">new</span> task.</span><br></pre></td></tr></table></figure></p>
+<p>但通过实验，并没有新建一个task，怎么回事呢？<br>如果需要如官文所描述，新建一个task，就需要声明<strong>taskAffinity</strong>属性：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;activity</span><br><span class="line">    android:name=<span class="string">".SingleTaskActivity"</span></span><br><span class="line">    android:label=<span class="string">"singleTask launchMode"</span></span><br><span class="line">    android:launchMode=<span class="string">"singleTask"</span></span><br><span class="line">    android:taskAffinity=<span class="string">""</span>&gt;</span><br></pre></td></tr></table></figure></p>
+<p>这个时候结果如下：<br><img src="/ActivityLaunchMode/singleTask_task_affinity.jpg" alt="singleTask_task_affinity"><br><img src="/ActivityLaunchMode/singleTask_task_affinity_task_manager.jpg" alt="singleTask_task_affinity_task_manager"><br>至于要不要用taskAffinity，就要根据实际情况考虑了。</p>
+<p><strong>总结：</strong>     </p>
+<ol>
+<li>设置了”singleTask”启动模式的Activity，它在启动的时候，会先在系统中查找属性值affinity等于它的属性值taskAffinity的任务存在；如果存在这样的任务，它就会在这个任务中启动，否则就会在新任务中启动。因此，如果我们想要设置了”singleTask”启动模式的Activity在新的任务中启动，就要为它设置一个独立的taskAffinity属性值。     </li>
+<li>如果设置了”singleTask”启动模式的Activity不是在新的任务中启动时，它会在已有的任务中查看是否已经存在相应的Activity实例，如果存在，就会把位于这个Activity实例上面的Activity全部结束掉，即最终这个Activity实例会位于任务的堆栈顶端中。</li>
+</ol>
+<h5 id="不同的应用">不同的应用</h5><p>如果系统中，没有这个Activity的实例，那么，新建Activity的时候，就会创建一个新的task。<br><img src="/ActivityLaunchMode/singleTaskAnotherApp.jpg" alt="singleTaskAnotherApp"><br><img src="/ActivityLaunchMode/singleTaskAnotherApp2.jpg" alt="singleTaskAnotherApp2"><br>如果这个声明了singleTask的应用已经存在一个task了，切这个task里面没有那个Activity，那么新建的Activity实例会放到这个task的顶部。<br><img src="/ActivityLaunchMode/singleTaskAnotherAppExist.jpg" alt="singleTaskAnotherAppExist"><br>如果Activity已经存在于那个task，那么，栈上面的Activity实例会被销毁。如果用户按了返回键，就会回到唤起Activity的task。<br><img src="/ActivityLaunchMode/singleTaskAnotherAppExist2.jpg" alt="singleTaskAnotherAppExist2"></p>
+<h3 id="singeInstance">singeInstance</h3><p>这个模式跟singleTask类似，系统只能存在一个Activity的实例。唯一的区别就是，singleInstance中，Activity所在的task只能有那个Activity实例，不能有别的Activity。<br>所以，新建这个Activity的时候，就会创建一个新的task。<br><img src="/ActivityLaunchMode/singleInstance.jpg" alt="singleInstance"><br>这种模式很少用。</p>
+<h3 id="Intent_Flags">Intent Flags</h3><p>除了在AndroidManifest.xml中声明启动模式，还可以在代码中添加Intent Flags，例如：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Intent intent = <span class="keyword">new</span> Intent(StandardActivity.<span class="keyword">this</span>, StandardActivity.class);</span><br><span class="line">intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);</span><br><span class="line">startActivity(intent);</span><br></pre></td></tr></table></figure></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2015/09/23/activityLaunchMode/" data-id="cig7t3ab7000e6kuzalp78c8b" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/android-launchmode-standard-singleTop-singleTop-singleInstance-翻译/">android launchmode standard singleTop singleTop singleInstance 翻译</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2015/10/09/bezierBase/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          贝塞尔曲线原理介绍及基础使用
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2015/09/18/context/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">Android中的Context浅析</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/android-ServiceManager-zygote/">android ServiceManager zygote</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/android-context/">android context</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/android-launchmode-standard-singleTop-singleTop-singleInstance-翻译/">android launchmode standard singleTop singleTop singleInstance 翻译</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java-android-enum/">java android enum</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/process-SharedPreferences/">process SharedPreferences</a><span class="tag-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/android-ServiceManager-zygote/" style="font-size: 10px;">android ServiceManager zygote</a> <a href="/tags/android-context/" style="font-size: 10px;">android context</a> <a href="/tags/android-launchmode-standard-singleTop-singleTop-singleInstance-翻译/" style="font-size: 10px;">android launchmode standard singleTop singleTop singleInstance 翻译</a> <a href="/tags/java-android-enum/" style="font-size: 20px;">java android enum</a> <a href="/tags/process-SharedPreferences/" style="font-size: 10px;">process SharedPreferences</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">October 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">September 2015</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a><span class="archive-list-count">2</span></li></ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recents</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2015/10/09/bezierBase/">贝塞尔曲线原理介绍及基础使用</a>
+          </li>
+        
+          <li>
+            <a href="/2015/09/23/activityLaunchMode/">Activity启动模式——standard，singleTop，singleTop，singleInstance（译）</a>
+          </li>
+        
+          <li>
+            <a href="/2015/09/18/context/">Android中的Context浅析</a>
+          </li>
+        
+          <li>
+            <a href="/2015/09/16/multiProcessSharedPreferences/">多进程SharedPreferences</a>
+          </li>
+        
+          <li>
+            <a href="/2015/08/21/zygote/">Android启动初探</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2015 Double Chen<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css" type="text/css">
+  <script src="/fancybox/jquery.fancybox.pack.js" type="text/javascript"></script>
+
+
+<script src="/js/script.js" type="text/javascript"></script>
+
+  </div>
+</body>
+</html>

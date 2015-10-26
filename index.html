@@ -65,10 +65,10 @@
       <div class="outer">
         <section id="main">
   
-    <article id="post-enum" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-bezierBase" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2015/09/17/enum/" class="article-date">
-  <time datetime="2015-09-16T16:00:00.000Z" itemprop="datePublished">2015-09-17</time>
+    <a href="/2015/10/09/bezierBase/" class="article-date">
+  <time datetime="2015-10-08T16:00:00.000Z" itemprop="datePublished">2015-10-09</time>
 </a>
     
   </div>
@@ -79,7 +79,237 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2015/09/17/enum/">java中的枚举类型——Enum</a>
+      <a class="article-title" href="/2015/10/09/bezierBase/">贝塞尔曲线原理介绍及基础使用</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="贝塞尔曲线概述">贝塞尔曲线概述</h2><p>贝塞尔曲线于1962，由法国工程师皮埃尔·贝塞尔所广泛发表，他运用贝塞尔曲线来为汽车的主体进行设计。贝塞尔曲线最初由Paul de Casteljau于1959年运用de Casteljau演算法开发，以稳定数值的方法求出贝兹曲线。<br>贝塞尔曲线主要用于二维图形应用程序中的数学曲线，曲线由<strong>起始点</strong>，<strong>终止点（也称锚点）</strong>和<strong>控制点</strong>组成，通过调整控制点，贝塞尔曲线的形状会发生变化。<br>在计算机图形学中贝赛尔曲线的运用很广泛，例如Photoshop中的钢笔效果，Flash5的贝塞尔曲线工具，在软件GUI开发中一般也会提供对应的方法来实现贝赛尔曲线。</p>
+        
+          <p class="article-more-link">
+            <a href="/2015/10/09/bezierBase/#more">Read More</a>
+          </p>
+        
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2015/10/09/bezierBase/" data-id="cig7t3ab5000c6kuzx6k1w61b" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/java-android-enum/">java android enum</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-activityLaunchMode" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/09/23/activityLaunchMode/" class="article-date">
+  <time datetime="2015-09-22T16:00:00.000Z" itemprop="datePublished">2015-09-23</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/09/23/activityLaunchMode/">Activity启动模式——standard，singleTop，singleTop，singleInstance（译）</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>原文：<a href="http://inthecheesefactory.com/blog/understand-android-activity-launchmode/en">Understand Android Activity’s launchMode: standard, singleTop, singleTask and singleInstance</a></p>
+<h3 id="声明启动模式">声明启动模式</h3><p>可以在AndroidManifest.xml文件中声明启动模式。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&lt;activity</span><br><span class="line">	android:name=<span class="string">".SingleTaskActivity"</span></span><br><span class="line">	android:label=<span class="string">"singleTask launchMode"</span></span><br><span class="line">	android:launchMode=<span class="string">"singleTask"</span>&gt;</span><br></pre></td></tr></table></figure></p>
+        
+          <p class="article-more-link">
+            <a href="/2015/09/23/activityLaunchMode/#more">Read More</a>
+          </p>
+        
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2015/09/23/activityLaunchMode/" data-id="cig7t3ab7000e6kuzalp78c8b" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/android-launchmode-standard-singleTop-singleTop-singleInstance-翻译/">android launchmode standard singleTop singleTop singleInstance 翻译</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-context" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/09/18/context/" class="article-date">
+  <time datetime="2015-09-17T16:00:00.000Z" itemprop="datePublished">2015-09-18</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/09/18/context/">Android中的Context浅析</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>Context是Android中最常见的一个元素了，本文主要描述了Context的一些基础知识。</p>
+<h2 id="基本信息">基本信息</h2><ol>
+<li>描述应用程序环境信息，即上下文</li>
+<li>抽象类，具体实现类是ContextImpl</li>
+<li>Context总数＝Activity总数＋Service总数＋1（Apllication）</li>
+<li>可以通过Context获取系统的资源和类，也可以实现一些应用级别操作，例如：启动一个Activity，发送广播，接收Intent信息等</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">Context</span> </span>&#123;  </span><br><span class="line">	...  </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> Object <span class="title">getSystemService</span><span class="params">(String name)</span></span>;  <span class="comment">//获得系统级服务  </span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">void</span> <span class="title">startActivity</span><span class="params">(Intent intent)</span></span>;     <span class="comment">//通过一个Intent启动Activity  </span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> ComponentName <span class="title">startService</span><span class="params">(Intent service)</span></span>;  <span class="comment">//启动Service  </span></span><br><span class="line">    <span class="comment">//根据文件名得到SharedPreferences对象  </span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> SharedPreferences <span class="title">getSharedPreferences</span><span class="params">(String name,<span class="keyword">int</span> mode)</span></span>;  </span><br><span class="line">    ...  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+        
+          <p class="article-more-link">
+            <a href="/2015/09/18/context/#more">Read More</a>
+          </p>
+        
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2015/09/18/context/" data-id="cig7t3ab200096kuzstwrfrqg" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/android-context/">android context</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-multiProcessSharedPreferences" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/09/16/multiProcessSharedPreferences/" class="article-date">
+  <time datetime="2015-09-15T16:00:00.000Z" itemprop="datePublished">2015-09-16</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/09/16/multiProcessSharedPreferences/">多进程SharedPreferences</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>谷歌默认的SharedPreferences对多进程支持非常不友好，其自己也承认：</p>
+<p><img src="/MultiProcessSharedPreferences/sp_in_google_doc.png" alt="sp_in_google_doc"></p>
+        
+          <p class="article-more-link">
+            <a href="/2015/09/16/multiProcessSharedPreferences/#more">Read More</a>
+          </p>
+        
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2015/09/16/multiProcessSharedPreferences/" data-id="cig7t3aax00036kuzyepgri3k" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/process-SharedPreferences/">process SharedPreferences</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-zygote" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/08/21/zygote/" class="article-date">
+  <time datetime="2015-08-20T16:00:00.000Z" itemprop="datePublished">2015-08-21</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/08/21/zygote/">Android启动初探</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>init进程</p>
+<ul>
+<li>ServiceManager</li>
+<li>zygote</li>
+<li>…</li>
+</ul>
+<p>Android系统基于Linux内核，而在Linux系统中，所有的进程都是init进程的子孙进程，都是直接或间接由init进程fork出来的。<br>Zygote是在系统启动的过程中，由init进程创建的。</p>
+        
+          <p class="article-more-link">
+            <a href="/2015/08/21/zygote/#more">Read More</a>
+          </p>
+        
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2015/08/21/zygote/" data-id="cig7t3aan00006kuzfgxlyvpa" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/android-ServiceManager-zygote/">android ServiceManager zygote</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-enum" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/08/10/enum/" class="article-date">
+  <time datetime="2015-08-09T16:00:00.000Z" itemprop="datePublished">2015-08-10</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/08/10/enum/">java中的枚举类型——Enum</a>
     </h1>
   
 
@@ -97,13 +327,13 @@
 </ul>
         
           <p class="article-more-link">
-            <a href="/2015/09/17/enum/#more">Read More</a>
+            <a href="/2015/08/10/enum/#more">Read More</a>
           </p>
         
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2015/09/17/enum/" data-id="cig7qzoq00000yquzw4m2sul3" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2015/08/10/enum/" data-id="cig7t3aaz00066kuz60k0p0u6" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/java-android-enum/">java android enum</a></li></ul>
@@ -126,7 +356,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tags</h3>
     <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/java-android-enum/">java android enum</a><span class="tag-list-count">1</span></li></ul>
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/android-ServiceManager-zygote/">android ServiceManager zygote</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/android-context/">android context</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/android-launchmode-standard-singleTop-singleTop-singleInstance-翻译/">android launchmode standard singleTop singleTop singleInstance 翻译</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java-android-enum/">java android enum</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/process-SharedPreferences/">process SharedPreferences</a><span class="tag-list-count">1</span></li></ul>
     </div>
   </div>
 
@@ -135,7 +365,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/tags/java-android-enum/" style="font-size: 10px;">java android enum</a>
+      <a href="/tags/android-ServiceManager-zygote/" style="font-size: 10px;">android ServiceManager zygote</a> <a href="/tags/android-context/" style="font-size: 10px;">android context</a> <a href="/tags/android-launchmode-standard-singleTop-singleTop-singleInstance-翻译/" style="font-size: 10px;">android launchmode standard singleTop singleTop singleInstance 翻译</a> <a href="/tags/java-android-enum/" style="font-size: 20px;">java android enum</a> <a href="/tags/process-SharedPreferences/" style="font-size: 10px;">process SharedPreferences</a>
     </div>
   </div>
 
@@ -144,7 +374,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">September 2015</a><span class="archive-list-count">1</span></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">October 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">September 2015</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a><span class="archive-list-count">2</span></li></ul>
     </div>
   </div>
 
@@ -156,7 +386,23 @@
       <ul>
         
           <li>
-            <a href="/2015/09/17/enum/">java中的枚举类型——Enum</a>
+            <a href="/2015/10/09/bezierBase/">贝塞尔曲线原理介绍及基础使用</a>
+          </li>
+        
+          <li>
+            <a href="/2015/09/23/activityLaunchMode/">Activity启动模式——standard，singleTop，singleTop，singleInstance（译）</a>
+          </li>
+        
+          <li>
+            <a href="/2015/09/18/context/">Android中的Context浅析</a>
+          </li>
+        
+          <li>
+            <a href="/2015/09/16/multiProcessSharedPreferences/">多进程SharedPreferences</a>
+          </li>
+        
+          <li>
+            <a href="/2015/08/21/zygote/">Android启动初探</a>
           </li>
         
       </ul>

@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>多进程SharedPreferences | 陈双的博客</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="谷歌默认的SharedPreferences对多进程支持非常不友好，其自己也承认：">
+<meta property="og:type" content="article">
+<meta property="og:title" content="多进程SharedPreferences">
+<meta property="og:url" content="http://yoursite.com/2015/09/16/multiProcessSharedPreferences/index.html">
+<meta property="og:site_name" content="陈双的博客">
+<meta property="og:description" content="谷歌默认的SharedPreferences对多进程支持非常不友好，其自己也承认：">
+<meta property="og:image" content="http://yoursite.com/MultiProcessSharedPreferences/sp_in_google_doc.png">
+<meta property="og:image" content="http://yoursite.com/MultiProcessSharedPreferences/sp_source_code.png">
+<meta property="og:updated_time" content="2015-10-26T10:28:26.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="多进程SharedPreferences">
+<meta name="twitter:description" content="谷歌默认的SharedPreferences对多进程支持非常不友好，其自己也承认：">
+  
+    <link rel="alternative" href="/atom.xml" title="陈双的博客" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="/css/style.css" type="text/css">
+  
+
+</head>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">陈双的博客</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">你也可以叫我double chen</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-multiProcessSharedPreferences" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/09/16/multiProcessSharedPreferences/" class="article-date">
+  <time datetime="2015-09-15T16:00:00.000Z" itemprop="datePublished">2015-09-16</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      多进程SharedPreferences
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>谷歌默认的SharedPreferences对多进程支持非常不友好，其自己也承认：</p>
+<p><img src="/MultiProcessSharedPreferences/sp_in_google_doc.png" alt="sp_in_google_doc"></p>
+<a id="more"></a>
+<p>为啥支持不友好呢？去看一下源码：</p>
+<p><img src="/MultiProcessSharedPreferences/sp_source_code.png" alt="sp_source_code"></p>
+<p>可以看到，谷歌对<strong>MODE_MULTI_PROCESS</strong>的处理是判断当前的SP对应的XML文件有没有什么异动（不是当前进程的改变），如异常的时间戳、大小等变化，如果有变化就重新加载该SP文件的数据，使得保证获取的数据保持在最新版本。<br>这样做的问题就是：</p>
+<ul>
+<li>文件改动会引起多进程的频繁读取，降低效率</li>
+<li>只能保证获取SP时的数据为最新，后续操作无法保证</li>
+</ul>
+<p>针对这个问题，这边实现了一个跨进程友好的SharedPreferences。实现的原理就是通过Android中为跨进程通信而生的组件——<strong>ContentProvider</strong>。<br>基础的使用方式我们需要看看我们自定义的BaseApplication。（自定义的Application知识这边暂且不表）<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">BaseApplication</span> <span class="keyword">extends</span> <span class="title">Application</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> BaseApplication instance = <span class="keyword">new</span> BaseApplication();</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> BaseApplication <span class="title">getInstance</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> instance;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="annotation">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> SharedPreferences <span class="title">getSharedPreferences</span><span class="params">(String name, <span class="keyword">int</span> mode)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> SPManager.getsInstance().getSharedPreferences(name, mode);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> SharedPreferences <span class="title">getSystemSharedPreferences</span><span class="params">(String name, <span class="keyword">int</span> mode)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">super</span>.getSharedPreferences(name, mode);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="annotation">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onCreate</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        SPManager.getsInstance().init(<span class="keyword">this</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>可以看到，在Application的onCreate里面做了我们的SPManager的初始化工作init()，这个init的主要工作是判断当前所在的进程是否是主进程。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">initProcessInfo</span><span class="params">(Context context)</span> </span>&#123;</span><br><span class="line">	<span class="keyword">if</span> (context == <span class="keyword">null</span>)</span><br><span class="line">		<span class="keyword">return</span>;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// get the name of current process</span></span><br><span class="line">	<span class="keyword">int</span> pid = android.os.Process.myPid();</span><br><span class="line">	ActivityManager manager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);</span><br><span class="line">	<span class="keyword">for</span> (ActivityManager.RunningAppProcessInfo info : manager.getRunningAppProcesses()) &#123;</span><br><span class="line">		<span class="keyword">if</span> (info.pid == pid) &#123;</span><br><span class="line">			sProcessName = info.processName;</span><br><span class="line">			<span class="keyword">break</span>;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	sIsInMainProcess = MAIN_PROCESS.equals(sProcessName);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>这边判断主进程的方式是比较字符串，主进程字符串简便起见，直接写死。当然也可以通过获取Manifest里面的package信息获取。这边赋值了一个最重要的静态变量——sIsInMainProcess。<br>重新回到BaseApplication，我们可以看到重写了getSharedPreferences方法，无缝得使这个项目中，通过Application获取SharedPreferences得到的都是我们这边的支持多进程的SP。当然，我们知道，项目中，SP的获取不止可以通过Application，也可以通过Activity，所以，我们也可以仿照这个，为工程定义一个BaseActivity，然后重写其getSharedPreferences方法，这边不具体阐述。而BaseApplication里面为啥要有一个getSystemSharedPreferences方法呢？卖个关子，后面说。<br>SPManager里面的getSharedPreferences具体如下：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> SharedPreferences <span class="title">getSharedPreferences</span><span class="params">(String name, <span class="keyword">int</span> mode)</span> </span>&#123;</span><br><span class="line">	<span class="keyword">if</span> (TextUtils.isEmpty(name)) &#123;</span><br><span class="line">		name = <span class="string">"null"</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	SharedPreferences sp = <span class="keyword">null</span>;</span><br><span class="line">	Map&lt;String, SharedPreferences&gt; spMap = <span class="keyword">null</span>;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> (Utils.sIsInMainProcess) &#123;</span><br><span class="line">		spMap = mLocalSPs; <span class="comment">// local的使用多一点，放在if里面</span></span><br><span class="line">	&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">		spMap = mRemoteSPs;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	sp = spMap.get(name);</span><br><span class="line">	<span class="keyword">if</span> (sp == <span class="keyword">null</span>) &#123;</span><br><span class="line">		<span class="keyword">synchronized</span> (spMap) &#123;</span><br><span class="line">			sp = spMap.get(name);</span><br><span class="line">			<span class="keyword">if</span> (sp == <span class="keyword">null</span>) &#123;</span><br><span class="line">				sp = <span class="keyword">new</span> SPProxy(mContext, name, mode);</span><br><span class="line">				spMap.put(name, sp);</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> sp;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>这边有个小技巧，就是为主进程和子进程分别通过ConcurrentHashMap保存了SP的引用，方便下次获取SP。我们可以看到，真正得到的SharedPreferences是我们的SPProxy对象。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SPProxy</span> <span class="keyword">implements</span> <span class="title">SharedPreferences</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> IKeyValueOperator mSPOperator;</span><br><span class="line">    <span class="keyword">private</span> EditorImpl mEditor;</span><br><span class="line">    <span class="keyword">private</span> Set&lt;OnSharedPreferenceChangeListener&gt; mListeners;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">SPProxy</span><span class="params">(WeakReference&lt;Context&gt; context, String name, <span class="keyword">int</span> mode)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (Utils.sIsInMainProcess) &#123;</span><br><span class="line">            mSPOperator = <span class="keyword">new</span> DefaultSPOperator(context.get(), name, mode);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            mSPOperator = <span class="keyword">new</span> ContentProviderOperator(context, name);</span><br><span class="line">        &#125;</span><br><span class="line">        mEditor = <span class="keyword">new</span> EditorImpl();</span><br><span class="line">    &#125;</span><br><span class="line">	</span><br><span class="line">	...</span><br><span class="line">	...</span><br><span class="line">	...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>SPProxy中有两个重要的变量，mSPOperator和mEditor，而mSPOperator尤为重要，它实现了我们真正通过SP存取数据时的操作。这边可以清晰的看到，主进程和子进程的mSPOperator是不同的。主进程是DefaultSPOperator，而子进程我们看到了熟悉的字眼ContentProviderOperator，对，就是ContentProvider。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ContentProviderOperator</span> <span class="keyword">implements</span> <span class="title">IKeyValueOperator</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String BASE_URI = <span class="string">"content://com.multiprocesssp.sharedpreferences.SPContentProvider"</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String DEFAULT_NAME = <span class="string">"default"</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> WeakReference&lt;Context&gt; mContext;</span><br><span class="line">    <span class="keyword">private</span> Uri mUri;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">ContentProviderOperator</span><span class="params">(WeakReference&lt;Context&gt; context, String name)</span> </span>&#123;</span><br><span class="line">        mContext = context;</span><br><span class="line">        String uriStr = BASE_URI + <span class="string">"/params?"</span> + Constants.KEY_FILE + <span class="string">"="</span> + (TextUtils.isEmpty(name) ? DEFAULT_NAME :</span><br><span class="line">                name);</span><br><span class="line">        mUri = Uri.parse(uriStr);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">	...</span><br><span class="line">	</span><br><span class="line">	<span class="annotation">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Object <span class="title">read</span><span class="params">(<span class="keyword">int</span> valueType, String key, Object defaultValue)</span> </span>&#123;</span><br><span class="line">        Context context;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (mContext == <span class="keyword">null</span> || (context = mContext.get()) == <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span> defaultValue;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        Cursor cursor = <span class="keyword">null</span>;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            cursor = context.getContentResolver().query(mUri, <span class="keyword">new</span> String[]&#123;</span><br><span class="line">                    Constants.KEY_KEY, key,</span><br><span class="line">                    Constants.KEY_VALUE_TYPE, valueType + <span class="string">""</span>,</span><br><span class="line">                    Constants.KEY_DEFAULT, defaultValue + <span class="string">""</span></span><br><span class="line">            &#125;, <span class="keyword">null</span>, <span class="keyword">null</span>, <span class="keyword">null</span>);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (cursor == <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span> defaultValue;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="keyword">if</span> (!cursor.moveToFirst()) &#123;</span><br><span class="line">                <span class="keyword">return</span> defaultValue;</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                Object result = getDataFromCursor(cursor, valueType);</span><br><span class="line">                <span class="keyword">if</span> (result != <span class="keyword">null</span>) &#123;</span><br><span class="line">                    <span class="keyword">return</span> result;</span><br><span class="line">                &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                    <span class="keyword">return</span> defaultValue;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Throwable t) &#123;</span><br><span class="line">            <span class="keyword">return</span> defaultValue;</span><br><span class="line">        &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                cursor.close();</span><br><span class="line">            &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">                e.printStackTrace();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">	</span><br><span class="line">	...</span><br><span class="line">	...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>可以看到，通过ContentProviderOperator进行SP数据操作实际上是通过我们这边的mUri来的。我们知道，ContentProvider的原理就是封装自己的数据操作，然后向外界暴露一个Uri。换句话说，在子进程中的SP数据操作就是通过主进程暴露出来的ContentProvider的Uri来进行的。这个Uri就是”content://com.multiprocesssp.sharedpreferences.SPContentProvider”。<br>原来如此，<strong>原来我们跨进程的SharedPreferences基本原理就是子进程读取SP的时候，通过主进程暴露的ContentProvider的Uri来对主进程中的SP进行读取</strong>。<br>再来看看主进程中定义的ContentProvider。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SPContentProvider</span> <span class="keyword">extends</span> <span class="title">ContentProvider</span> </span>&#123;</span><br><span class="line">	...</span><br><span class="line">	</span><br><span class="line">	<span class="annotation">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Cursor <span class="title">query</span><span class="params">(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder)</span> </span>&#123;</span><br><span class="line">        String name = getParam(uri, Constants.KEY_FILE);</span><br><span class="line">        String key = NO_SUCH_KEY;</span><br><span class="line">        <span class="keyword">int</span> type = -<span class="number">1</span>;</span><br><span class="line">        String defaultValue = <span class="keyword">null</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>, count = projection.length; i &lt; count; i++) &#123;</span><br><span class="line">            <span class="keyword">if</span> (Constants.KEY_KEY.equals(projection[i])) &#123;</span><br><span class="line">                <span class="keyword">if</span> (++i &lt; count)</span><br><span class="line">                    key = projection[i];</span><br><span class="line">            &#125; <span class="keyword">else</span> <span class="keyword">if</span> (Constants.KEY_VALUE_TYPE.equals(projection[i])) &#123;</span><br><span class="line">                <span class="keyword">if</span> (++i &lt; count)</span><br><span class="line">                    type = Integer.parseInt(projection[i]);</span><br><span class="line">            &#125; <span class="keyword">else</span> <span class="keyword">if</span> (Constants.KEY_DEFAULT.equals(projection[i])) &#123;</span><br><span class="line">                <span class="keyword">if</span> (++i &lt; count)</span><br><span class="line">                    defaultValue = projection[i];</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (NO_SUCH_KEY.equals(key) || type == -<span class="number">1</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        MatrixCursor cursor = <span class="keyword">new</span> MatrixCursor(MOCK_COLUMNS);</span><br><span class="line">        Object value = <span class="keyword">null</span>;</span><br><span class="line">        SharedPreferences sp = SPManager.getsInstance().getSharedPreferences(name, Context.MODE_PRIVATE);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="keyword">switch</span> (type) &#123;</span><br><span class="line">                <span class="keyword">case</span> Constants.VALUE_TYPE_INTEGER:</span><br><span class="line">                    value = sp.getInt(key, Integer.parseInt(defaultValue));</span><br><span class="line">                    <span class="keyword">break</span>;</span><br><span class="line">                <span class="keyword">case</span> Constants.VALUE_TYPE_LONG:</span><br><span class="line">                    value = sp.getLong(key, Long.parseLong(defaultValue));</span><br><span class="line">                    <span class="keyword">break</span>;</span><br><span class="line">                <span class="keyword">case</span> Constants.VALUE_TYPE_FLOAT:</span><br><span class="line">                    value = sp.getFloat(key, Float.parseFloat(defaultValue));</span><br><span class="line">                    <span class="keyword">break</span>;</span><br><span class="line">                <span class="keyword">case</span> Constants.VALUE_TYPE_BOOLEAN:</span><br><span class="line">                    <span class="comment">// boolean has to be converted to an integer cursor</span></span><br><span class="line">                    value = sp.getBoolean(key, Boolean.parseBoolean(defaultValue)) ? <span class="number">1</span> : <span class="number">0</span>;</span><br><span class="line">                    <span class="keyword">break</span>;</span><br><span class="line">                <span class="keyword">case</span> Constants.VALUE_TYPE_STRING:</span><br><span class="line">                    value = sp.getString(key, defaultValue);</span><br><span class="line">                    <span class="keyword">break</span>;</span><br><span class="line">                <span class="keyword">case</span> Constants.VALUE_TYPE_ANY:</span><br><span class="line">                    <span class="comment">// return something to hint that key exists</span></span><br><span class="line">                    value = sp.contains(key) ? <span class="number">0</span> : <span class="keyword">null</span>;</span><br><span class="line">                    <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> (value != <span class="keyword">null</span>) &#123;</span><br><span class="line">                cursor.addRow(<span class="keyword">new</span> Object[]&#123;</span><br><span class="line">                        value</span><br><span class="line">                &#125;);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> cursor;</span><br><span class="line">    &#125;</span><br><span class="line">	</span><br><span class="line">	...</span><br><span class="line">	...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>以query方法举例，可以看到，在主进程的SP操作，又回到了SPManager.getsInstance().getSharedPreferences(name, Context.MODE_PRIVATE);而我们上面可以看到，这个方法得到的就是主进程的SPProxy，在主进程中，返回的就是系统默认的SharedPreferences，而这个系统默认的SharedPreferences我们是通过BaseApplication里面的getSystemSharedPreferences获取到的，在Utils类里面。所以，这里，才是所有的进程真正操作SharedPreferences数据的地方。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Utils</span> </span>&#123;</span><br><span class="line">	...</span><br><span class="line">	...</span><br><span class="line">	...</span><br><span class="line">	</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> SharedPreferences <span class="title">getSystemSP</span><span class="params">(Context context, String name, <span class="keyword">int</span> mode)</span> </span>&#123;</span><br><span class="line">        <span class="comment">/*</span><br><span class="line">        * 这边直接调context.getSharedPreferences(name, mode)的话，</span><br><span class="line">        * 会调用BaseApplication里面的getSharedPreferences，然后一层一层调回来，</span><br><span class="line">        * 引起无限循环</span><br><span class="line">        */</span></span><br><span class="line">        SharedPreferences sp = <span class="keyword">null</span>;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            Class&lt;?&gt; clazz = Class.forName(<span class="string">"com.multiprocesssp.base.BaseApplication"</span>);</span><br><span class="line">            Method method = clazz.getDeclaredMethod(<span class="string">"getSystemSharedPreferences"</span>, <span class="keyword">new</span> Class[]&#123;String.class, <span class="keyword">int</span>.class&#125;);</span><br><span class="line">            sp = (SharedPreferences) method.invoke(context, <span class="keyword">new</span> Object[]&#123;name, mode&#125;);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (ClassNotFoundException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125; <span class="keyword">catch</span> (NoSuchMethodException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125; <span class="keyword">catch</span> (IllegalArgumentException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125; <span class="keyword">catch</span> (IllegalAccessException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125; <span class="keyword">catch</span> (InvocationTargetException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> sp;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>至此，大体将跨进程的ContentProvider原理讲清了，具体源码可以参考<a href="https://github.com/double0291/MultiProcessSharedPreferences" target="_blank" rel="external">MultiProcessSharedPreferences</a>     </p>
+<h5 id="注意">注意</h5><ol>
+<li>ContentProvider的实现类要在manifest中声明，进程启动的时候，会执行该类的onCreate()方法。</li>
+<li>多进程的声明 android:process=”:XXX”，这个XXX不能为数字。</li>
+</ol>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2015/09/16/multiProcessSharedPreferences/" data-id="cig7t3aax00036kuzyepgri3k" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/process-SharedPreferences/">process SharedPreferences</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2015/09/18/context/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          Android中的Context浅析
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2015/08/21/zygote/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">Android启动初探</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/android-ServiceManager-zygote/">android ServiceManager zygote</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/android-context/">android context</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/android-launchmode-standard-singleTop-singleTop-singleInstance-翻译/">android launchmode standard singleTop singleTop singleInstance 翻译</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java-android-enum/">java android enum</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/process-SharedPreferences/">process SharedPreferences</a><span class="tag-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/android-ServiceManager-zygote/" style="font-size: 10px;">android ServiceManager zygote</a> <a href="/tags/android-context/" style="font-size: 10px;">android context</a> <a href="/tags/android-launchmode-standard-singleTop-singleTop-singleInstance-翻译/" style="font-size: 10px;">android launchmode standard singleTop singleTop singleInstance 翻译</a> <a href="/tags/java-android-enum/" style="font-size: 20px;">java android enum</a> <a href="/tags/process-SharedPreferences/" style="font-size: 10px;">process SharedPreferences</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">October 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">September 2015</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a><span class="archive-list-count">2</span></li></ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recents</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2015/10/09/bezierBase/">贝塞尔曲线原理介绍及基础使用</a>
+          </li>
+        
+          <li>
+            <a href="/2015/09/23/activityLaunchMode/">Activity启动模式——standard，singleTop，singleTop，singleInstance（译）</a>
+          </li>
+        
+          <li>
+            <a href="/2015/09/18/context/">Android中的Context浅析</a>
+          </li>
+        
+          <li>
+            <a href="/2015/09/16/multiProcessSharedPreferences/">多进程SharedPreferences</a>
+          </li>
+        
+          <li>
+            <a href="/2015/08/21/zygote/">Android启动初探</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2015 Double Chen<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css" type="text/css">
+  <script src="/fancybox/jquery.fancybox.pack.js" type="text/javascript"></script>
+
+
+<script src="/js/script.js" type="text/javascript"></script>
+
+  </div>
+</body>
+</html>
