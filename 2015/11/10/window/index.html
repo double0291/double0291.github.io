@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Android中的Window浅析 | DoubleChen，就这样</title>
+  <meta name="viewport" content="width=device-width">
+  <meta name="description" content="简介一个Window就是一个包含唯一的View树结构的矩形区域。下面这张图告诉我们，一个屏幕中可能有多个Window。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android中的Window浅析">
+<meta property="og:url" content="http://yoursite.com/2015/11/10/window/index.html">
+<meta property="og:site_name" content="DoubleChen，就这样">
+<meta property="og:description" content="简介一个Window就是一个包含唯一的View树结构的矩形区域。下面这张图告诉我们，一个屏幕中可能有多个Window。">
+<meta property="og:image" content="http://yoursite.com/Window/window.png">
+<meta property="og:image" content="http://yoursite.com/Window/window_list.png">
+<meta property="og:image" content="http://yoursite.com/Window/DecorView.gif">
+<meta property="og:updated_time" content="2015-11-10T11:30:11.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Android中的Window浅析">
+<meta name="twitter:description" content="简介一个Window就是一个包含唯一的View树结构的矩形区域。下面这张图告诉我们，一个屏幕中可能有多个Window。">
+  
+    <link rel="alternative" href="/atom.xml" title="DoubleChen，就这样" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  <link rel="stylesheet" href="/css/style.css" type="text/css">
+  <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+  
+</head>
+<body>
+  <div id="container">
+    <div class="mobile-nav-panel">
+	<i class="icon-reorder icon-large"></i>
+</div>
+<header id="header">
+	<h1 class="blog-title">
+		<a href="/">DoubleChen，就这样</a>
+	</h1>
+	<nav class="nav">
+		<ul>
+			<li><a href="/">Home</a></li><li><a href="/archives">Archives</a></li>
+			<li><a id="nav-search-btn" class="nav-icon" title="Search"></a></li>
+			<li><a href="/atom.xml" id="nav-rss-link" class="nav-icon" title="RSS Feed"></a></li>
+		</ul>
+	</nav>
+	<div id="search-form-wrap">
+		<form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+	</div>
+</header>
+    <div id="main">
+      <article id="post-window" class="post">
+	<footer class="entry-meta-header">
+		<span class="meta-elements date">
+			<a href="/2015/11/10/window/" class="article-date">
+  <time datetime="2015-11-09T16:00:00.000Z" itemprop="datePublished">2015-11-10</time>
+</a>
+		</span>
+		<span class="meta-elements author">Double Chen</span>
+		<div class="commentscount">
+			
+		</div>
+	</footer>
+	
+	<header class="entry-header">
+		
+  
+    <h1 class="article-title entry-title" itemprop="name">
+      Android中的Window浅析
+    </h1>
+  
+
+	</header>
+	<div class="entry-content">
+		
+    	<h2 id="简介">简介</h2><p>一个Window就是<strong>一个包含唯一的View树结构的矩形区域</strong>。<br>下面这张图告诉我们，一个屏幕中可能有多个Window。<br><img src="/Window/window.png" alt="window"><br><a id="more"></a><br>我们可以通过Hierarchy Viewer来查看当前的Window，或者通过adb命令：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">adb shell dumpsys window</span><br></pre></td></tr></table></figure></p>
+<p><img src="/Window/window_list.png" alt="window_list"><br>关于Window，Android架构师Dianne Hackborn层有过一段<a href="http://stackoverflow.com/questions/4576909/understanding-canvas-and-surface-concepts#answers" target="_blank" rel="external">描述</a></p>
+<blockquote>
+<p>A Surface is an object holding pixels that are being composited to the screen. Every window you see on the screen (a dialog, your full-screen activity, the status bar) has its own surface that it draws in to, and Surface Flinger renders these to the final display in their correct Z-order. A surface typically has more than one buffer (usually two) to do double-buffered rendering: the application can be drawing its next UI state while the surface flinger is compositing the screen using the last buffer, without needing to wait for the application to finish drawing.</p>
+<p>A window is basically like you think of a window on the desktop. It has a single Surface in which the contents of the window is rendered. An application interacts with the Window Manager to create windows; the Window Manager creates a Surface for each window and gives it to the application for drawing. The application can draw whatever it wants in the Surface; to the Window Manager it is just an opaque rectangle.</p>
+<p>A View is an interactive UI element inside of a window. A window has a single view hierarchy attached to it, which provides all of the behavior of the window. Whenever the window needs to be redrawn (such as because a view has invalidated itself), this is done into the window’s Surface. The Surface is locked, which returns a Canvas that can be used to draw into it. A draw traversal is done down the hierarchy, handing the Canvas down for each view to draw its part of the UI. Once done, the Surface is unlocked and posted so that the just drawn buffer is swapped to the foreground to then be composited to the screen by Surface Flinger.</p>
+<p>A SurfaceView is a special implementation of View that also creates its own dedicated Surface for the application to directly draw into (outside of the normal view hierarchy, which otherwise must share the single Surface for the window). The way this works is simpler than you may expect – all SurfaceView does is ask the window manager to create a new window, telling it to Z-order that window either immediately behind or in front of the SurfaceView’s window, and positioning it to match where the SurfaceView appears in the containing window. If the surface is being placed behind the main window (in Z order), SurfaceView also fills its part of the main window with transparency so that the surface can be seen.</p>
+<p>A Bitmap is just an interface to some pixel data. The pixels may be allocated by Bitmap itself when you are directly creating one, or it may be pointing to pixels it doesn’t own such as what internally happens to hook a Canvas up to a Surface for drawing. (A Bitmap is created and pointed to the current drawing buffer of the Surface.)</p>
+</blockquote>
+<h2 id="基础类">基础类</h2><h4 id="Window类">Window类</h4><p>抽象类，提供了一套耳熟能详的通用API。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">Window</span> </span>&#123;</span><br><span class="line">	...</span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">final</span> Context mContext;</span><br><span class="line">	</span><br><span class="line">	<span class="keyword">private</span> TypedArray mWindowStyle;</span><br><span class="line">	...</span><br><span class="line">	</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="title">Window</span><span class="params">(Context context)</span> </span>&#123;  </span><br><span class="line">		mContext = context;  </span><br><span class="line">    &#125;</span><br><span class="line">	</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">final</span> Context <span class="title">getContext</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> mContext;</span><br><span class="line">    &#125;</span><br><span class="line">	</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">final</span> TypedArray <span class="title">getWindowStyle</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">synchronized</span> (<span class="keyword">this</span>) &#123;</span><br><span class="line">            <span class="keyword">if</span> (mWindowStyle == <span class="keyword">null</span>) &#123;</span><br><span class="line">               mWindowStyle = mContext.obtainStyledAttributes(</span><br><span class="line">						com.android.internal.R.styleable.Window);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">return</span> mWindowStyle;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">	</span><br><span class="line">	<span class="function"><span class="keyword">public</span> View <span class="title">findViewById</span><span class="params">(<span class="keyword">int</span> id)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">return</span> getDecorView().findViewById(id);</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> View <span class="title">getDecorView</span><span class="params">()</span></span>;</span><br><span class="line">	</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">void</span> <span class="title">setTitle</span><span class="params">(CharSequence title)</span></span>;</span><br><span class="line">	</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">void</span> <span class="title">setContentView</span><span class="params">(<span class="keyword">int</span> layoutResID)</span></span>;</span><br><span class="line">	</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">void</span> <span class="title">setBackgroundDrawable</span><span class="params">(Drawable drawable)</span></span>;</span><br><span class="line">	</span><br><span class="line">	...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h4 id="PhoneWindow类">PhoneWindow类</h4><p>PhoneWindow类是Window类的具体实现，主要工作是封装了DecorView，并通过操作DecorView具体实现了窗口的操作接口。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">PhoneWindow</span> <span class="keyword">extends</span> <span class="title">Window</span> <span class="keyword">implements</span> <span class="title">MenuBuilder</span>.<span class="title">Callback</span> </span>&#123;</span><br><span class="line">	...</span><br><span class="line">	<span class="comment">// This is the top-level view of the window, containing the window decor.</span></span><br><span class="line">	<span class="keyword">private</span> DecorView mDecor;</span><br><span class="line">	</span><br><span class="line">	<span class="comment">// This is the view in which the window contents are placed. It is either</span></span><br><span class="line">	<span class="comment">// mDecor itself, or a child of mDecor where the contents go.</span></span><br><span class="line">	<span class="keyword">private</span> ViewGroup mContentParent;</span><br><span class="line">	</span><br><span class="line">	...</span><br><span class="line">	</span><br><span class="line">	<span class="keyword">private</span> LayoutInflater mLayoutInflater;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">private</span> TextView mTitleView;</span><br><span class="line">	</span><br><span class="line">	...</span><br><span class="line">	</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setTitle</span><span class="params">(CharSequence title)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">if</span> (mTitleView != <span class="keyword">null</span>) &#123;</span><br><span class="line">			mTitleView.setText(title);</span><br><span class="line">		&#125; <span class="keyword">else</span> <span class="keyword">if</span> (mActionBar != <span class="keyword">null</span>) &#123;</span><br><span class="line">			mActionBar.setWindowTitle(title);</span><br><span class="line">		&#125;</span><br><span class="line">		mTitle = title;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	...</span><br><span class="line">	</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setContentView</span><span class="params">(<span class="keyword">int</span> layoutResID)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">if</span> (mContentParent == <span class="keyword">null</span>) &#123;</span><br><span class="line">			installDecor();</span><br><span class="line">		&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">			mContentParent.removeAllViews();</span><br><span class="line">		&#125;</span><br><span class="line">		mLayoutInflater.inflate(layoutResID, mContentParent);</span><br><span class="line">		<span class="keyword">final</span> Callback cb = getCallback();</span><br><span class="line">		f (cb != <span class="keyword">null</span> &amp;&amp; !isDestroyed()) &#123;</span><br><span class="line">			cb.onContentChanged();</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	...</span><br><span class="line">	</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">void</span> <span class="title">setBackgroundDrawable</span><span class="params">(Drawable drawable)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">if</span> (drawable != mBackgroundDrawable || mBackgroundResource != <span class="number">0</span>) &#123;</span><br><span class="line">			mBackgroundResource = <span class="number">0</span>;</span><br><span class="line">			mBackgroundDrawable = drawable;</span><br><span class="line">			<span class="keyword">if</span> (mDecor != <span class="keyword">null</span>) &#123;</span><br><span class="line">				mDecor.setWindowBackground(drawable);</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h4 id="DecorView类">DecorView类</h4><p>DecorView类是PhoneWindow类的内部类。该类是FrameLayout的子类，通过在DecorView里面添加Title，添加Title上的滚动条，添加我们自定义的Content，才最终展示了我们看到的完整的窗口。它默认会包含一个灰色的标题栏，然后在标题栏下边会包含一个空白区域用来当用户调用setContentView的时候放置用户View，并传递事件。<br>一言概之，<strong>DecorView是所有应用窗口的根View</strong>。我们在Manifest中设置的Theme或者在PhoneWindow设置的Flags，来确定DecorView的Layout。<br><img src="/Window/DecorView.gif" alt="DecorView">     </p>
+<h2 id="setContentView过程">setContentView过程</h2><p>我们都知道，在Activity的onCreate()方法里面调用setContentView()方法会设置整个Activity的布局。这里，我们来看一下setContentView(intresId)方法。<br><strong>Activity中：</strong><br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setContentView</span><span class="params">(<span class="keyword">int</span> layoutResID)</span> </span>&#123;</span><br><span class="line">	getWindow().setContentView(layoutResID);</span><br><span class="line">	initActionBar();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">...</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> Window <span class="title">getWindow</span><span class="params">()</span> </span>&#123;  </span><br><span class="line">    <span class="keyword">return</span> mWindow;   <span class="comment">//Window对象，本质上是一个PhoneWindow对象  </span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p><strong>PhoneWindow类中：</strong><br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setContentView</span><span class="params">(<span class="keyword">int</span> layoutResID)</span> </span>&#123;</span><br><span class="line">	<span class="keyword">if</span> (mContentParent == <span class="keyword">null</span>) &#123;</span><br><span class="line">		installDecor();</span><br><span class="line">	&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">		mContentParent.removeAllViews();</span><br><span class="line">	&#125;</span><br><span class="line">	mLayoutInflater.inflate(layoutResID, mContentParent);</span><br><span class="line">	<span class="keyword">final</span> Callback cb = getCallback();</span><br><span class="line">	f (cb != <span class="keyword">null</span> &amp;&amp; !isDestroyed()) &#123;</span><br><span class="line">		cb.onContentChanged();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>首先根据mContentParent是否为空来判断是否第一次调用setContentView()。如果第一次调用，就去调installDecor()方法，否则就移除mContentParent里面的所有子View。然后就将我们的资源文件通过LayoutInflater对象转换为View树，并且添加至mContentParent视图中。<br>这段代码也就解释了为什么<strong>在应用程序里，我们可以多次调用setContentView()来显示我们的界面</strong>。<br>再来看看installDecor()方法：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">installDecor</span><span class="params">()</span> </span>&#123;  </span><br><span class="line">    <span class="keyword">if</span> (mDecor == <span class="keyword">null</span>) &#123;  </span><br><span class="line">        <span class="comment">//mDecor为空，则创建一个Decor对象  </span></span><br><span class="line">        mDecor = generateDecor();  </span><br><span class="line">        mDecor.setDescendantFocusability(ViewGroup.FOCUS_AFTER_DESCENDANTS);  </span><br><span class="line">        mDecor.setIsRootNamespace(<span class="keyword">true</span>);  </span><br><span class="line">    &#125;  </span><br><span class="line">    <span class="keyword">if</span> (mContentParent == <span class="keyword">null</span>) &#123;  </span><br><span class="line">        <span class="comment">//generateLayout()方法会根据窗口的风格修饰，选择对应的修饰布局文件  </span></span><br><span class="line">        <span class="comment">//并且将id为content(android:id="@+id/content")的FrameLayout赋值给mContentParent  </span></span><br><span class="line">        mContentParent = generateLayout(mDecor);  </span><br><span class="line">          </span><br><span class="line">        <span class="comment">//...  </span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>首先，会判断mDecor是否为空。如果是空的话，就会去创建一个DecorView。上面说过DecorView是FrameLayout的子类，所以，它也是一个ViewGroup。<br>接着就要去创建mContentParent了，这个过程通过generateLayout()方法完成。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">protected</span> ViewGroup <span class="title">generateLayout</span><span class="params">(DecorView decor)</span> </span>&#123;  </span><br><span class="line">    <span class="comment">// Apply data from current theme.  </span></span><br><span class="line">  </span><br><span class="line">    <span class="comment">//...1、根据requestFreature()和Activity节点的android:theme="" 设置好 features值  </span></span><br><span class="line">      </span><br><span class="line">    <span class="comment">//2 根据设定好的 features值，即特定风格属性，选择不同的窗口修饰布局文件  </span></span><br><span class="line">    <span class="keyword">int</span> layoutResource;  <span class="comment">//窗口修饰布局文件    </span></span><br><span class="line">    <span class="keyword">int</span> features = getLocalFeatures();  </span><br><span class="line">    <span class="comment">// System.out.println("Features: 0x" + Integer.toHexString(features));  </span></span><br><span class="line">    <span class="keyword">if</span> ((features &amp; ((<span class="number">1</span> &lt;&lt; FEATURE_LEFT_ICON) | (<span class="number">1</span> &lt;&lt; FEATURE_RIGHT_ICON))) != <span class="number">0</span>) &#123;  </span><br><span class="line">        <span class="keyword">if</span> (mIsFloating) &#123;  </span><br><span class="line">            layoutResource = com.android.internal.R.layout.dialog_title_icons;  </span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;  </span><br><span class="line">            layoutResource = com.android.internal.R.layout.screen_title_icons;  </span><br><span class="line">        &#125;  </span><br><span class="line">        <span class="comment">// System.out.println("Title Icons!");  </span></span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> ((features &amp; ((<span class="number">1</span> &lt;&lt; FEATURE_PROGRESS) | (<span class="number">1</span> &lt;&lt; FEATURE_INDETERMINATE_PROGRESS))) != <span class="number">0</span>) &#123;  </span><br><span class="line">        <span class="comment">// Special case for a window with only a progress bar (and title).  </span></span><br><span class="line">        <span class="comment">// <span class="label">XXX Need to have a no-title version of embedded windows.  </span></span></span><br><span class="line">        layoutResource = com.android.internal.R.layout.screen_progress;  </span><br><span class="line">        <span class="comment">// System.out.println("Progress!");  </span></span><br><span class="line">    &#125;   </span><br><span class="line">    <span class="comment">//...  </span></span><br><span class="line">      </span><br><span class="line">    <span class="comment">//3 选定了窗口修饰布局文件 ，添加至DecorView对象里，并且指定mcontentParent值  </span></span><br><span class="line">    View in = mLayoutInflater.inflate(layoutResource, <span class="keyword">null</span>);  </span><br><span class="line">    decor.addView(in, <span class="keyword">new</span> ViewGroup.LayoutParams(MATCH_PARENT, MATCH_PARENT));  </span><br><span class="line">  </span><br><span class="line">    ViewGroup contentParent = (ViewGroup)findViewById(ID_ANDROID_CONTENT);  </span><br><span class="line">    <span class="keyword">if</span> (contentParent == <span class="keyword">null</span>) &#123;  </span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">"Window couldn't find content container view"</span>);  </span><br><span class="line">    &#125;  </span><br><span class="line">  </span><br><span class="line">    <span class="keyword">if</span> ((features &amp; (<span class="number">1</span> &lt;&lt; FEATURE_INDETERMINATE_PROGRESS)) != <span class="number">0</span>) &#123;  </span><br><span class="line">        ProgressBar progress = getCircularProgressBar(<span class="keyword">false</span>);  </span><br><span class="line">        <span class="keyword">if</span> (progress != <span class="keyword">null</span>) &#123;  </span><br><span class="line">            progress.setIndeterminate(<span class="keyword">true</span>);  </span><br><span class="line">        &#125;  </span><br><span class="line">    &#125;  </span><br><span class="line">    <span class="comment">//...  </span></span><br><span class="line">    <span class="keyword">return</span> contentParent;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>详细看一下这个方法。    </p>
+<ol>
+<li><p>根据不同的Style选择不同的Window布局文件。选Style的方式有两种：</p>
+<ul>
+<li><p>通过requestFeature()指定窗口修饰符，PhoneWindow对象调用getLocalFeature()方法获取值</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">requestWindowFeature(Window.FEATURE_NO_TITLE);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>为Activity配置相应属性，即android:theme=””，PhoneWindow对象调用getWindowStyle()方法获取值</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">android:theme=<span class="string">"@android:style/Theme.NoTitleBar"</span></span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+</ol>
+<p>确定好窗口风格之后，选定该风格对应的布局文件，这些布局文件位于frameworks/base/core/res/layout/    </p>
+<ol>
+<li><p>确定了Window的Style后，mDecor作为根视图将该窗口布局添加进去，并且获取id为content的View，将其赋值给mContentParent对象。</p>
+</li>
+<li><p>将Activity的布局文件添加至id为content的FrameLayout内</p>
+</li>
+</ol>
+<p>这个步骤也解释了为什么<strong>在Activity中必须在setContentView之前调用requestFeature()方法</strong></p>
+<h2 id="参考">参考</h2><p><a href="http://blog.csdn.net/qinjuning/article/details/7226787" target="_blank" rel="external">Android中将布局文件/View添加至窗口过程分析 —- 从setContentView()谈起</a></p>
+
+    
+	</div>
+	<footer class="entry-footer">
+		<div class="entry-meta-footer">
+			<span class="category">
+				
+			</span>
+			<span class="tags">
+				
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/android-window-DecorView/">android window DecorView</a></li></ul>
+
+			</span>
+		</div>
+	</footer>
+	
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2015/11/02/view/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">
+        
+          Android中的View浅析
+        
+      </div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+
+
+    </div>
+    <div class="mb-search">
+  <form action="//google.com/search" method="get" accept-charset="utf-8">
+    <input type="search" name="q" results="0" placeholder="Search">
+    <input type="hidden" name="q" value="site:yoursite.com">
+  </form>
+</div>
+<footer id="footer">
+	<h1 class="footer-blog-title">
+		<a href="/">DoubleChen，就这样</a>
+	</h1>
+	<span class="copyright">
+		&copy; 2015 Double Chen<br>
+		Modify from <a href="http://sanographix.github.io/tumblr/apollo/" target="_blank">Apollo</a> theme, designed by <a href="http://www.sanographix.net/" target="_blank">SANOGRAPHIX.NET</a><br>
+		Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+	</span>
+</footer>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js" type="text/javascript"></script>
+  </div>
+</body>
+</html>
