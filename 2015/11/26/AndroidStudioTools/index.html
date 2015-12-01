@@ -14,7 +14,7 @@
 主面板">
 <meta property="og:type" content="article">
 <meta property="og:title" content="AndroidStudio分析工具">
-<meta property="og:url" content="http://yoursite.com/2015/11/26/AndroidStudioTools/index.html">
+<meta property="og:url" content="http://yoursite.com/2015/11/26/androidStudioTools/index.html">
 <meta property="og:site_name" content="DoubleChen，就这样">
 <meta property="og:description" content="内存监控（Memory Monitor）AndroidStudio里的内存监控能实时的看到APP的内存情况，有助于分析内存问题。具体用途包括：
 
@@ -27,7 +27,27 @@
 <meta property="og:image" content="http://yoursite.com/AndroidStudioTools/memory_monitor_gc.png">
 <meta property="og:image" content="http://yoursite.com/AndroidStudioTools/memory_monitor_usage.png">
 <meta property="og:image" content="http://yoursite.com/AndroidStudioTools/heap_viewer.png">
-<meta property="og:updated_time" content="2015-11-27T09:46:00.000Z">
+<meta property="og:image" content="http://yoursite.com/AndroidStudioTools/allocation_tracker_steps.png">
+<meta property="og:image" content="http://yoursite.com/AndroidStudioTools/allocation_tracer_group.png">
+<meta property="og:image" content="http://yoursite.com/AndroidStudioTools/group_by_method_1.png">
+<meta property="og:image" content="http://yoursite.com/AndroidStudioTools/group_by_method_2.png">
+<meta property="og:image" content="http://yoursite.com/AndroidStudioTools/group_by_method_3.png">
+<meta property="og:image" content="http://yoursite.com/AndroidStudioTools/group_by_allocator_1.png">
+<meta property="og:image" content="http://yoursite.com/AndroidStudioTools/group_by_allocator_2.png">
+<meta property="og:image" content="http://yoursite.com/AndroidStudioTools/jump_to_source.png">
+<meta property="og:image" content="http://yoursite.com/AndroidStudioTools/statistics_pic.png">
+<meta property="og:image" content="http://yoursite.com/AndroidStudioTools/statistics_sun_burst_1.png">
+<meta property="og:image" content="http://yoursite.com/AndroidStudioTools/statistics_sun_burst_2.gif">
+<meta property="og:image" content="http://yoursite.com/AndroidStudioTools/statistics_sun_burst_3.gif">
+<meta property="og:image" content="http://yoursite.com/AndroidStudioTools/statistics_sun_burst_4.gif">
+<meta property="og:image" content="http://yoursite.com/AndroidStudioTools/statistics_sun_burst_5.png">
+<meta property="og:image" content="http://yoursite.com/AndroidStudioTools/statistics_sun_burst_6.gif">
+<meta property="og:image" content="http://yoursite.com/AndroidStudioTools/statistics_change_layout.png">
+<meta property="og:image" content="http://yoursite.com/AndroidStudioTools/statistics_layout_1.png">
+<meta property="og:image" content="http://yoursite.com/AndroidStudioTools/statistics_layout_2.gif">
+<meta property="og:image" content="http://yoursite.com/AndroidStudioTools/statistics_layout_3.gif">
+<meta property="og:image" content="http://yoursite.com/AndroidStudioTools/statistics_layout_4.gif">
+<meta property="og:updated_time" content="2015-12-01T02:16:01.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="AndroidStudio分析工具">
 <meta name="twitter:description" content="内存监控（Memory Monitor）AndroidStudio里的内存监控能实时的看到APP的内存情况，有助于分析内存问题。具体用途包括：
@@ -68,10 +88,10 @@
 	</div>
 </header>
     <div id="main">
-      <article id="post-AndroidStudioTools" class="post">
+      <article id="post-androidStudioTools" class="post">
 	<footer class="entry-meta-header">
 		<span class="meta-elements date">
-			<a href="/2015/11/26/AndroidStudioTools/" class="article-date">
+			<a href="/2015/11/26/androidStudioTools/" class="article-date">
   <time datetime="2015-11-25T16:00:00.000Z" itemprop="datePublished">2015-11-26</time>
 </a>
 		</span>
@@ -133,6 +153,27 @@
 </ol>
 <h4 id="主面板-1">主面板</h4><p><img src="/AndroidStudioTools/heap_viewer.png" alt="heap_viewer"><br>按照图中的A-&gt;B-&gt;C-&gt;D-&gt;E顺序按下，就可以看到heap数据了。<br><strong>数据随着每次GC（无论系统触发还是手动触发）都更新一次</strong>。<br>Heap Viewer中的信息不做过多解释，都很明显。</p>
 <h4 id="排查内存泄露">排查内存泄露</h4><p>隔一段时间就手动GC，然后<strong>观察data object一栏的total size(也可以观察Heap Size/Allocated内存的情况)</strong>，看看内存是不是会回到一个稳定值，多次操作后，只要内存是稳定在某个值，那么说明没有内存溢出的，如果发现内存在每次GC后，都在增长，不管是慢增长还是快速增长，都说明有内存泄漏的可能性。</p>
+<h2 id="内存分配追踪（Allocation_Tracker）">内存分配追踪（Allocation Tracker）</h2><p>Allocation Tracker主要记录了在一段时间内，对APP操作引起的所有内存分配活动。<br>AndroidStudio的Allocation Tracker比之前Eclipse的更强大炫酷，但实现的功能基本是一样的。</p>
+<h4 id="操作步骤">操作步骤</h4><p><img src="/AndroidStudioTools/allocation_tracker_steps.png" alt="allocation_tracker_steps">    </p>
+<ol>
+<li>连接设备，打开调试环境，打开AndroidStudio里面的Android窗口。</li>
+<li>点击左边的<strong>Start Allocation Tracker</strong>按钮。</li>
+<li>操作APP。</li>
+<li>点击左边的<strong>Stop Allocation Tracker</strong>按钮。</li>
+</ol>
+<h4 id="查看数据">查看数据</h4><p>上述的操作完成后，就会生成一个alloc文件，该文件记录了这次内存分配追踪到的所有数据。<br>有两种方式去查看具体数据。<br><img src="/AndroidStudioTools/allocation_tracer_group.png" alt="allocation_tracer_group">    </p>
+<h6 id="按方法分组（Group_by_Method）">按方法分组（Group by Method）</h6><p>默认是Group by Method的。<br><img src="/AndroidStudioTools/group_by_method_1.png" alt="group_by_method_1"><br>可以看到，是按照线程分类的，默认按照分配顺序排序，也可以通过点击<strong>count</strong>，<strong>size</strong>来改变顺序。<br><strong>count</strong>就是分配的次数，<strong>size</strong>就是分配的内存大小。<br>点击线程可以看到这个线程所有的涉及内存分配的方法。<br><img src="/AndroidStudioTools/group_by_method_2.png" alt="group_by_method_1"><br>并可以一步一步到底。<br><img src="/AndroidStudioTools/group_by_method_3.png" alt="group_by_method_1">    </p>
+<h6 id="按内存分配器分组（Group_by_Allocator）">按内存分配器分组（Group by Allocator）</h6><p>换成Group by Allocator后，详细信息就会以包来分组了。默认的排序是按照分配者的第一次分配顺序来的。<br><img src="/AndroidStudioTools/group_by_allocator_1.png" alt="group_by_allocator_1"><br>这种显示方式的话，我们可以直接定位到我们的代码处，看到我们代码内部的内存分配情况。<br><img src="/AndroidStudioTools/group_by_allocator_2.png" alt="group_by_allocator_2">    </p>
+<h4 id="Jump_To_Source">Jump To Source</h4><p>在你感兴趣的地方，可以右键选择“Jump To Source”或者点击“Jump To Source”按钮，这个时候就会跳转到相应的源码，前提是能找到源码。<br>不过要注意，<strong>只能跳转到类的开头，并不跳转到具体代码行</strong>。<br><img src="/AndroidStudioTools/jump_to_source.png" alt="jump_to_source">    </p>
+<h4 id="统计图">统计图</h4><p>点击统计图表按钮，就进入了最为炫酷的统计图界面。<br><img src="/AndroidStudioTools/statistics_pic.png" alt="statistics_pic">    </p>
+<h5 id="轮胎图">轮胎图</h5><p><img src="/AndroidStudioTools/statistics_sun_burst_1.png" alt="statistics_sun_burst_1">    </p>
+<h6 id="起始分配">起始分配</h6><p>最内部的圆环<strong>按照线程</strong>分割，在此基础上每个扇面都是该线程的内存分配路径。<br><img src="/AndroidStudioTools/statistics_sun_burst_2.gif" alt="statistics_sun_burst_2">    </p>
+<h6 id="查看扇面">查看扇面</h6><p>顺着一个扇面向外滑动，就能看到一个线程里面的内存按顺序分配的详细信息。<br>如果觉得不够清晰，就可以双击某个扇面，展开该扇面的相信信息。<br><img src="/AndroidStudioTools/statistics_sun_burst_3.gif" alt="statistics_sun_burst_3"><br>如果想回到刚才的圆，双击圆心空白即可。<br><img src="/AndroidStudioTools/statistics_sun_burst_4.gif" alt="statistics_sun_burst_4">    </p>
+<h6 id="演示查看完整路径">演示查看完整路径</h6><p><img src="/AndroidStudioTools/statistics_sun_burst_5.png" alt="statistics_sun_burst_5"><br><img src="/AndroidStudioTools/statistics_sun_burst_6.gif" alt="statistics_sun_burst_6">    </p>
+<h5 id="柱状图">柱状图</h5><p>将查看方式由默认的Sunburst改为layout，就会展示柱状图。<br><img src="/AndroidStudioTools/statistics_change_layout.png" alt="statistics_change_layout"><br>本质上没有什么区别，只是展示的样式不同。<br>柱状图以左边为起始点，照例以线程为单位分割，从左到右的顺序是某个的堆栈信息顺序，纵坐标上的宽度是以其Count/Size的大小决定的。<br><img src="/AndroidStudioTools/statistics_layout_1.png" alt="statistics_layout_1">    </p>
+<h6 id="查看某个线程堆栈路径">查看某个线程堆栈路径</h6><p><img src="/AndroidStudioTools/statistics_layout_2.gif" alt="statistics_layout_2">    </p>
+<h6 id="查看某个分支">查看某个分支</h6><p><img src="/AndroidStudioTools/statistics_layout_3.gif" alt="statistics_layout_3">    </p>
+<h6 id="Count/Size切换">Count/Size切换</h6><p><img src="/AndroidStudioTools/statistics_layout_4.gif" alt="statistics_layout_4">    </p>
 
     
 	</div>
