@@ -52,7 +52,7 @@
 <meta property="og:image" content="http://yoursite.com/AndroidStudioTools/heap_snapshot_b.png">
 <meta property="og:image" content="http://yoursite.com/AndroidStudioTools/heap_snapshot_c.png">
 <meta property="og:image" content="http://yoursite.com/AndroidStudioTools/heap_snapshot_c_2.png">
-<meta property="og:updated_time" content="2015-12-02T07:25:11.000Z">
+<meta property="og:updated_time" content="2015-12-02T08:54:38.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="AndroidStudio分析工具">
 <meta name="twitter:description" content="内存监控（Memory Monitor）AndroidStudio里的内存监控能实时的看到APP的内存情况，有助于分析内存问题。具体用途包括：
@@ -179,8 +179,8 @@
 <h6 id="查看某个线程堆栈路径">查看某个线程堆栈路径</h6><p><img src="/AndroidStudioTools/statistics_layout_2.gif" alt="statistics_layout_2">    </p>
 <h6 id="查看某个分支">查看某个分支</h6><p><img src="/AndroidStudioTools/statistics_layout_3.gif" alt="statistics_layout_3">    </p>
 <h6 id="Count/Size切换">Count/Size切换</h6><p><img src="/AndroidStudioTools/statistics_layout_4.gif" alt="statistics_layout_4">    </p>
-<h2 id="Heap快照（Heap_Snapshot）">Heap快照（Heap Snapshot）</h2><p>找到内存泄露问题最常用的方式就是去获取Heap快照，通过查看Java堆内存的详细信息排查问题了。</p>
-<h4 id="Dump_Heap">Dump Heap</h4><p>Android Monitor &gt; Memory &gt; Dump Java Heap<br><img src="/AndroidStudioTools/dump_java_heap.png" alt="dump_java_heap">    </p>
+<h2 id="Heap快照（Heap_Snapshot）">Heap快照（Heap Snapshot）</h2><p>排查内存泄露最常用的方式就是去获取Heap快照，查看Java堆内存的详细信息。</p>
+<h4 id="Dump_Heap">Dump Heap</h4><p>Android Monitor &gt; Memory &gt; Dump Java Heap<br>可以获取当前的Heap快照，并在Android Studio中显示出来。<br><img src="/AndroidStudioTools/dump_java_heap.png" alt="dump_java_heap">    </p>
 <h4 id="详细信息">详细信息</h4><p><img src="/AndroidStudioTools/heap_snapshot.png" alt="heap_snapshot">    </p>
 <h6 id="A区域">A区域</h6><p>列举了堆内存中所有的类。    </p>
 <table>
@@ -238,6 +238,7 @@
 </table>
 <p>当你点击某个对象时，将展开该对象内部含有哪些对象，同时C区域也会显示哪些对象引用了该对象:<br><img src="/AndroidStudioTools/heap_snapshot_b.png" alt="heap_snapshot_b">    </p>
 <h6 id="C区域">C区域</h6><p>对象的引用树，在这里面能看出其被谁引用了。<br><img src="/AndroidStudioTools/heap_snapshot_c.png" alt="heap_snapshot_c"><br>在内存泄漏中，可以看出来它被谁引用。<br>比如上图，引用树的第一行，可以看出来，该对象被Object[12]对象引用，索引值为1，那我们展开后，可以看到，该Object[12]是一个ArrayList。<br><img src="/AndroidStudioTools/heap_snapshot_c_2.png" alt="heap_snapshot_c_2">     </p>
+<p><strong>当然，内存泄露排查最好的工具还是MAT，以后我们会专门讲。</strong></p>
 
     
 	</div>
