@@ -47,7 +47,12 @@
 <meta property="og:image" content="http://yoursite.com/AndroidStudioTools/statistics_layout_2.gif">
 <meta property="og:image" content="http://yoursite.com/AndroidStudioTools/statistics_layout_3.gif">
 <meta property="og:image" content="http://yoursite.com/AndroidStudioTools/statistics_layout_4.gif">
-<meta property="og:updated_time" content="2015-12-01T02:16:01.000Z">
+<meta property="og:image" content="http://yoursite.com/AndroidStudioTools/dump_java_heap.png">
+<meta property="og:image" content="http://yoursite.com/AndroidStudioTools/heap_snapshot.png">
+<meta property="og:image" content="http://yoursite.com/AndroidStudioTools/heap_snapshot_b.png">
+<meta property="og:image" content="http://yoursite.com/AndroidStudioTools/heap_snapshot_c.png">
+<meta property="og:image" content="http://yoursite.com/AndroidStudioTools/heap_snapshot_c_2.png">
+<meta property="og:updated_time" content="2015-12-02T07:25:11.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="AndroidStudio分析工具">
 <meta name="twitter:description" content="内存监控（Memory Monitor）AndroidStudio里的内存监控能实时的看到APP的内存情况，有助于分析内存问题。具体用途包括：
@@ -174,6 +179,65 @@
 <h6 id="查看某个线程堆栈路径">查看某个线程堆栈路径</h6><p><img src="/AndroidStudioTools/statistics_layout_2.gif" alt="statistics_layout_2">    </p>
 <h6 id="查看某个分支">查看某个分支</h6><p><img src="/AndroidStudioTools/statistics_layout_3.gif" alt="statistics_layout_3">    </p>
 <h6 id="Count/Size切换">Count/Size切换</h6><p><img src="/AndroidStudioTools/statistics_layout_4.gif" alt="statistics_layout_4">    </p>
+<h2 id="Heap快照（Heap_Snapshot）">Heap快照（Heap Snapshot）</h2><p>找到内存泄露问题最常用的方式就是去获取Heap快照，通过查看Java堆内存的详细信息排查问题了。</p>
+<h4 id="Dump_Heap">Dump Heap</h4><p>Android Monitor &gt; Memory &gt; Dump Java Heap<br><img src="/AndroidStudioTools/dump_java_heap.png" alt="dump_java_heap">    </p>
+<h4 id="详细信息">详细信息</h4><p><img src="/AndroidStudioTools/heap_snapshot.png" alt="heap_snapshot">    </p>
+<h6 id="A区域">A区域</h6><p>列举了堆内存中所有的类。    </p>
+<table>
+<thead>
+<tr>
+<th>名称</th>
+<th>意义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Total Count</td>
+<td>内存中该类的对象个数</td>
+</tr>
+<tr>
+<td>Heap Count</td>
+<td>堆内存中该类的对象个数</td>
+</tr>
+<tr>
+<td>Sizeof</td>
+<td>物理大小</td>
+</tr>
+<tr>
+<td>Shallow size</td>
+<td>该对象本身占有内存大小</td>
+</tr>
+<tr>
+<td>Retained Size</td>
+<td>释放该对象后，节省的内存大小</td>
+</tr>
+</tbody>
+</table>
+<h6 id="B区域">B区域</h6><p>当我们点击某个类时，右边的B区域会显示该类的实例化对象，这里面会显示有多少个实体，以及详细信息。    </p>
+<table>
+<thead>
+<tr>
+<th>名称</th>
+<th>意义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>depth</td>
+<td>深度</td>
+</tr>
+<tr>
+<td>Shallow Size</td>
+<td>对象本身内存大小</td>
+</tr>
+<tr>
+<td>Dominating Size</td>
+<td>管辖的内存大小</td>
+</tr>
+</tbody>
+</table>
+<p>当你点击某个对象时，将展开该对象内部含有哪些对象，同时C区域也会显示哪些对象引用了该对象:<br><img src="/AndroidStudioTools/heap_snapshot_b.png" alt="heap_snapshot_b">    </p>
+<h6 id="C区域">C区域</h6><p>对象的引用树，在这里面能看出其被谁引用了。<br><img src="/AndroidStudioTools/heap_snapshot_c.png" alt="heap_snapshot_c"><br>在内存泄漏中，可以看出来它被谁引用。<br>比如上图，引用树的第一行，可以看出来，该对象被Object[12]对象引用，索引值为1，那我们展开后，可以看到，该Object[12]是一个ArrayList。<br><img src="/AndroidStudioTools/heap_snapshot_c_2.png" alt="heap_snapshot_c_2">     </p>
 
     
 	</div>
