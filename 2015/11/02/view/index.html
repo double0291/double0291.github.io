@@ -15,7 +15,7 @@ This class represents the basic building block for user interface components. A 
 <meta property="og:description" content="简介View，耳熟能详，无人不识，但是否无人不知呢？这里先来看看官方文档对View的定义。
 
 This class represents the basic building block for user interface components. A View occupies a rectangular area on the screen and is responsible for dra">
-<meta property="og:updated_time" content="2015-11-11T03:33:12.000Z">
+<meta property="og:updated_time" content="2015-12-02T10:00:06.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Android中的View浅析">
 <meta name="twitter:description" content="简介View，耳熟能详，无人不识，但是否无人不知呢？这里先来看看官方文档对View的定义。
@@ -132,6 +132,13 @@ This class represents the basic building block for user interface components. A 
 <li>setVisibility()方法，当View的可视状态在INVISIBLE/ VISIBLE转换为GONE状态时，会间接调用requestLayout() 和invalidate方法。同时，由于整个个View树大小发生了变化，会请求measure()过程以及draw()过程，同样地，只绘制需要“重新绘制”的视图</li>
 </ol>
 <h4 id="requestFocus()">requestFocus()</h4><p>请求View树的draw()过程，但只绘制“需要重绘”的视图。</p>
+<h2 id="onSizeChange()，onMeasure()，onLayout()调用时机">onSizeChange()，onMeasure()，onLayout()调用时机</h2><ol>
+<li>首先执行最底层child的onMeasure()方法，逐层向上调用，最后调用root的onMeasure()方法。上面提到过，onMeasure()方法的作用就是告诉父View自己占用多大的位置，所以，会自下往上递归调用。<br>root的onMeasure()是由<strong>DecorView</strong>获取的。</li>
+<li>统计完大小后，开始调用onSizeChange()，首次显示的原因，调用顺序是从root开始，逐级往下调用。<br>调用完每个child的onSizeChange()后，每个Child执行onLayout()方法。</li>
+<li>从顺序来看，onLayout()和onMeasure()都是从下往上调用。<br>只有大小发生了变化，才会调用onSizeChange()。如果没有onSizeChange()，就会从下往上执行onMeasure()，再从下往上执行onLayout()。</li>
+<li>onSizeChange()不一定会调用，只有View的大小发生变化的时候才调用。而且不一定是从root开始调用。onMeasure()在界面上增减View的时候会调用onSizeChange()，比如addView()或removeView()。另外，<strong>child设置为gone会触发onMeasure()，但是设置为invisible不会</strong>。一旦执行onMeasure()，往往就会重新执行onLayout()布局。</li>
+<li>如果root有两个child在不同分支，一个child变化时，会影响其所在的分支，但是不影响另一条分支。<br>又比如，在root下加一个child，如果加在前两个child后面，就不会影响前两个child。如果加在两个child中间，就会对第二个child产生影响。</li>
+</ol>
 <h2 id="自定义View可能用到的方法">自定义View可能用到的方法</h2><p>官方文档里面列出了自定义一个View可能要继承到的方法，如下：</p>
 <table>
 <thead>
