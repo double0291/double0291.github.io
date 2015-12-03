@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Android绘图那些事——Canvas，Matrix，Shader | DoubleChen，就这样</title>
+  <meta name="viewport" content="width=device-width">
+  <meta name="description" content="简介Android自己的SDK提供了2D图形处理相关的API，大部分都在android.graphics和android.graphics.drawable包中。绘制2D图形，有两种方式：
+
+在layout中定义图形和动画，主要用于绘制静态图形和预先定义好的动画。
+直接在Canvas上绘制，一般用于需要重绘实现效果的View。 
+
+根据官方文档，绘画需要4个元素协同完成
+
+To draw some">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android绘图那些事——Canvas，Matrix，Shader">
+<meta property="og:url" content="http://yoursite.com/2015/12/03/graphics/index.html">
+<meta property="og:site_name" content="DoubleChen，就这样">
+<meta property="og:description" content="简介Android自己的SDK提供了2D图形处理相关的API，大部分都在android.graphics和android.graphics.drawable包中。绘制2D图形，有两种方式：
+
+在layout中定义图形和动画，主要用于绘制静态图形和预先定义好的动画。
+直接在Canvas上绘制，一般用于需要重绘实现效果的View。 
+
+根据官方文档，绘画需要4个元素协同完成
+
+To draw some">
+<meta property="og:image" content="http://yoursite.com/Graphics/canvas_translate.png">
+<meta property="og:image" content="http://yoursite.com/Graphics/canvas_save_restore.png">
+<meta property="og:image" content="http://yoursite.com/Graphics/compose_shader.jpg">
+<meta property="og:image" content="http://yoursite.com/Graphics/shader.png">
+<meta property="og:updated_time" content="2015-12-03T12:47:32.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Android绘图那些事——Canvas，Matrix，Shader">
+<meta name="twitter:description" content="简介Android自己的SDK提供了2D图形处理相关的API，大部分都在android.graphics和android.graphics.drawable包中。绘制2D图形，有两种方式：
+
+在layout中定义图形和动画，主要用于绘制静态图形和预先定义好的动画。
+直接在Canvas上绘制，一般用于需要重绘实现效果的View。 
+
+根据官方文档，绘画需要4个元素协同完成
+
+To draw some">
+  
+    <link rel="alternative" href="/atom.xml" title="DoubleChen，就这样" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  <link rel="stylesheet" href="/css/style.css" type="text/css">
+  <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+  
+</head>
+<body>
+  <div id="container">
+    <div class="mobile-nav-panel">
+	<i class="icon-reorder icon-large"></i>
+</div>
+<header id="header">
+	<h1 class="blog-title">
+		<a href="/">DoubleChen，就这样</a>
+	</h1>
+	<nav class="nav">
+		<ul>
+			<li><a href="/">Home</a></li><li><a href="/archives">Archives</a></li>
+			<li><a id="nav-search-btn" class="nav-icon" title="Search"></a></li>
+			<li><a href="/atom.xml" id="nav-rss-link" class="nav-icon" title="RSS Feed"></a></li>
+		</ul>
+	</nav>
+	<div id="search-form-wrap">
+		<form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+	</div>
+</header>
+    <div id="main">
+      <article id="post-graphics" class="post">
+	<footer class="entry-meta-header">
+		<span class="meta-elements date">
+			<a href="/2015/12/03/graphics/" class="article-date">
+  <time datetime="2015-12-02T16:00:00.000Z" itemprop="datePublished">2015-12-03</time>
+</a>
+		</span>
+		<span class="meta-elements author">Double Chen</span>
+		<div class="commentscount">
+			
+		</div>
+	</footer>
+	
+	<header class="entry-header">
+		
+  
+    <h1 class="article-title entry-title" itemprop="name">
+      Android绘图那些事——Canvas，Matrix，Shader
+    </h1>
+  
+
+	</header>
+	<div class="entry-content">
+		
+    	<h2 id="简介">简介</h2><p>Android自己的SDK提供了2D图形处理相关的API，大部分都在android.graphics和android.graphics.drawable包中。<br>绘制2D图形，有两种方式：</p>
+<ol>
+<li>在layout中定义图形和动画，主要用于绘制静态图形和预先定义好的动画。</li>
+<li>直接在Canvas上绘制，一般用于需要重绘实现效果的View。 </li>
+</ol>
+<p>根据官方文档，绘画需要4个元素协同完成</p>
+<blockquote>
+<p>To draw something, you need 4 basic components: A Bitmap to hold the pixels, a Canvas to host the draw calls (writing into the bitmap), a drawing primitive (e.g. Rect, Path, text, Bitmap), and a paint (to describe the colors and styles for the drawing).<br><a id="more"></a></p>
+</blockquote>
+<ol>
+<li>位图：Bitmap来存储像素</li>
+<li>画布：Canvas来响应画画（draw）的行为并将其写入Bitmap</li>
+<li>“颜料”：drawing primitive，比如矩形、路径、文字、位图等元素</li>
+<li>画笔：Paint描述画画（draw）的颜色和样式等</li>
+</ol>
+<h2 id="画笔Paint">画笔Paint</h2><p>Canvas.drawXXX()方法里面都有一个Paint参数，这个就是常说的画笔。通过这个画笔，就可以在画布上画画了。<br>Paint类（android.graphics.Paint）主要用于设置绘图风格，包括画笔颜色、粗细、填充风格等。<br>下面列举了Paint常见的设置绘图风格的方法：</p>
+<ul>
+<li>setARGB(int a,int r,int g,int b)：设置ARGB颜色。</li>
+<li>setColor(int color)：设置颜色。</li>
+<li>setAlpha(int a)：设置透明度。</li>
+<li>setPathEffect(PathEffect effect)：设置绘制路径时的路径效果。</li>
+<li>setShader(Shader shader)：设置Paint的填充效果。</li>
+<li>setAntiAlias(boolean aa)：设置是否抗锯齿。</li>
+<li>setStrokeWidth(float width)：设置Paint的笔触宽度。</li>
+<li>setStyle(Paint.Style style)：设置Paint的填充风格。</li>
+<li>setTextSize(float textSize)：设置绘制文本时的文字大小。</li>
+</ul>
+<h2 id="画布Canvas">画布Canvas</h2><p>我们要实现自定义的图形绘制或者动画效果，就必须通过Canvas。通过Canvas，我们所有draw的效果都会被执行到一个Bitmap上面，而这个Bitmap就会显示到手机上，被我们看到。<br><strong>所以说，Canvas只是提供绘图的API，真正的内存是下面的Bitmap。</strong><br>android.graphics.Canvas 类提供了很多“画“的方法，让这块画布具有了丰富多彩的画画能力。比如：画点、线、矩形、椭圆、圆、文字等等。<br>相应的方法就是各种drawXXX()，常见的有以下几种：</p>
+<ul>
+<li>void drawBitmap(Bitmap bitmap,float left,float top,Paint paint)：在指定坐标绘制位图。</li>
+<li>void drawLine(float startX,float startY,float stopX,float stopY,Paint paint)：根据给定的起始点和结束点之间绘制连线。</li>
+<li>void drawPath(Path path,Paint paint)：根据给定的path，绘制连线。</li>
+<li>void drawPoint(float x,float y,Paint paint)：根据给定的坐标，绘制点。</li>
+<li>void drawText(String text,int start,int end,Paint paint)：根据给定的坐标，绘制文字。</li>
+</ul>
+<p>其他一些我们在绘制时需要使用到的类一般都有draw方法。<br>比如我们想把一个Drawable放到Canvas里面时，Drawable类就有一个Canvas为参数的draw()方法。</p>
+<h4 id="获取Canvas">获取Canvas</h4><p>Canvas常用的获取方式有两种：</p>
+<ol>
+<li>重写View.onDraw()方法，View中的Canvas对象会被当做参数传递过来。</li>
+<li>自己新建Canvas。</li>
+</ol>
+<h6 id="重写View-onDraw()">重写View.onDraw()</h6><p>操作onDraw中传入的Canvas对象，View就会表现出相应效果。<br>这种方式常用在自定义组件中。<br>新建一个View的子类，然后重写onDraw()方法，让绘制的步骤在onDraw()中完成：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">PaintBoard</span> <span class="keyword">extends</span> <span class="title">View</span> </span>&#123;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="title">PaintBoard</span><span class="params">(Context context, AttributeSet attrs)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">super</span>(context, attrs);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="annotation">@Override</span></span><br><span class="line">	<span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onDraw</span><span class="params">(Canvas canvas)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">super</span>.onDraw(canvas);</span><br><span class="line"></span><br><span class="line">		<span class="comment">// paint a circle</span></span><br><span class="line">		Paint paint = <span class="keyword">new</span> Paint();</span><br><span class="line">		paint.setColor(Color.BLUE);</span><br><span class="line">		paint.setStyle(Paint.Style.STROKE);</span><br><span class="line">		paint.setStrokeWidth(<span class="number">10</span>);</span><br><span class="line">		canvas.drawCircle(<span class="number">120</span>, <span class="number">80</span>, <span class="number">60</span>, paint);</span><br><span class="line"></span><br><span class="line">		<span class="comment">// paint string</span></span><br><span class="line">		paint = <span class="keyword">new</span> Paint();</span><br><span class="line">		paint.setColor(Color.YELLOW);</span><br><span class="line">		paint.setTextSize(<span class="number">20</span>);</span><br><span class="line">		canvas.drawText(<span class="string">"My name is Linc!"</span>,<span class="number">245</span>,<span class="number">140</span>,paint);</span><br><span class="line"></span><br><span class="line">		<span class="comment">// draw line</span></span><br><span class="line">		paint = <span class="keyword">new</span> Paint();</span><br><span class="line">		paint.setColor(Color.BLACK);</span><br><span class="line">		canvas.drawLine(<span class="number">245</span>,<span class="number">145</span>,<span class="number">500</span>,<span class="number">145</span>,paint);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h6 id="新建Canvas">新建Canvas</h6><p>官方文档指出，新建Canvas的时候，一定要定义相应的Bitmap。    </p>
+<blockquote>
+<p>However, if you need to create a new Canvas, then you must define the Bitmap upon which drawing will actually be performed. The Bitmap is always required for a Canvas.</p>
+</blockquote>
+<p>Canvas类提供了两个构造函数：</p>
+<ol>
+<li>Canvas()：创建一个空的Canvas对象。</li>
+<li>Canvas(Bitmap bitmap)：创建一个以bitmap位图为背景的Canvas。</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Bitmap b = Bitmap.createBitmap(<span class="number">100</span>, <span class="number">100</span>, Bitmap.Config.ARGB_8888);</span><br><span class="line">Canvas c = <span class="keyword">new</span> Canvas(b);</span><br></pre></td></tr></table></figure>
+<p>这段代码新建了一个100 * 100像素的Bitmap，并将它作为Canvas的操作对象。<br>当使用新建的Canvas在Bitmap上执行绘制方法之后，还可以通过Canvas.drawBitmap(Bitmap,…)方法将绘制的结果提交给另一个Canvas，这样就可以达到两个Canvas协作完成的效果。<br>常见的我们可以在自定义的Canvas中对一个Bitmap实现绘制后，在View.onDraw()方法中，调用canvas.drawBitmap(Bitmap,…)方法，将绘制结果显示到View上。<br><strong>这种先将图形全加载到内存进行绘制，然后再一次性展示到屏幕上，避免直接在屏幕上绘图导致出现明显闪烁的技术叫做双缓冲</strong>。</p>
+<h2 id="变换处理Matrix">变换处理Matrix</h2><p>对绘图进行变换处理，需要借助Matrix类（android.graphics.Matrix）。<br>该类是一个矩阵工具类，本身不能对图像或View进行变换，但是可以结合Canvas的API来控制图形、View的变换。<br>Matrix提供的控制图片变换的方法主要包括：</p>
+<ul>
+<li>setTranslate(float dx,float dy)：控制Matrix进行位移。</li>
+<li>setSkew(float kx,float ky)：控制Matrix进行倾斜，kx、ky为X、Y方向上的比例。</li>
+<li>setSkew(float kx,float ky,float px,float py)：控制Matrix以px、py为轴心进行倾斜，kx、ky为X、Y方向上的倾斜比例。</li>
+<li>setRotate(float degrees)：控制Matrix进行depress角度的旋转，轴心为（0,0）。</li>
+<li>setRotate(float degrees,float px,float py)：控制Matrix进行depress角度的旋转，轴心为(px,py)。</li>
+<li>setScale(float sx,float sy)：设置Matrix进行缩放，sx、sy为X、Y方向上的缩放比例。</li>
+<li>setScale(float sx,float sy,float px,float py)：设置Matrix以(px,py)为轴心进行缩放，sx、sy为X、Y方向上的缩放比例。</li>
+</ul>
+<p>比如：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span><br><span class="line"> * 缩放图片</span><br><span class="line"> */</span></span><br><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">bitmapScale</span><span class="params">(<span class="keyword">float</span> x, <span class="keyword">float</span> y)</span> </span>&#123;</span><br><span class="line">	<span class="comment">// 因为要将图片放大，所以要根据放大的尺寸重新创建Bitmap</span></span><br><span class="line">	Bitmap afterBitmap = Bitmap.createBitmap((<span class="keyword">int</span>) (baseBitmap.getWidth() * x), (<span class="keyword">int</span>) (baseBitmap.getHeight() * y),</span><br><span class="line">			baseBitmap.getConfig());</span><br><span class="line">	Canvas canvas = <span class="keyword">new</span> Canvas(afterBitmap);</span><br><span class="line">	<span class="comment">// 初始化Matrix对象</span></span><br><span class="line">	Matrix matrix = <span class="keyword">new</span> Matrix();</span><br><span class="line">	<span class="comment">// 根据传入的参数设置缩放比例</span></span><br><span class="line">	matrix.setScale(x, y);</span><br><span class="line">	<span class="comment">// 根据缩放比例，把图片draw到Canvas上</span></span><br><span class="line">	canvas.drawBitmap(baseBitmap, matrix, paint);</span><br><span class="line">	iv_after.setImageBitmap(afterBitmap);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>几个注意点：</p>
+<ul>
+<li>对于一个从BitmapFactory.decodeXxx()方法加载的Bitmap对象而言，它是一个只读的，无法对其进行处理，必须使用Bitmap.createBitmap()方法重新创建一个Bitmap对象的拷贝，才可以对拷贝的Bitmap进行处理。</li>
+<li>因为图像的变换是针对每一个像素点的，所以有些变换可能发生像素点的丢失，这里需要使用Paint.setAnitiAlias(boolean)设置来消除锯齿，这样图片变换后的效果会好很多。</li>
+<li>在重新创建一个Bitmap对象的拷贝的时候，需要注意它的宽高，如果设置不妥，很可能变换后的像素点已经移动到”图片之外”去了。</li>
+</ul>
+<h2 id="关于Canvas和Matrix的一些理解">关于Canvas和Matrix的一些理解</h2><p>参考：<a href="http://kyleduo.com/?p=108" target="_blank" rel="external">Android Canvas Matrix —— Bitmap是如何画出来的</a><br>可以将Canvas理解为坐标系。我们在View或者Bitmap上进行绘制时，都是绘制到屏幕或者Bitmap上，都是有限的大小，而Canvas可以理解为是无限大的。<br><strong>如果将Canvas理解为坐标系，那么Canvas就成了我们绘制内容的参考基准。</strong><br>比如，默认Canvas的圆点在绘制区域的左上角，如果对Canvas进行位移，效果如下：<br><img src="/Graphics/canvas_translate.png" alt="canvas_translate"><br>上图中，右侧红色区域就是偏移后的坐标系，使用偏移后的坐标系进行绘制，效果就是平移了。<br>通过Matrix进行变换，那么Matrix就会保留变换之后的状态，如果多次变换，就会造成变换的累加。<br>为了不造成累加后的坐标混乱，Canvas提供了save()和restore()方法对Canvas的状态进行暂存和恢复。<br>在Canvas变换前，先使用save()方法，保存Canvas的状态，绘制完成之后，再使用restore()方法，将Canvas的状态恢复到save()的时候的状态，然后再进行下一次变换和绘制。<br><strong>结合坐标系的理解，save()和restore()只是针对坐标系的变换而言，之前绘制的内容不会出现任何改动。</strong><br><img src="/Graphics/canvas_save_restore.png" alt="canvas_save_restore">    </p>
+<h2 id="Shader">Shader</h2><p>Shader类是专门用来渲染图像及一些几何图形的。<br>使用Shader时，先构建Shader对象，然后通过Paint的setShader()方法来设置渲染对象，最后将这个Paint对象绘制到屏幕上。<br>Shader有5个直接子类，分别是BitmapShader、ComposeShader、LinearGradient、RadialGradient以及SweepGradient。</p>
+<h4 id="BitmapShader（图像渲染）：">BitmapShader（图像渲染）：</h4><p>BitmapShader的作用是使用一张位图作为纹理来对某一区域进行填充。可以想象成在一块区域内铺瓷砖，只是这里的瓷砖是一张张位图而已。<br>BitmapShader函数原型为：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">BitmapShader</span> <span class="params">(Bitmap bitmap, Shader.TileMode tileX, Shader.TileMode tileY)</span></span>;</span><br></pre></td></tr></table></figure></p>
+<p>其中，参数bitmap表示用来作为纹理填充的位图；参数tileX表示在位图X方向上位图衔接形式；参数tileY表示在位图Y方向上位图衔接形式。<br>Shader.TileMode有3种参数可供选择，分别为CLAMP、REPEAT和MIRROR。</p>
+<ul>
+<li>CLAMP的作用是如果渲染器超出原始边界范围，则会复制边缘颜色对超出范围的区域进行着色。</li>
+<li>REPEAT的作用是在横向和纵向上以平铺的形式重复渲染位图。</li>
+<li>MIRROR的作用是在横向和纵向上以镜像的方式重复渲染位图。</li>
+</ul>
+<h4 id="LinearGradient（线性渲染）">LinearGradient（线性渲染）</h4><p>LinearGradient的作用是实现某一区域内颜色的线性渐变效果。<br>LinearGradient的函数原型为：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">LinearGradient</span> <span class="params">(<span class="keyword">float</span> x0, <span class="keyword">float</span> y0, <span class="keyword">float</span> x1, <span class="keyword">float</span> y1, <span class="keyword">int</span>[] colors, <span class="keyword">float</span>[] positions, Shader.TileMode tile)</span></span>;</span><br></pre></td></tr></table></figure></p>
+<p>其中，参数x0表示渐变的起始点x坐标；参数y0表示渐变的起始点y坐标；参数x1表示渐变的终点x坐标；参数y1表示渐变的终点y坐标；参数colors表示渐变的颜色数组；参数positions用来指定颜色数组的相对位置；参数tile表示平铺方式。<br>通常，参数positions设为null，表示颜色数组以斜坡线的形式均匀分布。</p>
+<h4 id="ComposeShader（混合渲染）">ComposeShader（混合渲染）</h4><p>ComposeShader的作用是实现渲染效果的叠加，如BitmapShader与LinearGradient的混合渲染效果等。<br>ComposeShader的函数原型为：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">ComposeShader</span> <span class="params">(Shader shaderA, Shader shaderB, PorterDuff.Mode mode)</span></span>;</span><br></pre></td></tr></table></figure></p>
+<p>其中，参数shaderA表示某一种渲染效果；参数shaderB也表示某一种渲染效果；参数mode表示两种渲染效果的叠加模式。<br>PorterDuff.Mode有16种参数可供选择，分别为：CLEAR、SRC、DST、SRC_OVER、DST_OVER、SRC_IN、DST_IN、SRC_OUT、DST_OUT、SRC_ATOP、DST_ATOP、XOR、DARKEN、LIGHTEN、MULTIPLY、SCREEN。<br>这16种叠加模式的具体叠加效果如图1所示。<br><img src="/Graphics/compose_shader.jpg" alt="compose_shader">    </p>
+<h4 id="RadialGradient（环形渲染）">RadialGradient（环形渲染）</h4><p>RadialGradient的作用是在某一区域内实现环形的渐变效果。<br>RadialGradient的函数原型为：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">RadialGradient</span> <span class="params">(<span class="keyword">float</span> x, <span class="keyword">float</span> y, <span class="keyword">float</span> radius, <span class="keyword">int</span>[] colors, <span class="keyword">float</span>[] positions, Shader.TileMode tile)</span></span>;</span><br></pre></td></tr></table></figure></p>
+<p>其中，参数x表示环形的圆心x坐标；参数y表示环形的圆心y坐标；参数radius表示环形的半径；参数colors表示环形渐变的颜色数组；参数positions用来指定颜色数组的相对位置；参数tile表示平铺的方式。</p>
+<h4 id="SweepGradient（梯度渲染）">SweepGradient（梯度渲染）</h4><p>SweepGradient也称为扫描渲染，是指在某一中心以x轴正方向逆时针旋转一周而形成的扫描效果的渲染形式。<br>SweepGradient的函数原型为：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">SweepGradient</span> <span class="params">(<span class="keyword">float</span> cx, <span class="keyword">float</span> cy, <span class="keyword">int</span>[] colors, <span class="keyword">float</span>[] positions)</span></span>;</span><br></pre></td></tr></table></figure></p>
+<p>其中，参数cx表示扫描的中心x坐标；参数cy表示扫描的中心y坐标；参数colors表示梯度渐变的颜色数组；参数positions用来指定颜色数组的相对位置。</p>
+<h4 id="效果">效果</h4><p><img src="/Graphics/shader.png" alt="shader">    </p>
+
+    
+	</div>
+	<footer class="entry-footer">
+		<div class="entry-meta-footer">
+			<span class="category">
+				
+			</span>
+			<span class="tags">
+				
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/android-canvas-Matrix-Shader/">android canvas Matrix Shader</a></li></ul>
+
+			</span>
+		</div>
+	</footer>
+	
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2015/11/26/androidStudioTools/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">
+        
+          AndroidStudio分析工具
+        
+      </div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+
+
+    </div>
+    <div class="mb-search">
+  <form action="//google.com/search" method="get" accept-charset="utf-8">
+    <input type="search" name="q" results="0" placeholder="Search">
+    <input type="hidden" name="q" value="site:yoursite.com">
+  </form>
+</div>
+<footer id="footer">
+	<h1 class="footer-blog-title">
+		<a href="/">DoubleChen，就这样</a>
+	</h1>
+	<span class="copyright">
+		&copy; 2015 Double Chen<br>
+		Modify from <a href="http://sanographix.github.io/tumblr/apollo/" target="_blank">Apollo</a> theme, designed by <a href="http://www.sanographix.net/" target="_blank">SANOGRAPHIX.NET</a><br>
+		Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+	</span>
+</footer>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js" type="text/javascript"></script>
+  </div>
+</body>
+</html>
