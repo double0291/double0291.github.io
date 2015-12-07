@@ -16,7 +16,7 @@
 <meta property="og:image" content="http://yoursite.com/Titanic/wave_static.png">
 <meta property="og:image" content="http://yoursite.com/Titanic/wave_dynamic.gif">
 <meta property="og:image" content="http://yoursite.com/Titanic/wave_has_bg.png">
-<meta property="og:updated_time" content="2015-12-07T13:16:24.000Z">
+<meta property="og:updated_time" content="2015-12-07T13:19:41.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="BitmapShader实例——Titanic for Android">
 <meta name="twitter:description" content="简介本文以一个优秀的开源项目——Titanic来探讨BitmapShader的实用技巧。">
@@ -93,7 +93,7 @@
 <li>我们通过ObjectAnimator.ofInt(…)来实现私有变量mXMove的动态改变，类中<strong>一定要有mXMove的set方法</strong>，否则动画就失效了，ofInt()方法就是通过类的set方法去改变变量的值的。</li>
 <li>动画通过不停的重复水平平移动作来实现，每一次水平的平移距离应该是我们原始的wave.png的宽度（不知道为什么的话就要补一下高中数学知识了）。源工程的移动距离直接写死了200，因为这张图的水平像素就是200。但实际上，<strong>不同的Android手机下，甚至将图放到不同的Drawable文件夹下，真实的像素是不同的</strong>，所以，要在init()方法里面，通过bitmap.getWidth()来获取这张图真实的水平像素。</li>
 <li>动画一定要<strong>添加线性均匀属性值变化的方式——LinearInterpolator()</strong>，否则，会出现卡顿。因为不线性的话，图片移动到末尾时重新回到开头就无法做到无缝连接，就会跳帧。</li>
-<li>在onAttachedToWindow()和onDetachedFromWindow()中控制动画的启动结束，比较原始。也可以通过提供接口来实现动画的启动和结束。</li>
+<li>在<strong>onAttachedToWindow()</strong>和<strong>onDetachedFromWindow()</strong>中控制动画的启动结束，比较原始。也可以通过提供接口来实现动画的启动和结束。</li>
 </ol>
 <h2 id="TitanicTextView">TitanicTextView</h2><p>TitanicTextView就是在我们上面的波浪基础上，再加上垂直的动画。<br>垂直动画我们也通过ObjectAnimator.ofInt(…)来实现。要实现波浪从字体底部动画移动到顶部，我们将mYMove的范围定在了下面这个范围:<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mYAnimator = ObjectAnimator.ofInt(<span class="keyword">this</span>, <span class="string">"mYMove"</span>, getHeight() / <span class="number">2</span>, -getHeight() / <span class="number">2</span>);</span><br></pre></td></tr></table></figure></p>
 <p>同时注意，在onDraw()绘制的时候，我们要增加一个偏移，因为我们的wave.png的上下部分是对称的，所以，我们的位移就可以定为<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(getHeight() - mWaveBitmapHeight) / <span class="number">2</span></span><br></pre></td></tr></table></figure></p>
@@ -102,7 +102,7 @@
 <p>这边讲几点跟上面的单纯的波浪Demo的不同之处：</p>
 <ol>
 <li>我们将invalidate()放到了私有变量mXMove和mYMove的set方法里面，这跟上面的加一个listener的效果是一样的。</li>
-<li>因为垂直方向的动画范围是根据整个View的高度定的，而在第一次onAttachedToWindow()的时候，View还没有初始化好，获取不到高度，会为0，所以，我们将启动动画的工作放到了onDraw()中，同时制定了一个标识变量，防止反复启动动画。</li>
+<li>因为垂直方向的动画范围是根据整个View的高度定的，而<strong>在第一次onAttachedToWindow()的时候，View还没有初始化好，获取不到高度，会为0</strong>，所以，我们将启动动画的工作放到了onDraw()中，同时制定了一个标识变量，防止反复启动动画。</li>
 <li>设置BitmapShader的工作放到了setTextColor()方法里面，而不是构造函数里面。因为TextView初始化肯定会调用setTextColor()方法，更重要的是，在APP运行过程中，<strong>要支持动态更改TextView的字体颜色</strong>。</li>
 </ol>
 <h2 id="其他">其他</h2><p>在源工程中，还有这么一段代码：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">TitanicTextView tv = (TitanicTextView) findViewById(R.id.my_text_view);</span><br><span class="line">tv.setTypeface(Typefaces.get(<span class="keyword">this</span>, <span class="string">"Satisfy-Regular.ttf"</span>));</span><br><span class="line"><span class="keyword">new</span> Titanic().start(tv);</span><br></pre></td></tr></table></figure></p>
