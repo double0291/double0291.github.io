@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+
+    
+
+    <title>
+      Android内存泄露浅析 | DoubleChen，就这样 
+    </title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    
+      <meta name="author" content="Double Chen">
+    
+    
+
+    <meta name="description" content="基础知识内存分配策略根据编译原理观点，程序运行时的内存分配主要分为三块——静态存储区、堆区和栈区。
+静态存储区也称为方法区。这块内存在程序编译的时候就分配好了，在程序整个运行期间都存在。主要存放静态数据，全局static数据以及常量。
+栈区（Stack）执行函数时，函数参数值、局部变量等存储单元都在栈上创建，函数执行结束时这些存储单元自动被释放。栈内存分配运算内置于处理器的指令集中，效率很高，但是">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android内存泄露浅析 | DoubleChen，就这样">
+<meta property="og:url" content="http://yoursite.com/2015/12/30/memoryLeak/index.html">
+<meta property="og:site_name" content="DoubleChen，就这样">
+<meta property="og:description" content="基础知识内存分配策略根据编译原理观点，程序运行时的内存分配主要分为三块——静态存储区、堆区和栈区。
+静态存储区也称为方法区。这块内存在程序编译的时候就分配好了，在程序整个运行期间都存在。主要存放静态数据，全局static数据以及常量。
+栈区（Stack）执行函数时，函数参数值、局部变量等存储单元都在栈上创建，函数执行结束时这些存储单元自动被释放。栈内存分配运算内置于处理器的指令集中，效率很高，但是">
+<meta property="og:image" content="http://yoursite.com/MemoryLeak/gc_0.png">
+<meta property="og:image" content="http://yoursite.com/MemoryLeak/gc_1.png">
+<meta property="og:image" content="http://yoursite.com/MemoryLeak/handler_memory_leak.jpg">
+<meta property="og:image" content="http://yoursite.com/MemoryLeak/single_instance_leak_1.png">
+<meta property="og:image" content="http://yoursite.com/MemoryLeak/single_instance_leak_2.png">
+<meta property="og:updated_time" content="2016-01-05T08:04:17.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Android内存泄露浅析 | DoubleChen，就这样">
+<meta name="twitter:description" content="基础知识内存分配策略根据编译原理观点，程序运行时的内存分配主要分为三块——静态存储区、堆区和栈区。
+静态存储区也称为方法区。这块内存在程序编译的时候就分配好了，在程序整个运行期间都存在。主要存放静态数据，全局static数据以及常量。
+栈区（Stack）执行函数时，函数参数值、局部变量等存储单元都在栈上创建，函数执行结束时这些存储单元自动被释放。栈内存分配运算内置于处理器的指令集中，效率很高，但是">
+    
+    
+    
+      <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+    
+    <link rel="stylesheet" href="/css/uno.css" type="text/css">
+    <link rel="stylesheet" href="/css/highlight.css" type="text/css">
+    <link rel="stylesheet" href="/css/archive.css" type="text/css">
+
+</head>
+<body>
+
+    <span class="mobile btn-mobile-menu">
+        <i class="icon icon-list btn-mobile-menu__icon"></i>
+        <i class="icon icon-x-circle btn-mobile-close__icon hidden"></i>
+    </span>
+
+    
+
+<header class="panel-cover panel-cover--collapsed">
+
+
+  <div class="panel-main">
+
+    <div class="panel-main__inner panel-inverted">
+    <div class="panel-main__content">
+
+        
+        <a href="/" title="link to homepage for DoubleChen，就这样"><img src="/images/avatar.png" width="80" alt="DoubleChen，就这样 logo" class="panel-cover__logo logo" /></a>
+        
+
+        <h1 class="panel-cover__title panel-title"><a href="/" title="link to homepage">DoubleChen，就这样</a></h1>
+        <hr class="panel-cover__divider" />
+
+        
+
+        <div class="navigation-wrapper">
+
+          <nav class="cover-navigation cover-navigation--primary">
+            <ul class="navigation">
+
+              
+                
+                <li class="navigation__item"><a href="/#blog" title="" class="blog-button">首页</a></li>
+              
+                
+                <li class="navigation__item"><a href="/archives" title="" class="">归档</a></li>
+              
+
+            </ul>
+          </nav>
+
+          <!-- ----------------------------
+To add a new social icon simply duplicate one of the list items from below
+and change the class in the <i> tag to match the desired social network
+and then add your link to the <a>. Here is a full list of social network
+classes that you can use:
+
+    icon-social-500px
+    icon-social-behance
+    icon-social-delicious
+    icon-social-designer-news
+    icon-social-deviant-art
+    icon-social-digg
+    icon-social-dribbble
+    icon-social-facebook
+    icon-social-flickr
+    icon-social-forrst
+    icon-social-foursquare
+    icon-social-github
+    icon-social-google-plus
+    icon-social-hi5
+    icon-social-instagram
+    icon-social-lastfm
+    icon-social-linkedin
+    icon-social-medium
+    icon-social-myspace
+    icon-social-path
+    icon-social-pinterest
+    icon-social-rdio
+    icon-social-reddit
+    icon-social-skype
+    icon-social-spotify
+    icon-social-stack-overflow
+    icon-social-steam
+    icon-social-stumbleupon
+    icon-social-treehouse
+    icon-social-tumblr
+    icon-social-twitter
+    icon-social-vimeo
+    icon-social-xbox
+    icon-social-yelp
+    icon-social-youtube
+    icon-social-zerply
+    icon-mail
+
+-------------------------------->
+
+<!-- add social info here -->
+
+
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <div class="panel-cover--overlay"></div>
+  </div>
+</header>
+
+    <div class="content-wrapper">
+        <div class="content-wrapper__inner entry">
+            
+
+<article class="post-container post-container--single">
+
+  <header class="post-header">
+    
+    <h1 class="post-title">Android内存泄露浅析</h1>
+
+    
+
+    <div class="post-meta">
+      <time datetime="2015-12-30" class="post-meta__date date">2015-12-30</time> 
+
+      <span class="post-meta__tags tags">
+
+          
+
+          
+             &#8226; 标签:
+            <font class="tags">
+              <a class="tags-link" href="/tags/android/">android</a>, <a class="tags-link" href="/tags/memory-leak/">memory leak</a>
+            </font>
+          
+
+      </span>
+    </div>
+    
+    
+
+  </header>
+
+  <section id="post-content" class="article-content post">
+    <h2 id="基础知识">基础知识</h2><h3 id="内存分配策略">内存分配策略</h3><p>根据编译原理观点，程序运行时的内存分配主要分为三块——静态存储区、堆区和栈区。</p>
+<h4 id="静态存储区">静态存储区</h4><p>也称为方法区。<br>这块内存在程序编译的时候就分配好了，在程序整个运行期间都存在。<br>主要存放静态数据，全局static数据以及常量。</p>
+<h4 id="栈区（Stack）">栈区（Stack）</h4><p>执行函数时，函数参数值、局部变量等存储单元都在栈上创建，函数执行结束时这些存储单元自动被释放。<br>栈内存分配运算内置于处理器的指令集中，效率很高，但是分配的容量有限。</p>
+<a id="more"></a>
+<h4 id="堆区（Heap）">堆区（Heap）</h4><p>也称为动态内存分配区。<br>程序运行期间用malloc或new申请任意大小的内存，程序员自己负责适当的时候free或delete释放内存（Java则依赖垃圾回收器）。<br>动态内存的生存期可以由我们决定，如果我们不释放内存，程序将在最后才释放掉动态内存。<br>良好的编程习惯是：<strong>如果动态内存不再使用，就需要将其释放掉</strong>。</p>
+<h4 id="栈与堆区别">栈与堆区别</h4><ol>
+<li>在函数中（说明是局部变量）定义的一些基本类型的变量和对象的引用变量都是在函数的栈内存中分配</li>
+<li>堆内存用于存放所有由new创建的对象（内容包括该对象其中的所有成员变量）和数组</li>
+<li>栈区的数据结构类似于先进后出的栈，进出一一对应，不产生碎片。</li>
+<li>堆区的数据结构类似于链表，是不连续的内存区域。</li>
+</ol>
+<h3 id="Android之OOM起因">Android之OOM起因</h3><p>Android对dalvik的vm heapsize作了限制，当Java进程申请的内存超过阈值时，会抛出OOM异常。<br>程序发生OOM并不能说明RAM不足，只能说明是Java heap超出了dalvik vm heapsize的阈值。<br>当RAM内存不足时，memory killer会杀掉低优先级进程，保证高优先级进程有更多内存。<br>Google之所以这样设计，是为了让比较多的进程同时常驻内存，这样程序启动时不需要每次都加载到内存，能够给用户更快的响应。<br>通过限制每个应用程序的内存，使得Android系统内存中同时常驻多个进程。</p>
+<h3 id="dalvik虚拟机GC原理">dalvik虚拟机GC原理</h3><p>Android虚拟机的垃圾回收采用的是<strong>根搜索算法</strong>。<br><img src="/MemoryLeak/gc_0.png" alt="gc_0"><br>如上图所示，GC会选择一些它了解还存活的对象作为内存遍历的根节点（GC Roots），比方说thread stack中的变量，JNI中的全局变量，zygote中的对象（class loader加载）等，然后开始对heap进行遍历。<br>最后，部分没有直接或者间接引用到GC Roots的就是需要回收的垃圾，会被GC回收掉。<br>如下图蓝色部分。<br><img src="/MemoryLeak/gc_1.png" alt="gc_1">    </p>
+<h2 id="内存优化">内存优化</h2><h3 id="减少Service的使用">减少Service的使用</h3><p>Service启动的时候，其所在进程会保持运行状态，Service所占内存不会释放，使得进程占用资源过多。<br>这样的话，系统LRU Cache中同时存在的进程数就会减少，应用程序切换效率也会降低。<br>如果没有足够的进程来处理系统中的Service，也会导致系统稳定性变差。<br>所以要做到：</p>
+<ul>
+<li>尽量少用Service，当后台任务运行完成时及时关闭Service</li>
+<li>使用IntentService代替Service，后台任务完成时自动结束服务本身</li>
+</ul>
+<h3 id="UI不可见或者内存紧张时，释放内存">UI不可见或者内存紧张时，释放内存</h3><p>在Activity的回调方法onTrimMemory(int level)中根据level的不同释放内存。</p>
+<h4 id="进程不在缓存中">进程不在缓存中</h4><ul>
+<li><strong>TRIM_MEMORY_RUNNING_MODERATE</strong> 应用程序正在运行，并且处于非killable状态，此时设备内存低（low），系统主动杀LRU缓存中的进程</li>
+<li><strong>TRIM_MEMORY_RUNNING_LOW</strong> 应用程序正在运行，并且处于非killable状态，此时设备内存很低（much lower），需要释放没用的资源</li>
+<li><strong>TRIM_MEMORY_RUNNING_CRITICAL</strong> 应用程序正在运行，但是系统已杀死LRU缓存中的大部分进程，此时需要释放所有不至关重要的资源。如果系统不能回收足够的内存，就会清掉LRU中所有的进程以及服务进程。</li>
+</ul>
+<h4 id="进程在LRU缓存中">进程在LRU缓存中</h4><ul>
+<li><strong>TRIM_MEMORY_BACKGROUND</strong> 系统低内存下运行，程序进程位于LRU缓存列表的开头位置。虽然程序进程被kill的概率不大，但是系统可能正在杀LRU中的进程。你需要释放容易恢复的资源以便程序进程还在LRU list中，当从其他App返回时，能快速恢复现场。</li>
+<li><strong>TRIM_MEMORY_MODERATE</strong> 系统低内存下运行，程序进程位于LRU缓存列表的中间位置。你的进程被杀掉的可能性变大。</li>
+<li><strong>TRIM_MEMORY_COMPLETE</strong> 系统低内存下运行，程序进程最先容易被系统杀死。你需要释放所有对于恢复程序状态不至关重要的资源。</li>
+</ul>
+<p>API14开始有<em>onTrimMemory()</em>回调；API 14以下使用的是<em>onLowMemory()</em>，等价于<strong>TRIM_MEMORY_COMPLETE</strong>。</p>
+<h3 id="恰当使用Bitmap">恰当使用Bitmap</h3><p>加载Bitmap的时候，尽量保证Bitmap分辨率和屏幕分辨率匹配，对于大分辨率的Bitmap需要进行压缩。</p>
+<ul>
+<li>Android 2.3.x(API 10)及以下的系统，bitmap像素数据实际存储于native内存中，在java heap中只是保留对象的引用，因此在java heap中内部都显示同一个大小。内存回收需主动调用recycle()，GC失效。</li>
+<li>在Android 3.0(API 11)及以上的系统，bitmap像素数据存储于java heap中，无需主动调用recycle()，由GC管理内存。</li>
+<li>通过内存分析工具调试bitmap内存时，在Android 3.0的系统上进行，因为大部分内存分析工具只能分析java内存。</li>
+</ul>
+<h3 id="其他内存优化">其他内存优化</h3><ul>
+<li>使用SparseArray，SparseBooleanArray和LongSparseArray等优化的数据容器代替HashMap</li>
+<li>使用static const代替enum</li>
+<li>非必要情况下，少用抽象</li>
+<li>对于序列化数据，使用nano protobuf</li>
+<li>尽量少使用依赖注入框架</li>
+<li>谨慎使用第三方库</li>
+<li>使用ProGuard去除不必要的代码</li>
+<li>apk打包签名时，使用zipalign工具对齐</li>
+<li>使用多进程</li>
+</ul>
+<h2 id="内存泄露">内存泄露</h2><h3 id="内存泄露简介">内存泄露简介</h3><p>内存泄漏指的是进程中某些对象（垃圾对象）已经没有使用价值了，但是它们却可以直接或间接地引用到gc roots导致无法被GC回收。<br>无用的对象占据着内存空间，使得实际可使用内存变小，形象地说法就是内存泄漏了。</p>
+<h3 id="引起内存泄露的因素">引起内存泄露的因素</h3><ul>
+<li>长时间保持对Activity,Context,View,Drawable和其他对象的引用</li>
+<li>非静态内部类</li>
+<li>持有对象的时间超出需要的时间</li>
+</ul>
+<h3 id="常见内存泄露">常见内存泄露</h3><ul>
+<li>非静态内部类的静态实例：<br>非静态内部类会维持一个到外部类实例的引用，如果非静态内部类的实例是静态的，就会间接长期维持着外部类的引用，阻止被回收掉。</li>
+<li>Activity使用静态成员：<br>静态变量长期维持到大数据对象的引用，阻止垃圾回收。</li>
+<li>Handler、HandlerThread使用时的问题：<br>下文有具体举例。</li>
+<li>register某个对象后缺少对应的unregister操作：<br>未反注册会导致观察者列表里维持着对象的引用，阻止垃圾回收。</li>
+<li>集合对象未清理，资源对象未关闭：<br>资源性对象如Cursor、File、Socket，应该在使用后及时关闭。未在finally中关闭，会导致异常情况下资源对象未被释放的隐患。</li>
+<li>Dialog或PopupWindow未关闭引起的window leak</li>
+<li>不良代码造成的压力：<br>如Bitmap使用不当；构造adapter时，没有使用缓存的convertView；在循环方法中创建对象。</li>
+</ul>
+<h3 id="改进建议">改进建议</h3><ul>
+<li>与View无关的操作尽量使用Application Context</li>
+<li>使用静态内部类</li>
+<li>Activity中尽量不要使用非静态内部类，可以使用静态内部类和WeakReference代替</li>
+<li>不要维持到Activity的长久引用，对activity的引用应该和activity本身有相同的生命周期</li>
+</ul>
+<h2 id="内存泄露举例">内存泄露举例</h2><h3 id="Handler">Handler</h3><p>看一段常见的代码：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SampleActivity</span> <span class="keyword">extends</span> <span class="title">Activity</span> </span>&#123;</span><br><span class="line">  <span class="keyword">private</span> <span class="keyword">final</span> Handler mLeakyHandler = <span class="keyword">new</span> Handler() &#123;</span><br><span class="line">    <span class="annotation">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">handleMessage</span><span class="params">(Message msg)</span> </span>&#123;</span><br><span class="line">      <span class="comment">// ... </span></span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>打完这段代码，IDE应该就会提醒你：</p>
+<blockquote>
+<p>In Android, Handler classes should be static or leaks might occur.</p>
+</blockquote>
+<p>Handler到底是怎么造成内存泄露的呢？</p>
+<ol>
+<li>当你启动一个application时，它会自动在主线程创建一个Looper对象，用于处理Handler中的message。<br>Looper实现了简单的消息队列，在循环中一个接一个的处理Message对象。<br>大多数Application框架事件（比如Activity生命周期调用，按钮点击等）都在Message中，它们在Looper的消息队列中一个接一个的处理。<br>注意Looper是存在于application整个生命周期中。</li>
+<li>当新建了一个handler对象后，它会被分配给Looper的消息队列。<br>被发送到消息队列的Message将保持对Handler的引用，因为当消息队列处理到这个消息时，需要使用<em>Handler#handleMessage(Message)</em>。<br><strong>也就是说，只要没有处理到这个Message，Handler就一直在队列中被引用</strong>。</li>
+<li>在java中，非静态的内部Class与匿名Class对它们外部的Class有强引用。<br><strong>static inner class除外</strong>。<br><img src="/MemoryLeak/handler_memory_leak.jpg" alt="handler_memory_leak">    </li>
+</ol>
+<p>尝试运行如下代码：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SampleActivity</span> <span class="keyword">extends</span> <span class="title">Activity</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">private</span> <span class="keyword">final</span> Handler mLeakyHandler = <span class="keyword">new</span> Handler() &#123;</span><br><span class="line">    <span class="annotation">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">handleMessage</span><span class="params">(Message msg)</span> </span>&#123;</span><br><span class="line">      <span class="comment">// ...</span></span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="annotation">@Override</span></span><br><span class="line">  <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onCreate</span><span class="params">(Bundle savedInstanceState)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">super</span>.onCreate(savedInstanceState);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Post a message and delay its execution for 10 minutes.</span></span><br><span class="line">    mLeakyHandler.postDelayed(<span class="keyword">new</span> Runnable() &#123;</span><br><span class="line">      <span class="annotation">@Override</span></span><br><span class="line">      <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123; <span class="comment">/* ... */</span> &#125;</span><br><span class="line">    &#125;, <span class="number">1000</span> * <span class="number">60</span> * <span class="number">10</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Go back to the previous Activity.</span></span><br><span class="line">    finish();</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>这段代码发送了一个Message，将在十分钟后运行，也就是说Message将被保持引用达到10分钟，这就照成了至少10分钟的内存泄露。<br>所以正确的代码应该是这样的：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SampleActivity</span> <span class="keyword">extends</span> <span class="title">Activity</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">  <span class="comment">/**</span><br><span class="line">  * Instances of static inner classes do not hold an implicit</span><br><span class="line">  * reference to their outer class.</span><br><span class="line">  */</span></span><br><span class="line">  <span class="keyword">private</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">MyHandler</span> <span class="keyword">extends</span> <span class="title">Handler</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> WeakReference&lt;SampleActivity&gt; mActivity;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="title">MyHandler</span><span class="params">(SampleActivity activity)</span> </span>&#123;</span><br><span class="line">      mActivity = <span class="keyword">new</span> WeakReference&lt;SampleActivity&gt;(activity);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="annotation">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">handleMessage</span><span class="params">(Message msg)</span> </span>&#123;</span><br><span class="line">      SampleActivity activity = mActivity.get();</span><br><span class="line">      <span class="keyword">if</span> (activity != <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="comment">// ...</span></span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">private</span> <span class="keyword">final</span> MyHandler mHandler = <span class="keyword">new</span> MyHandler(<span class="keyword">this</span>);</span><br><span class="line"></span><br><span class="line">  <span class="comment">/**</span><br><span class="line">   * Instances of anonymous classes do not hold an implicit</span><br><span class="line">   * reference to their outer class when they are "static".</span><br><span class="line">   */</span></span><br><span class="line">  <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> Runnable sRunnable = <span class="keyword">new</span> Runnable() &#123;</span><br><span class="line">    <span class="annotation">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123; <span class="comment">/* ... */</span> &#125;</span><br><span class="line">  &#125;;</span><br><span class="line"></span><br><span class="line">  <span class="annotation">@Override</span></span><br><span class="line">  <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onCreate</span><span class="params">(Bundle savedInstanceState)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">super</span>.onCreate(savedInstanceState);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Post a message and delay its execution for 10 minutes.</span></span><br><span class="line">    mHandler.postDelayed(sRunnable, <span class="number">1000</span> * <span class="number">60</span> * <span class="number">10</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Go back to the previous Activity.</span></span><br><span class="line">    finish();</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h4 id="结论">结论</h4><ul>
+<li>匿名类/非静态类内部class会保持对它所在Activity的引用，使用时要注意它们的生命周期不能超过Activity，否则要用static inner class</li>
+<li>善于在Activy中的生命周期(比如onPause)中手动控制其他类的生命周期</li>
+</ul>
+<h3 id="HandlerThread使用">HandlerThread使用</h3><p>当我们在activity里面创建了一个HandlerThread，代码如下：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> classMainActivity extends Activity</span><br><span class="line">&#123;</span><br><span class="line">  <span class="annotation">@Override</span>  </span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onCreate</span><span class="params">(BundlesavedInstanceState)</span>  </span><br><span class="line">  </span>&#123;  </span><br><span class="line">    <span class="keyword">super</span>.onCreate(savedInstanceState);  </span><br><span class="line">    setContentView(R.layout.activity_main);  </span><br><span class="line">    Thread mThread = newHandlerThread(<span class="string">"demo"</span>, Process.THREAD_PRIORITY_BACKGROUND);   </span><br><span class="line">    mThread.start();  </span><br><span class="line">    MyHandler mHandler = <span class="keyword">new</span> MyHandler( mThread.getLooper( ) );  </span><br><span class="line">    ...</span><br><span class="line">    ...</span><br><span class="line">    ...  </span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">  <span class="annotation">@Override</span>  </span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onDestroy</span><span class="params">()</span> </span>&#123;  </span><br><span class="line">    <span class="keyword">super</span>.onDestroy();  </span><br><span class="line">  &#125;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>这个代码存在泄漏问题，因为HandlerThread实现的run方法是一个无限循环，它不会自己结束，线程的生命周期超过了Activity生命周期。<br>当横竖屏切换，HandlerThread线程的数量会随着activity重建次数的增加而增加。<br>应该在onDestroy时将线程停止掉：<em>mThread.getLooper().quit();</em><br>另外，<strong>对于不是HandlerThread的线程，也应该确保activity消耗后，线程已经终止</strong>。<br>可以这样做：在onDestroy时调用<em>mThread.join()</em>;</p>
+<h3 id="onDestroy()或者onPause()中未及时关闭对象"><em>onDestroy()</em>或者<em>onPause()</em>中未及时关闭对象</h3><h4 id="线程泄漏">线程泄漏</h4><p>当你执行耗时任务，在<em>onDestroy()</em>的时候考虑调用<em>Thread.close()</em>，如果对线程的控制不够强的话，可以使用RxJava自动建立线程池进行控制，并在生命周期结束时取消订阅</p>
+<h4 id="Handler泄露">Handler泄露</h4><p>当退出activity时，要注意所在Handler消息队列中的Message是否全部处理完成，可以考虑<em>removeCallbacksAndMessages(null)</em>手动关闭</p>
+<h4 id="广播泄露">广播泄露</h4><p>手动注册广播时，记住退出的时候要<em>unregisterReceiver()</em></p>
+<h4 id="第三方SDK/开源框架泄露">第三方SDK/开源框架泄露</h4><p>ShareSDK, JPush等第三方SDK需要按照文档控制生命周期,它们有时候要求你继承它们丑陋的activity，其实也为了帮你控制生命周期</p>
+<h4 id="各种callBack/Listener的泄露">各种callBack/Listener的泄露</h4><p>要及时设置为Null，特别是static的callback</p>
+<h4 id="EventBus等观察者模式的框架">EventBus等观察者模式的框架</h4><p>需要手动解除注册</p>
+<h4 id="Service要及时关闭">Service要及时关闭</h4><p>比如图片上传，当上传成功后，要stopself()</p>
+<h3 id="Static的使用">Static的使用</h3><h4 id="static_class/method/variable_的区别">static class/method/variable 的区别</h4><h5 id="static_inner_class_与_non_static_inner_class_的区别">static inner class 与 non static inner class 的区别</h5><p>static inner class 即<strong>静态内部类</strong>，它只会出现在类的内部，在某个类中写一个静态内部类其实<strong>同你在IDE里新建一个.java 文件是完全一样的</strong>。<br>下面为其对比：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center"></th>
+<th style="text-align:center">static inner class</th>
+<th style="text-align:center">non-static inner class</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">与外部class引用关系</td>
+<td style="text-align:center">如果没有传入参数，就无引用关系</td>
+<td style="text-align:center">自动获得强引用（implicit reference）</td>
+</tr>
+<tr>
+<td style="text-align:center">被调用时需要外部实例</td>
+<td style="text-align:center">不需要（比如Bulider类）</td>
+<td style="text-align:center">需要</td>
+</tr>
+<tr>
+<td style="text-align:center">能否调用外部class中的变量与方法</td>
+<td style="text-align:center">不能</td>
+<td style="text-align:center">能</td>
+</tr>
+<tr>
+<td style="text-align:center">生命周期</td>
+<td style="text-align:center">自主的生命周期</td>
+<td style="text-align:center">依赖于外部类，甚至比外部类更长</td>
+</tr>
+</tbody>
+</table>
+<p>可以看到，非静态内部类埋下了内存泄露的隐患，如果其生命周期比Activity长的话，就会发生泄露，还可能发生难以预防的空指针问题。<br>上面的Handler就是典型的例子。</p>
+<h5 id="static_inner_method">static inner method</h5><p>静态内部方法，可以被直接调用，而不用去依赖它所在的类。<br>比如你需要随机数，只用调用Math.random()即可，而不用实例化Math这个对象。<br>在工具类（Utils）中，建议用static修饰方法。<br><strong>static方法的调用不会泄露内存</strong>。</p>
+<h5 id="static_inner_variable">static inner variable</h5><p>static 变量称为静态变量或者类变量，它由类的所有实例共享。<br>当ClassLoader停止加载这个Class时，它才会回收。<br>在Android中，需要手动置空才会卸掉ClassLoader，才能出现GC。<br>下面这段谷歌博客上的著名代码演示了一次内存泄露的，当你旋转屏幕后，Drawable就会泄露：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> Drawable sBackground;</span><br><span class="line"></span><br><span class="line"><span class="annotation">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onCreate</span><span class="params">(Bundle state)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">super</span>.onCreate(state);</span><br><span class="line"></span><br><span class="line">  TextView label = <span class="keyword">new</span> TextView(<span class="keyword">this</span>);</span><br><span class="line">  label.setText(<span class="string">"Leaks are bad"</span>);</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> (sBackground == <span class="keyword">null</span>) &#123;</span><br><span class="line">    sBackground = getDrawable(R.drawable.large_bitmap);</span><br><span class="line">  &#125;</span><br><span class="line">  label.setBackgroundDrawable(sBackground);</span><br><span class="line"></span><br><span class="line">  setContentView(label);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h4 id="单例导致内存泄露">单例导致内存泄露</h4><p><img src="/MemoryLeak/single_instance_leak_1.png" alt="single_instance_leak_1"><br><img src="/MemoryLeak/single_instance_leak_2.png" alt="single_instance_leak_2"><br>可以看出ImageUtil这个工具类是一个单例，并引用了activity的context。<br>试想这个场景，应用起来以后，转屏。<br>转屏以后，旧MainActivity会destroy，新MainActivity会重建，导致单例ImageUtil重新getInstance。<br>不幸的是，由于instance已经不是空的了，所以ImageUtil不会重建，还持有之前的Context，也就是之前的那个MainActivity实例的context，因此会造成两个问题：</p>
+<ol>
+<li>功能问题：使用ImageUitl访问context相关内容时可能会发生异常（因为当前context并不是当前activity的context）</li>
+<li>内存泄露：旧context被生命周期更长的静态变量持有而导致activity无法释放造成泄漏！（因此静态变量是很容易因此内存泄露的！）</li>
+</ol>
+<h4 id="使用内部匿名类要注意什么？">使用内部匿名类要注意什么？</h4><p>匿名内部类实际上就是non-static inner class，比如某些初学者经常一个new Handler就写出来了，它对外部类有一个强引用。<br>建议单独写出来这个类并继承，并加入static修饰。</p>
+
+  </section>
+
+  
+  
+</article>
+
+
+            <footer class="footer">
+
+    <span class="footer__copyright">&copy; 2014-2015. | 由<a href="https://hexo.io/">Hexo</a>强力驱动 | 主题<a href="https://github.com/someus/huno">Huno</a></span>
+    
+</footer>
+        </div>
+    </div>
+
+    <!-- js files -->
+    <script src="/js/jquery.min.js"></script>
+    <script src="/js/main.js"></script>
+    <script src="/js/scale.fix.js"></script>
+    
+
+    
+
+    <script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript"> 
+        $(document).ready(function(){
+            MathJax.Hub.Config({ 
+                tex2jax: {inlineMath: [['[latex]','[/latex]'], ['\\(','\\)']]} 
+            });
+        });
+    </script>
+
+
+    
+
+    <script src="/js/awesome-toc.min.js"></script>
+    <script>
+        $(document).ready(function(){
+            $.awesome_toc({
+                overlay: true,
+                contentId: "post-content",
+            });
+        });
+    </script>
+
+
+    
+    
+    <!--kill ie6 -->
+<!--[if IE 6]>
+  <script src="//letskillie6.googlecode.com/svn/trunk/2/zh_CN.js"></script>
+<![endif]-->
+
+</body>
+</html>
