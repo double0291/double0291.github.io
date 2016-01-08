@@ -27,6 +27,7 @@
 <meta property="og:image" content="http://yoursite.com/Mat/android_studio_convert_hprof.png">
 <meta property="og:image" content="http://yoursite.com/Mat/get_start.png">
 <meta property="og:image" content="http://yoursite.com/Mat/mat_base.png">
+<meta property="og:image" content="http://yoursite.com/Mat/leak_suspects.png">
 <meta property="og:image" content="http://yoursite.com/Mat/dominator_tree.png">
 <meta property="og:image" content="http://yoursite.com/Mat/dominator_tree_search.png">
 <meta property="og:image" content="http://yoursite.com/Mat/dominator_tree_search_gc_path.png">
@@ -36,7 +37,7 @@
 <meta property="og:image" content="http://yoursite.com/Mat/histogram_list_object_result.png">
 <meta property="og:image" content="http://yoursite.com/Mat/retained_objects.gif">
 <meta property="og:image" content="http://yoursite.com/Mat/retained_objects_2.gif">
-<meta property="og:updated_time" content="2016-01-08T10:18:11.000Z">
+<meta property="og:updated_time" content="2016-01-08T10:28:34.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Android内存泄露分析利器——MAT | DoubleChen，就这样">
 <meta name="twitter:description" content="简介讲到Android的内存泄露，就不能不提及内存泄露分析的利器——MAT。MAT全称Eclipse Memory Analyzer，分为Eclipse插件版和独立版两个版本。下载地址在MAT。如果平时使用Eclipse开发，那么插件版MAT会非常方便，插件安装的update地址也在上述下载地址里面有。如果平时使用Android Studio开发，那么就只能使用独立版的MAT了。">
@@ -196,11 +197,13 @@ classes that you can use:
 <h3 id="转换Hprof文件">转换Hprof文件</h3><p>默认Dump出来的Hprof文件是Dalvik格式，我们要将其转换成J2SE格式的才能进行内存泄露分析。<br>如果Eclipse装了MAT插件，那么Dump Heap后，转换的过程会自动进行，稍等片刻，就会<strong>直接自动在Eclipse中打开转换后的Hprof文件</strong>。<br>如果Eclipse没有安装MAT插件，那么，点击Dump Hprof File后，会让你另存为一个本地文件。<br>存储后，我们就需要将这个Hprof文件进行转换了。<br>转换工作要利用<em>hprof-conv</em>命令，在控制台中输入：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hprof-conv dump.hprof converted-dump.hprof</span><br></pre></td></tr></table></figure></p>
 <p>hprof-conv命令文件存放于<android sdk="">/platform-tools目录下面。    </android></p>
 <p>如果使用的是Android Studio，可以右键生成的文件进行转换：<br><img src="/Mat/android_studio_convert_hprof.png" alt="android_studio_convert_hprof">    </p>
-<h3 id="具体分析">具体分析</h3><p>在MAT中打开我们转换之后的hprof文件，弹出的Get Start界面就选默认的Leak Suspects Report，点击Finish按钮。<br><img src="/Mat/get_start.png" alt="get_start"><br>之后就是MAT的基础界面了：<br><img src="/Mat/mat_base.png" alt="mat_base"><br>MAT提供了非常强大而细致的功能，但常用的就那么几个。<br>上图中的饼图展示了最大的几个对象所占内存的比例，但大部分情况下，显示的都是系统变量，没什么意义。<br>一般常用的功能是下面两个：</p>
+<h3 id="具体分析">具体分析</h3><p>在MAT中打开我们转换之后的hprof文件，弹出的Get Start界面就选默认的Leak Suspects Report，点击Finish按钮。<br><img src="/Mat/get_start.png" alt="get_start"><br>之后就是MAT的基础界面了：<br><img src="/Mat/mat_base.png" alt="mat_base"><br>MAT提供了非常强大而细致的功能，但常用的就那么几个。<br>上图中的饼图展示了最大的几个对象所占内存的比例，但大部分情况下，显示的都是系统变量，没什么意义。<br>一般常用的功能是下面几个：</p>
 <ul>
+<li><strong>Leak Suspects</strong>：列出疑似内存泄露问题。</li>
 <li><strong>Histogram</strong>：可以列出内存中每个对象的名字、数量以及大小。</li>
 <li><strong>Dominator Tree</strong>：会将所有内存中的对象按大小进行排序，并且我们可以分析对象之间的引用结构。</li>
 </ul>
+<h4 id="Leak_Suspects">Leak Suspects</h4><p>系统会在弹出首页的同时列出其认为疑似内存泄露的问题：<br><img src="/Mat/leak_suspects.png" alt="leak_suspects"><br>其不止列出问题描述，还有对象的具体信息，以及可以点击Detail看详细问题分析。<br>但是工具的怀疑未必真实存在，很多情况下，提出的问题涉及的对象都是系统对象，意义不大。</p>
 <h4 id="Dominator_Tree">Dominator Tree</h4><p>点击Dominator Tree，结果展示如下：<br><img src="/Mat/dominator_tree.png" alt="dominator_tree"><br><strong>Retained Heap</strong>表示这个对象以及它所持有的其它引用（包括直接和间接）所占的总内存，下文有具体阐述。<br>具体分析的时候，应该从Retained Heap最大的对象开始看起。<br>在每一行的最左边都有一个文件型的图标，其中一些图标的左下角带有一个橙色的点，另外的则没有。这个是什么呢？<br>带有橙色的对象就表示<strong>可以被GC Roots访问到的</strong>，根据上面的讲解，可以被GC Root访问到的对象都是无法被回收的。<br>需要注意的是，无法被回收不代表就是泄露对象，因为很多都是系统需要使用的对象。<br>我们可以注意到，大部分橙色对象最右边都有写一个System Class，说明这是一个由系统管理的对象，并不是由我们自己创建并导致内存泄漏的对象。    </p>
 <p>在Dominator Tree中寻找我们的内存泄露对象，无异于大海捞针，能找到，纯粹是内存泄露对象太大太明显了，或者祖坟冒青烟。<br>大部分情况，我们对自己的泄露对象有一个初步的猜测，就可以在Dominator Tree里面去寻找了。<br>在最顶端输入我们觉得可能内存泄露的对象，比如我们怀疑我们的MainActivity有泄漏，就可以这样：<br><img src="/Mat/dominator_tree_search.png" alt="dominator_tree_search"><br>可以看到我们这里有好多好多的MainActivity对象（原谅我闲的蛋疼，旋转屏幕无数次）。<br>理论上，我们的Activity在旋转屏幕的时候会顺利被销毁，但是我们这把却留存了那么多的MainActivity对象，说明发生了内存泄露。<br>选择其中一个对象，右击，选择Path to GCRoot-&gt;exclude weak/soft reference。<br><img src="/Mat/dominator_tree_search_gc_path.png" alt="dominator_tree_search_gc_path"><br>为什么选择exclude weak/soft references呢？因为弱引用是不会阻止对象被垃圾回收器回收的，所以我们这里直接把它排除掉。<br>结果如下：<br><img src="/Mat/dominator_tree_search_gc_path_result.png" alt="dominator_tree_search_gc_path_result"><br>可以看到，我们的MainActivity$LeakClass对象，左下角有橙色图标，说明能被GC Root访问，并且是我们自己的Thread，不是System Class。<br>所以，这就是我们的内存泄露根源，MainActivity$LeakClass不能被回收，那么其引用的MainActivity也就不能回收了。</p>
 <h4 id="Histogram">Histogram</h4><p>Histogram也可以去分析大内存对象，但是意义不大。<br>Histogram更重要的功能是可以显示对象的数目，同样，我们在Histogram中搜索MainActivity，结果如下：<br><img src="/Mat/histogram_search.png" alt="histogram_search"><br>可以看到，我们内存里面有超多的MainActivity对象，说明我们泄露了。<br>对着MainActivity右键 -&gt; List objects -&gt; with incoming references查看具体MainActivity实例：    </p>
