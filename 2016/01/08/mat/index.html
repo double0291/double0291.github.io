@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+
+    
+
+    <title>
+      Android内存泄露分析利器——MAT | DoubleChen，就这样 
+    </title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    
+      <meta name="author" content="Double Chen">
+    
+    
+
+    <meta name="description" content="简介讲到Android的内存泄露，就不能不提及内存泄露分析的利器——MAT。MAT全称Eclipse Memory Analyzer，分为Eclipse插件版和独立版两个版本。下载地址在MAT。如果平时使用Eclipse开发，那么插件版MAT会非常方便，插件安装的update地址也在上述下载地址里面有。如果平时使用Android Studio开发，那么就只能使用独立版的MAT了。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android内存泄露分析利器——MAT | DoubleChen，就这样">
+<meta property="og:url" content="http://yoursite.com/2016/01/08/mat/index.html">
+<meta property="og:site_name" content="DoubleChen，就这样">
+<meta property="og:description" content="简介讲到Android的内存泄露，就不能不提及内存泄露分析的利器——MAT。MAT全称Eclipse Memory Analyzer，分为Eclipse插件版和独立版两个版本。下载地址在MAT。如果平时使用Eclipse开发，那么插件版MAT会非常方便，插件安装的update地址也在上述下载地址里面有。如果平时使用Android Studio开发，那么就只能使用独立版的MAT了。">
+<meta property="og:image" content="http://yoursite.com/Mat/eclipse_dump_heap.png">
+<meta property="og:image" content="http://yoursite.com/Mat/android_studio_dump_heap.png">
+<meta property="og:image" content="http://yoursite.com/Mat/android_studio_convert_hprof.png">
+<meta property="og:image" content="http://yoursite.com/Mat/get_start.png">
+<meta property="og:image" content="http://yoursite.com/Mat/mat_base.png">
+<meta property="og:image" content="http://yoursite.com/Mat/dominator_tree.png">
+<meta property="og:image" content="http://yoursite.com/Mat/dominator_tree_search.png">
+<meta property="og:image" content="http://yoursite.com/Mat/dominator_tree_search_gc_path.png">
+<meta property="og:image" content="http://yoursite.com/Mat/dominator_tree_search_gc_path_result.png">
+<meta property="og:image" content="http://yoursite.com/Mat/histogram_search.png">
+<meta property="og:image" content="http://yoursite.com/Mat/histogram_list_object.png">
+<meta property="og:image" content="http://yoursite.com/Mat/histogram_list_object_result.png">
+<meta property="og:image" content="http://yoursite.com/Mat/retained_objects.gif">
+<meta property="og:image" content="http://yoursite.com/Mat/retained_objects_2.gif">
+<meta property="og:updated_time" content="2016-01-08T10:18:11.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Android内存泄露分析利器——MAT | DoubleChen，就这样">
+<meta name="twitter:description" content="简介讲到Android的内存泄露，就不能不提及内存泄露分析的利器——MAT。MAT全称Eclipse Memory Analyzer，分为Eclipse插件版和独立版两个版本。下载地址在MAT。如果平时使用Eclipse开发，那么插件版MAT会非常方便，插件安装的update地址也在上述下载地址里面有。如果平时使用Android Studio开发，那么就只能使用独立版的MAT了。">
+    
+    
+    
+      <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+    
+    <link rel="stylesheet" href="/css/uno.css" type="text/css">
+    <link rel="stylesheet" href="/css/highlight.css" type="text/css">
+    <link rel="stylesheet" href="/css/archive.css" type="text/css">
+
+</head>
+<body>
+
+    <span class="mobile btn-mobile-menu">
+        <i class="icon icon-list btn-mobile-menu__icon"></i>
+        <i class="icon icon-x-circle btn-mobile-close__icon hidden"></i>
+    </span>
+
+    
+
+<header class="panel-cover panel-cover--collapsed">
+
+
+  <div class="panel-main">
+
+    <div class="panel-main__inner panel-inverted">
+    <div class="panel-main__content">
+
+        
+        <a href="/" title="link to homepage for DoubleChen，就这样"><img src="/images/avatar.png" width="80" alt="DoubleChen，就这样 logo" class="panel-cover__logo logo" /></a>
+        
+
+        <h1 class="panel-cover__title panel-title"><a href="/" title="link to homepage">DoubleChen，就这样</a></h1>
+        <hr class="panel-cover__divider" />
+
+        
+
+        <div class="navigation-wrapper">
+
+          <nav class="cover-navigation cover-navigation--primary">
+            <ul class="navigation">
+
+              
+                
+                <li class="navigation__item"><a href="/#blog" title="" class="blog-button">首页</a></li>
+              
+                
+                <li class="navigation__item"><a href="/archives" title="" class="">归档</a></li>
+              
+
+            </ul>
+          </nav>
+
+          <!-- ----------------------------
+To add a new social icon simply duplicate one of the list items from below
+and change the class in the <i> tag to match the desired social network
+and then add your link to the <a>. Here is a full list of social network
+classes that you can use:
+
+    icon-social-500px
+    icon-social-behance
+    icon-social-delicious
+    icon-social-designer-news
+    icon-social-deviant-art
+    icon-social-digg
+    icon-social-dribbble
+    icon-social-facebook
+    icon-social-flickr
+    icon-social-forrst
+    icon-social-foursquare
+    icon-social-github
+    icon-social-google-plus
+    icon-social-hi5
+    icon-social-instagram
+    icon-social-lastfm
+    icon-social-linkedin
+    icon-social-medium
+    icon-social-myspace
+    icon-social-path
+    icon-social-pinterest
+    icon-social-rdio
+    icon-social-reddit
+    icon-social-skype
+    icon-social-spotify
+    icon-social-stack-overflow
+    icon-social-steam
+    icon-social-stumbleupon
+    icon-social-treehouse
+    icon-social-tumblr
+    icon-social-twitter
+    icon-social-vimeo
+    icon-social-xbox
+    icon-social-yelp
+    icon-social-youtube
+    icon-social-zerply
+    icon-mail
+
+-------------------------------->
+
+<!-- add social info here -->
+
+
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <div class="panel-cover--overlay"></div>
+  </div>
+</header>
+
+    <div class="content-wrapper">
+        <div class="content-wrapper__inner entry">
+            
+
+<article class="post-container post-container--single">
+
+  <header class="post-header">
+    
+    <h1 class="post-title">Android内存泄露分析利器——MAT</h1>
+
+    
+
+    <div class="post-meta">
+      <time datetime="2016-01-08" class="post-meta__date date">2016-01-08</time> 
+
+      <span class="post-meta__tags tags">
+
+          
+
+          
+             &#8226; 标签:
+            <font class="tags">
+              <a class="tags-link" href="/tags/android/">android</a>, <a class="tags-link" href="/tags/memory-leak，mat/">memory leak，mat</a>
+            </font>
+          
+
+      </span>
+    </div>
+    
+    
+
+  </header>
+
+  <section id="post-content" class="article-content post">
+    <h2 id="简介">简介</h2><p>讲到Android的内存泄露，就不能不提及内存泄露分析的利器——MAT。<br>MAT全称Eclipse Memory Analyzer，分为Eclipse插件版和独立版两个版本。<br>下载地址在<a href="http://www.eclipse.org/mat/downloads.php" target="_blank" rel="external">MAT</a>。<br>如果平时使用Eclipse开发，那么插件版MAT会非常方便，插件安装的update地址也在上述下载地址里面有。<br>如果平时使用Android Studio开发，那么就只能使用独立版的MAT了。    </p>
+<a id="more"></a>
+<h2 id="内存泄露分析">内存泄露分析</h2><h3 id="内存泄露代码">内存泄露代码</h3><p>这里，我们来模拟一种Activity内存泄漏的场景，就是之前提过的内部类内存泄露问题。<br>代码如下：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MainActivity</span> <span class="keyword">extends</span> <span class="title">Activity</span> </span>&#123;</span><br><span class="line">    <span class="annotation">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onCreate</span><span class="params">(Bundle savedInstanceState)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>.onCreate(savedInstanceState);</span><br><span class="line">        setContentView(R.layout.activity_main);</span><br><span class="line"></span><br><span class="line">        LeakClass leakClass = <span class="keyword">new</span> LeakClass();</span><br><span class="line">        leakClass.start();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">LeakClass</span> <span class="keyword">extends</span> <span class="title">Thread</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">        <span class="annotation">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</span><br><span class="line">                <span class="keyword">try</span> &#123;</span><br><span class="line">                    Thread.sleep(<span class="number">60</span> * <span class="number">60</span> * <span class="number">1000</span>);</span><br><span class="line">                &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">                    e.printStackTrace();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>具体泄露原理不说了，运行程序，然后不断地旋转手机让程序在横屏和竖屏之间切换。<br>因为每切换一次Activity都会经历一个重新创建的过程，而前面创建的Activity又无法得到回收，那么长时间操作下我们的应用程序所占用的内存就会越来越高，最终出现OutOfMemoryError。<br>接下来就要通过MAT去具体分析内存泄露问题了。</p>
+<h3 id="Dump_Hprof_File">Dump Hprof File</h3><p>我们要进行内存泄露分析，最基本的就是获取当前的Heap情况。<br>在Android中，一个heap dump就是一个当前程序的Heap快照，可以获知程序当前的Heap内存使用情况。<br>它保存为一种叫做HPROF的二进制格式。<br>下面介绍Dump Heap的过程。</p>
+<h4 id="Eclipse_Dump_Heap">Eclipse Dump Heap</h4><p><img src="/Mat/eclipse_dump_heap.png" alt="eclipse_dump_heap">    </p>
+<h4 id="Android_Studio_Dump_Heap">Android Studio Dump Heap</h4><p><img src="/Mat/android_studio_dump_heap.png" alt="android_studio_dump_heap">    </p>
+<h3 id="转换Hprof文件">转换Hprof文件</h3><p>默认Dump出来的Hprof文件是Dalvik格式，我们要将其转换成J2SE格式的才能进行内存泄露分析。<br>如果Eclipse装了MAT插件，那么Dump Heap后，转换的过程会自动进行，稍等片刻，就会<strong>直接自动在Eclipse中打开转换后的Hprof文件</strong>。<br>如果Eclipse没有安装MAT插件，那么，点击Dump Hprof File后，会让你另存为一个本地文件。<br>存储后，我们就需要将这个Hprof文件进行转换了。<br>转换工作要利用<em>hprof-conv</em>命令，在控制台中输入：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hprof-conv dump.hprof converted-dump.hprof</span><br></pre></td></tr></table></figure></p>
+<p>hprof-conv命令文件存放于<android sdk="">/platform-tools目录下面。    </android></p>
+<p>如果使用的是Android Studio，可以右键生成的文件进行转换：<br><img src="/Mat/android_studio_convert_hprof.png" alt="android_studio_convert_hprof">    </p>
+<h3 id="具体分析">具体分析</h3><p>在MAT中打开我们转换之后的hprof文件，弹出的Get Start界面就选默认的Leak Suspects Report，点击Finish按钮。<br><img src="/Mat/get_start.png" alt="get_start"><br>之后就是MAT的基础界面了：<br><img src="/Mat/mat_base.png" alt="mat_base"><br>MAT提供了非常强大而细致的功能，但常用的就那么几个。<br>上图中的饼图展示了最大的几个对象所占内存的比例，但大部分情况下，显示的都是系统变量，没什么意义。<br>一般常用的功能是下面两个：</p>
+<ul>
+<li><strong>Histogram</strong>：可以列出内存中每个对象的名字、数量以及大小。</li>
+<li><strong>Dominator Tree</strong>：会将所有内存中的对象按大小进行排序，并且我们可以分析对象之间的引用结构。</li>
+</ul>
+<h4 id="Dominator_Tree">Dominator Tree</h4><p>点击Dominator Tree，结果展示如下：<br><img src="/Mat/dominator_tree.png" alt="dominator_tree"><br><strong>Retained Heap</strong>表示这个对象以及它所持有的其它引用（包括直接和间接）所占的总内存，下文有具体阐述。<br>具体分析的时候，应该从Retained Heap最大的对象开始看起。<br>在每一行的最左边都有一个文件型的图标，其中一些图标的左下角带有一个橙色的点，另外的则没有。这个是什么呢？<br>带有橙色的对象就表示<strong>可以被GC Roots访问到的</strong>，根据上面的讲解，可以被GC Root访问到的对象都是无法被回收的。<br>需要注意的是，无法被回收不代表就是泄露对象，因为很多都是系统需要使用的对象。<br>我们可以注意到，大部分橙色对象最右边都有写一个System Class，说明这是一个由系统管理的对象，并不是由我们自己创建并导致内存泄漏的对象。    </p>
+<p>在Dominator Tree中寻找我们的内存泄露对象，无异于大海捞针，能找到，纯粹是内存泄露对象太大太明显了，或者祖坟冒青烟。<br>大部分情况，我们对自己的泄露对象有一个初步的猜测，就可以在Dominator Tree里面去寻找了。<br>在最顶端输入我们觉得可能内存泄露的对象，比如我们怀疑我们的MainActivity有泄漏，就可以这样：<br><img src="/Mat/dominator_tree_search.png" alt="dominator_tree_search"><br>可以看到我们这里有好多好多的MainActivity对象（原谅我闲的蛋疼，旋转屏幕无数次）。<br>理论上，我们的Activity在旋转屏幕的时候会顺利被销毁，但是我们这把却留存了那么多的MainActivity对象，说明发生了内存泄露。<br>选择其中一个对象，右击，选择Path to GCRoot-&gt;exclude weak/soft reference。<br><img src="/Mat/dominator_tree_search_gc_path.png" alt="dominator_tree_search_gc_path"><br>为什么选择exclude weak/soft references呢？因为弱引用是不会阻止对象被垃圾回收器回收的，所以我们这里直接把它排除掉。<br>结果如下：<br><img src="/Mat/dominator_tree_search_gc_path_result.png" alt="dominator_tree_search_gc_path_result"><br>可以看到，我们的MainActivity$LeakClass对象，左下角有橙色图标，说明能被GC Root访问，并且是我们自己的Thread，不是System Class。<br>所以，这就是我们的内存泄露根源，MainActivity$LeakClass不能被回收，那么其引用的MainActivity也就不能回收了。</p>
+<h4 id="Histogram">Histogram</h4><p>Histogram也可以去分析大内存对象，但是意义不大。<br>Histogram更重要的功能是可以显示对象的数目，同样，我们在Histogram中搜索MainActivity，结果如下：<br><img src="/Mat/histogram_search.png" alt="histogram_search"><br>可以看到，我们内存里面有超多的MainActivity对象，说明我们泄露了。<br>对着MainActivity右键 -&gt; List objects -&gt; with incoming references查看具体MainActivity实例：    </p>
+<ul>
+<li>outgoing references ：表示该对象的出节点（被该对象引用的对象）。</li>
+<li>incoming references ：表示该对象的入节点（引用到该对象的对象）。</li>
+</ul>
+<p><img src="/Mat/histogram_list_object.png" alt="histogram_list_object"><br>结果如下：<br><img src="/Mat/histogram_list_object_result.png" alt="histogram_list_object_result"><br>接下来，像上面一样，选择其中一个对象，右击，选择Path to GCRoot-&gt;exclude weak/soft reference，就能进行我们的内存泄露分析了。</p>
+<h4 id="几个重要的概念">几个重要的概念</h4><h5 id="Shallow_heap">Shallow heap</h5><p>Shallow size就是对象本身占用内存的大小，不包含其引用的对象。</p>
+<ul>
+<li>常规对象（非数组）的Shallow size有其成员变量的数量和类型决定。</li>
+<li>数组的shallow size有数组元素的类型（对象类型、基本类型）和数组长度决定</li>
+</ul>
+<h5 id="Retained_Heap">Retained Heap</h5><p>Retained Heap表示如果一个对象被释放掉，那会因为该对象的释放而减少引用进而被释放的所有的对象（包括被递归释放的）所占用的heap大小。<br>相对于shallow heap，Retained heap可以更精确的反映一个对象实际占用的大小（因为如果该对象释放，retained heap都可以被释放）。<br><img src="/Mat/retained_objects.gif" alt="retained_objects"><br><img src="/Mat/retained_objects_2.gif" alt="retained_objects_2"><br>从obj1入手，上图中蓝色节点代表仅仅只有通过obj1才能直接或间接访问的对象。<br>但是因为可以通过GC Roots访问，所以上图的obj3不是蓝色节点。<br>而在下图obj3却是蓝色，因为它已经被包含在retained集合内。<br>所以对于上图，obj1的retained size是obj1、obj2、obj4的shallow size总和。<br>下图的retained size是obj1、obj2、obj3、obj4的shallow size总和。<br>详见<a href="https://www.yourkit.com/docs/java/help/sizes.jsp" target="_blank" rel="external">Shallow and retained sizes</a></p>
+<h5 id="Path_to_GC_Root">Path to GC Root</h5><ul>
+<li>Strong Ref(强引用)：通常我们编写的代码都是Strong Ref，于此对应的是强可达性，只有去掉强可达，对象才被回收。</li>
+<li>Soft Ref(软引用)：对应软可达性，只要有足够的内存，就一直保持对象，直到发现内存吃紧且没有Strong Ref时才回收对象。一般可用来实现缓存，通过java.lang.ref.SoftReference类实现。</li>
+<li>Weak Ref(弱引用)：比Soft Ref更弱，当发现不存在Strong Ref时，立刻回收对象而不必等到内存吃紧的时候。通过java.lang.ref.WeakReference和java.util.WeakHashMap类实现。</li>
+<li>Phantom Ref(虚引用)：根本不会在内存中保持任何对象，你只能使用Phantom Ref本身。一般用于在进入finalize()方法后进行特殊的清理过程，通过 java.lang.ref.PhantomReference实现。</li>
+</ul>
+<h2 id="总结">总结</h2><p>需要注意的是，<strong>MAT并不会准确地告诉我们哪里发生了内存泄漏，而是会提供一大堆的数据和线索，我们需要自己去分析这些数据来去判断到底是不是真的发生了内存泄漏</strong>。<br>如果想准确的知道哪里发生了内存泄露，市面上有一款优秀的工具<a href="https://github.com/square/leakcanary" target="_blank" rel="external">LeakCanary</a>，以后有机会讲一下。<br>工具是死的，人是活的，参照前面的文章，尽量避免内存泄露才是王道。</p>
+
+  </section>
+
+  
+  
+</article>
+
+
+            <footer class="footer">
+
+    <span class="footer__copyright">&copy; 2014-2015. | 由<a href="https://hexo.io/">Hexo</a>强力驱动 | 主题<a href="https://github.com/someus/huno">Huno</a></span>
+    
+</footer>
+        </div>
+    </div>
+
+    <!-- js files -->
+    <script src="/js/jquery.min.js"></script>
+    <script src="/js/main.js"></script>
+    <script src="/js/scale.fix.js"></script>
+    
+
+    
+
+    <script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript"> 
+        $(document).ready(function(){
+            MathJax.Hub.Config({ 
+                tex2jax: {inlineMath: [['[latex]','[/latex]'], ['\\(','\\)']]} 
+            });
+        });
+    </script>
+
+
+    
+
+    <script src="/js/awesome-toc.min.js"></script>
+    <script>
+        $(document).ready(function(){
+            $.awesome_toc({
+                overlay: true,
+                contentId: "post-content",
+            });
+        });
+    </script>
+
+
+    
+    
+    <!--kill ie6 -->
+<!--[if IE 6]>
+  <script src="//letskillie6.googlecode.com/svn/trunk/2/zh_CN.js"></script>
+<![endif]-->
+
+</body>
+</html>
