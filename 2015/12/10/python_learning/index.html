@@ -36,7 +36,7 @@
 
 在程序前加上下面这句：
 1from __future__ imp">
-<meta property="og:updated_time" content="2016-01-13T12:03:52.000Z">
+<meta property="og:updated_time" content="2016-01-13T12:55:02.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Python基础学习 | DoubleChen，就这样">
 <meta name="twitter:description" content="基础知识数字和表达式除法普通情况下，整数被另一个整数除，结果只保留整数部分。12&amp;gt;&amp;gt;&amp;gt; 1/20
@@ -468,6 +468,58 @@ classes that you can use:
 <li>对象应该只关心自己实例的特性，让其他实例管理自己的状态。</li>
 <li>小心继承，特别是多重继承。</li>
 </ul>
+<h2 id="异常">异常</h2><h3 id="什么是异常">什么是异常</h3><p>Python用<strong>异常对象</strong>来表示异常情况。<br>遇到错误，就会引发异常。<br>如果异常没有被处理或捕获。程序就会用回溯（Traceback）终止执行：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="prompt">&gt;&gt;&gt; </span><span class="number">1</span>/<span class="number">0</span></span><br><span class="line">Traceback (most recent call last):</span><br><span class="line">  File <span class="string">"&lt;stdin&gt;"</span>, line <span class="number">1</span>, <span class="keyword">in</span> &lt;module&gt;</span><br><span class="line">ZeroDivisionError: integer division <span class="keyword">or</span> modulo by zero</span><br></pre></td></tr></table></figure></p>
+<p>事实上，每一个异常都是一些类的实例，比如上面的就是ZeroDivisionError。<br>这些实例可以被引发，并且可以用多种方法进行捕捉，使程序可以捉住作物并对其进行处理，而不是让整个程序失效。</p>
+<h3 id="自己的异常">自己的异常</h3><h4 id="raise语句">raise语句</h4><p>可以使用一个类（Exception的子类）或者实例参数调用raise语句，来引发异常。<br>使用类的时候，程序自动创建实例。<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="prompt">&gt;&gt;&gt; </span><span class="keyword">raise</span> Exception</span><br><span class="line">Traceback (most recent call last):</span><br><span class="line">  File <span class="string">"&lt;stdin&gt;"</span>, line <span class="number">1</span>, <span class="keyword">in</span> &lt;module&gt;</span><br><span class="line">Exception</span><br><span class="line"><span class="prompt">&gt;&gt;&gt; </span><span class="keyword">raise</span> Exception(<span class="string">'overload'</span>)</span><br><span class="line">Traceback (most recent call last):</span><br><span class="line">  File <span class="string">"&lt;stdin&gt;"</span>, line <span class="number">1</span>, <span class="keyword">in</span> &lt;module&gt;</span><br><span class="line">Exception: overload</span><br></pre></td></tr></table></figure></p>
+<p>内建的异常类有很多，这些类都可以在exceptions模块中找到。<br>常见的异常类有：</p>
+<table>
+<thead>
+<tr>
+<th>class name</th>
+<th>description </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Exception</td>
+<td>所有异常的基类</td>
+</tr>
+<tr>
+<td>AttributeError</td>
+<td>特性引用或赋值失败</td>
+</tr>
+<tr>
+<td>IOError</td>
+<td>试图打开不存在的文件（也有其他情况）</td>
+</tr>
+<tr>
+<td>IndexError</td>
+<td>使用序列中不存在的索引</td>
+</tr>
+<tr>
+<td>KeyError</td>
+<td>使用映射中不存在的键</td>
+</tr>
+<tr>
+<td>NameError</td>
+<td>找不到名字（变量）</td>
+</tr>
+<tr>
+<td>SyntaxError</td>
+<td>代码为错误形式时引发</td>
+</tr>
+<tr>
+<td>TypeError</td>
+<td>内建操作或者函数应用于错误类型的对象</td>
+</tr>
+<tr>
+<td>ValueError</td>
+<td>内建操作或者函数应用于正确类型的对象，但是该对象使用不合适的值</td>
+</tr>
+</tbody>
+</table>
+<h4 id="自定义异常类">自定义异常类</h4><p>创建自己的异常类，只需要继承Exception即可。<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">SomeCustomException</span><span class="params">(Exception)</span>:</span> <span class="keyword">pass</span></span><br></pre></td></tr></table></figure></p>
+<h4 id="捕捉异常">捕捉异常</h4><p>处理异常可以用<em>try/catch</em>来实现。<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span>:</span><br><span class="line">	x = input(<span class="string">'Enter first num:'</span>)</span><br><span class="line">	y = input(<span class="string">'Enter second num:'</span>)</span><br><span class="line">	<span class="keyword">print</span> x/y</span><br><span class="line"><span class="keyword">except</span> ZeroDivisionError:</span><br><span class="line">	<span class="keyword">print</span> <span class="string">"The second num can't be zero!"</span></span><br></pre></td></tr></table></figure></p>
 
   </section>
 
