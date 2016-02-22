@@ -16,19 +16,16 @@
     
     
 
-    <meta name="description" content="写程序永远避不开的一个话题就是破解、反编译，这里，简单介绍一下Android的反编译基础。apk文件其实是一个压缩包，如果我们将文件的后缀改为zip的话，就可以用压缩工具去对其进行解压。
-反编译资源文件解压apk得到的文件夹里面，有res文件夹，里面肯定就藏了我们熟知的资源文件了。">
+    <meta name="description" content="写程序永远避不开的一个话题就是破解、反编译，这里，简单介绍一下Android的反编译基础。apk文件其实是一个压缩包，如果我们将文件的后缀改为zip的话，就可以用压缩工具去对其进行解压。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Android反编译浅析 | DoubleChen，就这样">
 <meta property="og:url" content="http://yoursite.com/2016/02/10/decompile/index.html">
 <meta property="og:site_name" content="DoubleChen，就这样">
-<meta property="og:description" content="写程序永远避不开的一个话题就是破解、反编译，这里，简单介绍一下Android的反编译基础。apk文件其实是一个压缩包，如果我们将文件的后缀改为zip的话，就可以用压缩工具去对其进行解压。
-反编译资源文件解压apk得到的文件夹里面，有res文件夹，里面肯定就藏了我们熟知的资源文件了。">
-<meta property="og:updated_time" content="2016-02-22T16:39:27.000Z">
+<meta property="og:description" content="写程序永远避不开的一个话题就是破解、反编译，这里，简单介绍一下Android的反编译基础。apk文件其实是一个压缩包，如果我们将文件的后缀改为zip的话，就可以用压缩工具去对其进行解压。">
+<meta property="og:updated_time" content="2016-02-22T16:45:19.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Android反编译浅析 | DoubleChen，就这样">
-<meta name="twitter:description" content="写程序永远避不开的一个话题就是破解、反编译，这里，简单介绍一下Android的反编译基础。apk文件其实是一个压缩包，如果我们将文件的后缀改为zip的话，就可以用压缩工具去对其进行解压。
-反编译资源文件解压apk得到的文件夹里面，有res文件夹，里面肯定就藏了我们熟知的资源文件了。">
+<meta name="twitter:description" content="写程序永远避不开的一个话题就是破解、反编译，这里，简单介绍一下Android的反编译基础。apk文件其实是一个压缩包，如果我们将文件的后缀改为zip的话，就可以用压缩工具去对其进行解压。">
     
     
     
@@ -176,9 +173,8 @@ classes that you can use:
 
   <section id="post-content" class="article-content post">
     <p>写程序永远避不开的一个话题就是破解、反编译，这里，简单介绍一下Android的反编译基础。<br>apk文件其实是一个压缩包，如果我们将文件的后缀改为zip的话，就可以用压缩工具去对其进行解压。</p>
-<h2 id="反编译资源文件">反编译资源文件</h2><p>解压apk得到的文件夹里面，有res文件夹，里面肯定就藏了我们熟知的资源文件了。    </p>
 <a id="more"></a>
-<p>但实际上，这个res文件夹里面的相关资源文件都是乱码，要想获取一个apk的资源文件，就需要一个<strong>命令行</strong>工具——<a href="http://ibotpeaches.github.io/Apktool/" target="_blank" rel="external">Apktool</a>。<br>当前用的都是Apktool2.X了，对应的，使用之前，要先<strong>确保已有java1.7环境</strong>。<br>安装步骤如下（以Windows为例，Linux以及Mac OS类似，可以参考<a href="http://ibotpeaches.github.io/Apktool/install/" target="_blank" rel="external">官方文档</a>）：</p>
+<h2 id="反编译资源文件">反编译资源文件</h2><p>解压apk得到的文件夹里面，有res文件夹，里面肯定就藏了我们熟知的资源文件了。<br>但实际上，这个res文件夹里面的相关资源文件都是乱码，要想获取一个apk的资源文件，就需要一个<strong>命令行</strong>工具——<a href="http://ibotpeaches.github.io/Apktool/" target="_blank" rel="external">Apktool</a>。<br>当前用的都是Apktool2.X了，对应的，使用之前，要先<strong>确保已有java1.7环境</strong>。<br>安装步骤如下（以Windows为例，Linux以及Mac OS类似，可以参考<a href="http://ibotpeaches.github.io/Apktool/install/" target="_blank" rel="external">官方文档</a>）：</p>
 <ul>
 <li>下载脚本文件<a href="https://raw.githubusercontent.com/iBotPeaches/Apktool/master/scripts/windows/apktool.bat" target="_blank" rel="external">apktool.bat</a></li>
 <li>下载最新的<a href="https://bitbucket.org/iBotPeaches/apktool/downloads" target="_blank" rel="external">Apktool2.x.jar</a>，下载下来后，重命名为<strong>apktool.jar</strong></li>
