@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+
+    
+
+    <title>
+      Android反编译浅析 | DoubleChen，就这样 
+    </title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    
+      <meta name="author" content="Double Chen">
+    
+    
+
+    <meta name="description" content="写程序永远避不开的一个话题就是破解、反编译，这里，简单介绍一下Android的反编译基础。apk文件其实是一个压缩包，如果我们将文件的后缀改为zip的话，就可以用压缩工具去对其进行解压。
+反编译资源文件解压apk得到的文件夹里面，有res文件夹，里面肯定就藏了我们熟知的资源文件了。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android反编译浅析 | DoubleChen，就这样">
+<meta property="og:url" content="http://yoursite.com/2016/02/10/decompile/index.html">
+<meta property="og:site_name" content="DoubleChen，就这样">
+<meta property="og:description" content="写程序永远避不开的一个话题就是破解、反编译，这里，简单介绍一下Android的反编译基础。apk文件其实是一个压缩包，如果我们将文件的后缀改为zip的话，就可以用压缩工具去对其进行解压。
+反编译资源文件解压apk得到的文件夹里面，有res文件夹，里面肯定就藏了我们熟知的资源文件了。">
+<meta property="og:updated_time" content="2016-02-22T16:39:27.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Android反编译浅析 | DoubleChen，就这样">
+<meta name="twitter:description" content="写程序永远避不开的一个话题就是破解、反编译，这里，简单介绍一下Android的反编译基础。apk文件其实是一个压缩包，如果我们将文件的后缀改为zip的话，就可以用压缩工具去对其进行解压。
+反编译资源文件解压apk得到的文件夹里面，有res文件夹，里面肯定就藏了我们熟知的资源文件了。">
+    
+    
+    
+      <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+    
+    <link rel="stylesheet" href="/css/uno.css" type="text/css">
+    <link rel="stylesheet" href="/css/highlight.css" type="text/css">
+    <link rel="stylesheet" href="/css/archive.css" type="text/css">
+
+</head>
+<body>
+
+    <span class="mobile btn-mobile-menu">
+        <i class="icon icon-list btn-mobile-menu__icon"></i>
+        <i class="icon icon-x-circle btn-mobile-close__icon hidden"></i>
+    </span>
+
+    
+
+<header class="panel-cover panel-cover--collapsed">
+
+
+  <div class="panel-main">
+
+    <div class="panel-main__inner panel-inverted">
+    <div class="panel-main__content">
+
+        
+        <a href="/" title="link to homepage for DoubleChen，就这样"><img src="/images/avatar.png" width="80" alt="DoubleChen，就这样 logo" class="panel-cover__logo logo" /></a>
+        
+
+        <h1 class="panel-cover__title panel-title"><a href="/" title="link to homepage">DoubleChen，就这样</a></h1>
+        <hr class="panel-cover__divider" />
+
+        
+
+        <div class="navigation-wrapper">
+
+          <nav class="cover-navigation cover-navigation--primary">
+            <ul class="navigation">
+
+              
+                
+                <li class="navigation__item"><a href="/#blog" title="" class="blog-button">首页</a></li>
+              
+                
+                <li class="navigation__item"><a href="/archives" title="" class="">归档</a></li>
+              
+
+            </ul>
+          </nav>
+
+          <!-- ----------------------------
+To add a new social icon simply duplicate one of the list items from below
+and change the class in the <i> tag to match the desired social network
+and then add your link to the <a>. Here is a full list of social network
+classes that you can use:
+
+    icon-social-500px
+    icon-social-behance
+    icon-social-delicious
+    icon-social-designer-news
+    icon-social-deviant-art
+    icon-social-digg
+    icon-social-dribbble
+    icon-social-facebook
+    icon-social-flickr
+    icon-social-forrst
+    icon-social-foursquare
+    icon-social-github
+    icon-social-google-plus
+    icon-social-hi5
+    icon-social-instagram
+    icon-social-lastfm
+    icon-social-linkedin
+    icon-social-medium
+    icon-social-myspace
+    icon-social-path
+    icon-social-pinterest
+    icon-social-rdio
+    icon-social-reddit
+    icon-social-skype
+    icon-social-spotify
+    icon-social-stack-overflow
+    icon-social-steam
+    icon-social-stumbleupon
+    icon-social-treehouse
+    icon-social-tumblr
+    icon-social-twitter
+    icon-social-vimeo
+    icon-social-xbox
+    icon-social-yelp
+    icon-social-youtube
+    icon-social-zerply
+    icon-mail
+
+-------------------------------->
+
+<!-- add social info here -->
+
+
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <div class="panel-cover--overlay"></div>
+  </div>
+</header>
+
+    <div class="content-wrapper">
+        <div class="content-wrapper__inner entry">
+            
+
+<article class="post-container post-container--single">
+
+  <header class="post-header">
+    
+    <h1 class="post-title">Android反编译浅析</h1>
+
+    
+
+    <div class="post-meta">
+      <time datetime="2016-02-10" class="post-meta__date date">2016-02-10</time> 
+
+      <span class="post-meta__tags tags">
+
+          
+
+          
+             &#8226; 标签:
+            <font class="tags">
+              <a class="tags-link" href="/tags/android/">android</a>, <a class="tags-link" href="/tags/decompile/">decompile</a>
+            </font>
+          
+
+      </span>
+    </div>
+    
+    
+
+  </header>
+
+  <section id="post-content" class="article-content post">
+    <p>写程序永远避不开的一个话题就是破解、反编译，这里，简单介绍一下Android的反编译基础。<br>apk文件其实是一个压缩包，如果我们将文件的后缀改为zip的话，就可以用压缩工具去对其进行解压。</p>
+<h2 id="反编译资源文件">反编译资源文件</h2><p>解压apk得到的文件夹里面，有res文件夹，里面肯定就藏了我们熟知的资源文件了。    </p>
+<a id="more"></a>
+<p>但实际上，这个res文件夹里面的相关资源文件都是乱码，要想获取一个apk的资源文件，就需要一个<strong>命令行</strong>工具——<a href="http://ibotpeaches.github.io/Apktool/" target="_blank" rel="external">Apktool</a>。<br>当前用的都是Apktool2.X了，对应的，使用之前，要先<strong>确保已有java1.7环境</strong>。<br>安装步骤如下（以Windows为例，Linux以及Mac OS类似，可以参考<a href="http://ibotpeaches.github.io/Apktool/install/" target="_blank" rel="external">官方文档</a>）：</p>
+<ul>
+<li>下载脚本文件<a href="https://raw.githubusercontent.com/iBotPeaches/Apktool/master/scripts/windows/apktool.bat" target="_blank" rel="external">apktool.bat</a></li>
+<li>下载最新的<a href="https://bitbucket.org/iBotPeaches/apktool/downloads" target="_blank" rel="external">Apktool2.x.jar</a>，下载下来后，重命名为<strong>apktool.jar</strong></li>
+<li>将上面两个文件放到Windows目录下（一般为C://Windows），当然，也可以放到自己的目录下，然后将自己的目录添加到环境变量</li>
+</ul>
+<p>上面的步骤完成后，就能在命令行中使用Apktool工具了。<br>使用也很简单，在命令行中输入下面的命令就行了：<br><figure class="highlight gherkin"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">apktool d <span class="keyword">*</span><span class="keyword">*</span><span class="keyword">*</span>.apk</span><br></pre></td></tr></table></figure></p>
+<p>这之后，就会在apk所在目录生成一个以apk的名字命名的文件夹，里面就能找到我们熟知的资源文件了。</p>
+<h2 id="反编译java源码">反编译java源码</h2><p>解压apk得到的文件夹里面，有一个classes.dex文件，它是java文件编译然后通过dx工具打包成的生成的。我们要获取java源码也就要从这个文件入手。<br>具体有两步：</p>
+<ol>
+<li>将dex文件转为jar文件</li>
+<li>读取jar文件中的源码</li>
+</ol>
+<h3 id="将dex转为jar">将dex转为jar</h3><p>使用很简单，下面两步：</p>
+<ul>
+<li>下载<a href="https://github.com/pxb1988/dex2jar" target="_blank" rel="external">dex2jar</a>工具并解压。</li>
+<li>将classes.dex复制到dex2jar.bat所在目录</li>
+</ul>
+<p>然后，在命令行下定位到dex2jar.bat所在目录，并执行命令：<br><figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">dex2jar</span><span class="class">.bat</span> <span class="tag">classes</span><span class="class">.dex</span></span><br></pre></td></tr></table></figure></p>
+<p>之后就生成了我们需要的<strong>classes_dex2jar.jar</strong>文件。这个就是源码jar包了。</p>
+<h3 id="读取jar文件中的源码">读取jar文件中的源码</h3><p>去下载喜闻乐见的读源码工具——<a href="http://jd.benow.ca/" target="_blank" rel="external">jd-gui</a>。<br>将上面生成的<strong>classes_dex2jar.jar</strong>文件拖进去，OK，就能读源码了。</p>
+
+  </section>
+
+  
+  
+</article>
+
+
+            <footer class="footer">
+
+    <span class="footer__copyright">&copy; 2014-2015. | 由<a href="https://hexo.io/">Hexo</a>强力驱动 | 主题<a href="https://github.com/someus/huno">Huno</a></span>
+    
+</footer>
+        </div>
+    </div>
+
+    <!-- js files -->
+    <script src="/js/jquery.min.js"></script>
+    <script src="/js/main.js"></script>
+    <script src="/js/scale.fix.js"></script>
+    
+
+    
+
+    <script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript"> 
+        $(document).ready(function(){
+            MathJax.Hub.Config({ 
+                tex2jax: {inlineMath: [['[latex]','[/latex]'], ['\\(','\\)']]} 
+            });
+        });
+    </script>
+
+
+    
+
+    <script src="/js/awesome-toc.min.js"></script>
+    <script>
+        $(document).ready(function(){
+            $.awesome_toc({
+                overlay: true,
+                contentId: "post-content",
+            });
+        });
+    </script>
+
+
+    
+    
+    <!--kill ie6 -->
+<!--[if IE 6]>
+  <script src="//letskillie6.googlecode.com/svn/trunk/2/zh_CN.js"></script>
+<![endif]-->
+
+</body>
+</html>
