@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+
+    
+
+    <title>
+      Python Property（转） | DoubleChen，就这样 
+    </title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    
+      <meta name="author" content="Double Chen">
+    
+    
+
+    <meta name="description" content="原文：Python Property
+Python有个非常好的概念叫做属性(property), 它让面向对象编程变得更加简单。详细说Python的属性之前，我们先看看为什么它是那么重要。一个简单的例子假设有一天你需要一个类来存储摄氏度. 它还将实现一个方法将摄氏度转换为华氏度。这样做的方法之一是这样的。123456class Celsius:    def __init__(self, temp">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Python Property（转） | DoubleChen，就这样">
+<meta property="og:url" content="http://yoursite.com/2016/02/15/pythonProperty/index.html">
+<meta property="og:site_name" content="DoubleChen，就这样">
+<meta property="og:description" content="原文：Python Property
+Python有个非常好的概念叫做属性(property), 它让面向对象编程变得更加简单。详细说Python的属性之前，我们先看看为什么它是那么重要。一个简单的例子假设有一天你需要一个类来存储摄氏度. 它还将实现一个方法将摄氏度转换为华氏度。这样做的方法之一是这样的。123456class Celsius:    def __init__(self, temp">
+<meta property="og:updated_time" content="2016-02-24T15:34:18.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Python Property（转） | DoubleChen，就这样">
+<meta name="twitter:description" content="原文：Python Property
+Python有个非常好的概念叫做属性(property), 它让面向对象编程变得更加简单。详细说Python的属性之前，我们先看看为什么它是那么重要。一个简单的例子假设有一天你需要一个类来存储摄氏度. 它还将实现一个方法将摄氏度转换为华氏度。这样做的方法之一是这样的。123456class Celsius:    def __init__(self, temp">
+    
+    
+    
+      <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+    
+    <link rel="stylesheet" href="/css/uno.css" type="text/css">
+    <link rel="stylesheet" href="/css/highlight.css" type="text/css">
+    <link rel="stylesheet" href="/css/archive.css" type="text/css">
+
+</head>
+<body>
+
+    <span class="mobile btn-mobile-menu">
+        <i class="icon icon-list btn-mobile-menu__icon"></i>
+        <i class="icon icon-x-circle btn-mobile-close__icon hidden"></i>
+    </span>
+
+    
+
+<header class="panel-cover panel-cover--collapsed">
+
+
+  <div class="panel-main">
+
+    <div class="panel-main__inner panel-inverted">
+    <div class="panel-main__content">
+
+        
+        <a href="/" title="link to homepage for DoubleChen，就这样"><img src="/images/avatar.png" width="80" alt="DoubleChen，就这样 logo" class="panel-cover__logo logo" /></a>
+        
+
+        <h1 class="panel-cover__title panel-title"><a href="/" title="link to homepage">DoubleChen，就这样</a></h1>
+        <hr class="panel-cover__divider" />
+
+        
+
+        <div class="navigation-wrapper">
+
+          <nav class="cover-navigation cover-navigation--primary">
+            <ul class="navigation">
+
+              
+                
+                <li class="navigation__item"><a href="/#blog" title="" class="blog-button">首页</a></li>
+              
+                
+                <li class="navigation__item"><a href="/archives" title="" class="">归档</a></li>
+              
+
+            </ul>
+          </nav>
+
+          <!-- ----------------------------
+To add a new social icon simply duplicate one of the list items from below
+and change the class in the <i> tag to match the desired social network
+and then add your link to the <a>. Here is a full list of social network
+classes that you can use:
+
+    icon-social-500px
+    icon-social-behance
+    icon-social-delicious
+    icon-social-designer-news
+    icon-social-deviant-art
+    icon-social-digg
+    icon-social-dribbble
+    icon-social-facebook
+    icon-social-flickr
+    icon-social-forrst
+    icon-social-foursquare
+    icon-social-github
+    icon-social-google-plus
+    icon-social-hi5
+    icon-social-instagram
+    icon-social-lastfm
+    icon-social-linkedin
+    icon-social-medium
+    icon-social-myspace
+    icon-social-path
+    icon-social-pinterest
+    icon-social-rdio
+    icon-social-reddit
+    icon-social-skype
+    icon-social-spotify
+    icon-social-stack-overflow
+    icon-social-steam
+    icon-social-stumbleupon
+    icon-social-treehouse
+    icon-social-tumblr
+    icon-social-twitter
+    icon-social-vimeo
+    icon-social-xbox
+    icon-social-yelp
+    icon-social-youtube
+    icon-social-zerply
+    icon-mail
+
+-------------------------------->
+
+<!-- add social info here -->
+
+
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <div class="panel-cover--overlay"></div>
+  </div>
+</header>
+
+    <div class="content-wrapper">
+        <div class="content-wrapper__inner entry">
+            
+
+<article class="post-container post-container--single">
+
+  <header class="post-header">
+    
+    <h1 class="post-title">Python Property（转）</h1>
+
+    
+
+    <div class="post-meta">
+      <time datetime="2016-02-15" class="post-meta__date date">2016-02-15</time> 
+
+      <span class="post-meta__tags tags">
+
+          
+
+          
+             &#8226; 标签:
+            <font class="tags">
+              <a class="tags-link" href="/tags/property/">property</a>, <a class="tags-link" href="/tags/python/">python</a>
+            </font>
+          
+
+      </span>
+    </div>
+    
+    
+
+  </header>
+
+  <section id="post-content" class="article-content post">
+    <p>原文：<a href="http://pyiner.com/2014/03/09/Python-property.html" target="_blank" rel="external">Python Property</a></p>
+<p>Python有个非常好的概念叫做属性(property), 它让面向对象编程变得更加简单。<br>详细说Python的属性之前，我们先看看为什么它是那么重要。<br>一个简单的例子假设有一天你需要一个类来存储摄氏度. 它还将实现一个方法将摄氏度转换为华氏度。<br>这样做的方法之一是这样的。<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Celsius</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, temperature = <span class="number">0</span>)</span>:</span></span><br><span class="line">        self.temperature = temperature</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">to_fahrenheit</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> (self.temperature * <span class="number">1.8</span>) + <span class="number">32</span></span><br></pre></td></tr></table></figure></p>
+<a id="more"></a>
+<p>像我们期望的那样，我们可以改变类的属性和操作温度。<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="prompt">&gt;&gt;&gt; </span><span class="comment"># create new object</span></span><br><span class="line"><span class="prompt">&gt;&gt;&gt; </span>man = Celsius()</span><br><span class="line"><span class="prompt">&gt;&gt;&gt; </span><span class="comment"># set temperature</span></span><br><span class="line"><span class="prompt">&gt;&gt;&gt; </span>man.temperature = <span class="number">37</span></span><br><span class="line"><span class="prompt">&gt;&gt;&gt; </span><span class="comment"># get temperature</span></span><br><span class="line"><span class="prompt">&gt;&gt;&gt; </span>man.temperature</span><br><span class="line"><span class="number">37</span></span><br><span class="line"><span class="prompt">&gt;&gt;&gt; </span><span class="comment"># get degrees Fahrenheit</span></span><br><span class="line"><span class="prompt">&gt;&gt;&gt; </span>man.to_fahrenheit()</span><br><span class="line"><span class="number">98.60000000000001</span></span><br></pre></td></tr></table></figure></p>
+<p>额外的小数位是因为Python内部的浮点数算法问题 (在Python解释器中尝试 1.1 + 2.2)。<br>每次我们操作像temperature这样的属性，Python会去查找对象的 __dict__字典。<br>就像下面这样：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="prompt">&gt;&gt;&gt; </span>man.__dict__</span><br><span class="line">&#123;<span class="string">'temperature'</span>: <span class="number">37</span>&#125;</span><br></pre></td></tr></table></figure></p>
+<p>因此，man.temperature 在内部就变成 man.__dict__[‘temperature’]。<br>现在，我们继续假设我们的类在客户中流行，他们在他们的程序中使用我们的类。他们在将我们的类应用于各种各样的场景。直到有一天，一个用户反馈给我们，不应该接收小于-273的摄氏度（-273.15是绝对零度）。他希望我们对这个值进行约束，为了满足用户的需求，我们将我们的类升级到1.01版本。</p>
+<h3 id="Getters_和_Setters">Getters 和 Setters</h3><p>一个显而易见的方法是我们隐藏temperature属性，将它私有化，而使用getter和setter接口来操作它，像下面这样。<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Celsius</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, temperature = <span class="number">0</span>)</span>:</span></span><br><span class="line">        self.set_temperature(temperature)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">to_fahrenheit</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> (self.get_temperature() * <span class="number">1.8</span>) + <span class="number">32</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># new update</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">get_temperature</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> self._temperature</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">set_temperature</span><span class="params">(self, value)</span>:</span></span><br><span class="line">        <span class="keyword">if</span> value &lt; -<span class="number">273</span>:</span><br><span class="line">            <span class="keyword">raise</span> ValueError(<span class="string">"Temperature below -273 is not possible"</span>)</span><br><span class="line">        self._temperature = value</span><br></pre></td></tr></table></figure></p>
+<p>我们可以看到方法get_temperature() 和set_temperature() 的定义。<br>此外， temperature被替换成了_temperature。<br><strong>在Python中，下划线在属性开头表示私有属性。</strong><br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="prompt">&gt;&gt;&gt; </span>c = Celsius(-<span class="number">277</span>)</span><br><span class="line">Traceback (most recent call last):...</span><br><span class="line">ValueError: Temperature below -<span class="number">273</span> <span class="keyword">is</span> <span class="keyword">not</span> possible</span><br><span class="line"></span><br><span class="line"><span class="prompt">&gt;&gt;&gt; </span>c = Celsius(<span class="number">37</span>)&gt;&gt;&gt; c.get_temperature()</span><br><span class="line"><span class="number">37</span></span><br><span class="line"><span class="prompt">&gt;&gt;&gt; </span>c.set_temperature(<span class="number">10</span>)</span><br><span class="line"></span><br><span class="line"><span class="prompt">&gt;&gt;&gt; </span>c.set_temperature(-<span class="number">300</span>)</span><br><span class="line">Traceback (most recent call last):...</span><br><span class="line">ValueError: Temperature below -<span class="number">273</span> <span class="keyword">is</span> <span class="keyword">not</span> possible</span><br></pre></td></tr></table></figure></p>
+<p>这次升级成功的增加了一个新的约束，我们不再接受小于273的值。<br>但是，<strong>Python本身是不支持私有属性的，添加下划线的做法只是一种约定。语言本身不提供任何约束。</strong><br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="prompt">&gt;&gt;&gt; </span>c._temperature = -<span class="number">300</span></span><br><span class="line"><span class="prompt">&gt;&gt;&gt; </span>c.get_temperature()</span><br><span class="line">-<span class="number">300</span></span><br></pre></td></tr></table></figure></p>
+<p>但是这不是重点。<br>最大的问题是，对于上次的更新，我们的客户需要将他们的代码从 obj.temperature改为obj.get_temperature()和 obj.temperature = val 改为obj.set_temperature(val)，这样也许会对他们造成成千上万行代码的修改量。<br>总之，我们的更新不是向后兼容的。这需要property来帮忙。</p>
+<h3 id="Property的威力">Property的威力</h3><p>pythonic的方法来处理这个问题是使用property.下面是具体的做法。<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Celsius</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, temperature = <span class="number">0</span>)</span>:</span></span><br><span class="line">        self.temperature = temperature</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">to_fahrenheit</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> (self.temperature * <span class="number">1.8</span>) + <span class="number">32</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">get_temperature</span><span class="params">(self)</span>:</span></span><br><span class="line">        print(<span class="string">"Getting value"</span>)</span><br><span class="line">        <span class="keyword">return</span> self._temperature</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">set_temperature</span><span class="params">(self, value)</span>:</span></span><br><span class="line">        <span class="keyword">if</span> value &lt; -<span class="number">273</span>:</span><br><span class="line">            <span class="keyword">raise</span> ValueError(<span class="string">"Temperature below -273 is not possible"</span>)</span><br><span class="line">        print(<span class="string">"Setting value"</span>)</span><br><span class="line">        self._temperature = value</span><br><span class="line"></span><br><span class="line">    temperature = property(get_temperature,set_temperature)</span><br></pre></td></tr></table></figure></p>
+<p>我们向get_temperature()和set_temperature()各添加了一个print()函数，来观察他们的执行情况。<br>最后一行，我们创建一个property对象temperature。<br>简而言之, property 连接get_temperature和set_temperature来负责成员属性访问（temperature）。<br>任何代码想要取得temperature的值的时候，都会自动的调用get_temperature()代替__dict__字典中查找。<br>同样的，任何代码想给temperature赋值的时候都会自动调用set_temperature()。<br>这个Python中一个非常cool的特性。让我们看看它的实际应用。<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="prompt">&gt;&gt;&gt; </span>c = Celsius()</span><br><span class="line">Setting value</span><br></pre></td></tr></table></figure></p>
+<p>我们可以看到当我们创建一个对象的时候set_temperature()被调用。<br>你能猜到这是为什么吗？<br>原因是创建一个对象的时候，会调用初始化方法__init__()（最先调用的方法是__new__()）。<br> __init__()中有一行<br>self.temperature = temperature，<br>这个语句会自动调用set_temperature()。<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="prompt">&gt;&gt;&gt; </span>c.temperature</span><br><span class="line">Getting value</span><br><span class="line"><span class="number">0</span></span><br></pre></td></tr></table></figure></p>
+<p>同样的，像c.temperature这样的会自动调用get_temperature()。<br>这就是property做的事情，我们来看更多的例子。<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="prompt">&gt;&gt;&gt; </span>c.temperature = <span class="number">37</span>Setting value</span><br><span class="line"><span class="prompt">&gt;&gt;&gt; </span>c.to_fahrenheit()</span><br><span class="line">Getting value</span><br><span class="line"><span class="number">98.60000000000001</span></span><br></pre></td></tr></table></figure></p>
+<p>通过使用属性,我们可以看到,我们修改类和实现约束没有任何需要客户端代码的地方。<br>因此我们的实现是向后兼容的,每个人都快乐。<br>最后注意,实际温度的值存储在私有变量_temperature中。<br>属性temperature是一个为私有变量提供接口的property对象。</p>
+<h3 id="深入Property">深入Property</h3><p>在Python中property()是一个内建函数，创建并返回一个property对象。<br>函数的定义如下。<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">property(fget=<span class="keyword">None</span>, fset=<span class="keyword">None</span>, fdel=<span class="keyword">None</span>, doc=<span class="keyword">None</span>)</span><br></pre></td></tr></table></figure></p>
+<p>fget是获取属性的值的函数,fset是设置属性值的函数,fdel是删除属性的函数,doc是一个字符串(like a comment)。<br>从实现来看，这些参数都是可选的，所以可以向下面这样简单的创建一个property对象。<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="prompt">&gt;&gt;&gt; </span>property()</span><br><span class="line">&lt;property object at <span class="number">0x0000000003239B38</span>&gt;</span><br></pre></td></tr></table></figure></p>
+<p>property有三个方法getter(), setter()和delete() 来指定fget, fset和fdel。<br>这表示以下这行<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">temperature = property(get_temperature,set_temperature)</span><br></pre></td></tr></table></figure></p>
+<p>可以被分解为：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># make empty property</span></span><br><span class="line">temperature = property()<span class="comment"># assign fget</span></span><br><span class="line">temperature = temperature.getter(get_temperature)<span class="comment"># assign fset</span></span><br><span class="line">temperature = temperature.setter(set_temperature)</span><br></pre></td></tr></table></figure></p>
+<p>这两块代码是等价的。<br>熟悉Python装饰器的可以发现，上面这种结构可以用装饰器来实现。<br>我们可以不定义get_temperature和set_temperature， 他们是不必要的，而且污染了类的命名空间。<br>因此，我们重用temperature这个名字，当我们定义getter和setter的时候。<br>这是可以做到的。<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Celsius</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, temperature = <span class="number">0</span>)</span>:</span></span><br><span class="line">        self._temperature = temperature</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">to_fahrenheit</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> (self.temperature * <span class="number">1.8</span>) + <span class="number">32</span></span><br><span class="line"></span><br><span class="line"><span class="decorator">    @property</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">temperature</span><span class="params">(self)</span>:</span></span><br><span class="line">        print(<span class="string">"Getting value"</span>)</span><br><span class="line">        <span class="keyword">return</span> self._temperature</span><br><span class="line"></span><br><span class="line"><span class="decorator">    @temperature.setter</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">temperature</span><span class="params">(self, value)</span>:</span></span><br><span class="line">        <span class="keyword">if</span> value &lt; -<span class="number">273</span>:</span><br><span class="line">            <span class="keyword">raise</span> ValueError(<span class="string">"Temperature below -273 is not possible"</span>)</span><br><span class="line">        print(<span class="string">"Setting value"</span>)</span><br><span class="line">        self._temperature = value</span><br></pre></td></tr></table></figure></p>
+<p>上面的是实现property的简单而又被推荐的方法。<br>在Python中寻找property的时候你很有可能遇到这种设计。</p>
+
+  </section>
+
+  
+  
+</article>
+
+
+            <footer class="footer">
+
+    <span class="footer__copyright">&copy; 2014-2015. | 由<a href="https://hexo.io/">Hexo</a>强力驱动 | 主题<a href="https://github.com/someus/huno">Huno</a></span>
+    
+</footer>
+        </div>
+    </div>
+
+    <!-- js files -->
+    <script src="/js/jquery.min.js"></script>
+    <script src="/js/main.js"></script>
+    <script src="/js/scale.fix.js"></script>
+    
+
+    
+
+    <script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript"> 
+        $(document).ready(function(){
+            MathJax.Hub.Config({ 
+                tex2jax: {inlineMath: [['[latex]','[/latex]'], ['\\(','\\)']]} 
+            });
+        });
+    </script>
+
+
+    
+
+    <script src="/js/awesome-toc.min.js"></script>
+    <script>
+        $(document).ready(function(){
+            $.awesome_toc({
+                overlay: true,
+                contentId: "post-content",
+            });
+        });
+    </script>
+
+
+    
+    
+    <!--kill ie6 -->
+<!--[if IE 6]>
+  <script src="//letskillie6.googlecode.com/svn/trunk/2/zh_CN.js"></script>
+<![endif]-->
+
+</body>
+</html>
