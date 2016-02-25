@@ -22,7 +22,7 @@
 <meta property="og:url" content="http://yoursite.com/2016/02/10/decompile/index.html">
 <meta property="og:site_name" content="DoubleChen，就这样">
 <meta property="og:description" content="写程序永远避不开的一个话题就是破解、反编译，这里，简单介绍一下Android的反编译基础。apk文件其实是一个压缩包，如果我们将文件的后缀改为zip的话，就可以用压缩工具去对其进行解压。">
-<meta property="og:updated_time" content="2016-02-22T16:45:19.000Z">
+<meta property="og:updated_time" content="2016-02-25T05:38:47.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Android反编译浅析 | DoubleChen，就这样">
 <meta name="twitter:description" content="写程序永远避不开的一个话题就是破解、反编译，这里，简单介绍一下Android的反编译基础。apk文件其实是一个压缩包，如果我们将文件的后缀改为zip的话，就可以用压缩工具去对其进行解压。">
@@ -195,6 +195,28 @@ classes that you can use:
 <p>然后，在命令行下定位到dex2jar.bat所在目录，并执行命令：<br><figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">dex2jar</span><span class="class">.bat</span> <span class="tag">classes</span><span class="class">.dex</span></span><br></pre></td></tr></table></figure></p>
 <p>之后就生成了我们需要的<strong>classes_dex2jar.jar</strong>文件。这个就是源码jar包了。</p>
 <h3 id="读取jar文件中的源码">读取jar文件中的源码</h3><p>去下载喜闻乐见的读源码工具——<a href="http://jd.benow.ca/" target="_blank" rel="external">jd-gui</a>。<br>将上面生成的<strong>classes_dex2jar.jar</strong>文件拖进去，OK，就能读源码了。</p>
+<h2 id="其他工具">其他工具</h2><h3 id="onekey-decompile-apk">onekey-decompile-apk</h3><p><a href="https://code.google.com/archive/p/onekey-decompile-apk/downloads" target="_blank" rel="external">onekey-decompile-apk</a>主要功能如下：</p>
+<ul>
+<li>集成apktool/dex2jar/jd-gui</li>
+<li>只需执行一步即可反编译出apk所有文件(资源文件和jar等等)</li>
+<li>反编译完毕后自动打开jd-gui反编译jar文件</li>
+</ul>
+<p>使用方法：</p>
+<ul>
+<li>下载onekey-decompile-apk.zip, 解压缩到类似D:\downloads\onekey-decompile-apk</li>
+<li>将apk文件放到onekey-decompile-apk目录下</li>
+<li>将apk文件拖拽到_onekey-decompile-apk.bat上</li>
+</ul>
+<p>执行结果：</p>
+<ul>
+<li>在onekey-decompile-apk目录下生成和apk同名的目录(放置了apktools反编译出来资源)</li>
+<li>在onekey-decompile-apk目录下生成和apk同名的jar文件(dex2jar反编译出来的class)</li>
+</ul>
+<h3 id="enjarify">enjarify</h3><p><a href="https://github.com/google/enjarify#why-not-dex2jar" target="_blank" rel="external">enjarify</a>是是谷歌出品的一款反编译工具,它可以将dalvik字节码转化成java字节码。然后就可以使用JD-GUI之类的java逆向工具来分析app了。<br>enjarify可以运行在任意装有python3的平台上。</p>
+<h4 id="使用方法">使用方法</h4><h5 id="直接使用">直接使用</h5><figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">python3</span> <span class="tag">-O</span> <span class="tag">-m</span> <span class="tag">enjarify</span><span class="class">.main</span> <span class="tag">yourapp</span><span class="class">.apk</span></span><br></pre></td></tr></table></figure>
+<h5 id="win使用批处理">win使用批处理</h5><figure class="highlight tex"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">C:<span class="command">\Documents</span> and Settings<span class="command">\Administrator</span>&gt;enjarify.bat</span><br><span class="line">usage: enjarify <span class="special">[</span>-h<span class="special">]</span> <span class="special">[</span>-o OUTPUT<span class="special">]</span> <span class="special">[</span>-f<span class="special">]</span> <span class="special">[</span>--fast<span class="special">]</span> inputfile</span><br><span class="line">enjarify: error: the following arguments are required: inputfile</span><br><span class="line"></span><br><span class="line">//注意批处理里面的调用是 python3,默认的安装完后的 exe 是 python,改下两边任意一个的 name 就好了.</span><br><span class="line"></span><br><span class="line">C:<span class="command">\Documents</span> and Settings<span class="command">\Administrator</span>&gt;enjarify.bat "C:<span class="command">\Documents</span> and Settings<span class="command">\Administrator</span><span class="command">\My</span> Documents<span class="command">\下</span>载<span class="command">\Root</span>-Explorer-3.3.4.apk"</span><br><span class="line">1000 classes processed</span><br><span class="line">2000 classes processed</span><br><span class="line">3000 classes processed</span><br><span class="line">Output written to C:<span class="command">\Documents</span> and Settings<span class="command">\Administrator</span><span class="command">\My</span> Documents<span class="command">\下</span>载<span class="command">\Root</span>-Explorer-3.3.4-enjarify.jar</span><br><span class="line">3244 classes translated successfully, 0 classes had errors</span><br></pre></td></tr></table></figure>
+<h5 id="linux/oxs_使用脚本">linux/oxs 使用脚本</h5><figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">ln -s <span class="string">"$PWD/enjarify.sh"</span> ~/bin/enjarify</span><br><span class="line">enjarify yourapp<span class="class">.apk</span></span><br><span class="line">enjarify classes2<span class="class">.dex</span></span><br><span class="line">enjarify yourapp<span class="class">.apk</span> -o yourapp.jar</span><br></pre></td></tr></table></figure>
+<h3 id="android-classyshark">android-classyshark</h3><p><a href="http://www.classyshark.com/" target="_blank" rel="external">android-classyshark</a>，<a href="https://github.com/google/android-classyshark" target="_blank" rel="external">Github地址</a>是谷歌出的一款查看和分享android文件(APK/Zip/Class/Jar)的工具。</p>
 
   </section>
 
