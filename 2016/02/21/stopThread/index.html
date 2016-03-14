@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+
+    
+
+    <title>
+      如何停止一个java线程 | DoubleChen，就这样 
+    </title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    
+      <meta name="author" content="Double Chen">
+    
+    
+
+    <meta name="description" content="日常java编程中，多线程已经司空见惯，各种Thread，Runnable横飞。那应该如何正确的停止一个线程呢？最原始的Thread类提供了一系列控制线程生命周期的方法——start()，stop()，stop(Throwable)，suspend()，destroy()和resume()。然而，现实是残酷的，现在，除了start()方法，别的都已经处于depreciated状态了！sun公司的文">
+<meta property="og:type" content="article">
+<meta property="og:title" content="如何停止一个java线程 | DoubleChen，就这样">
+<meta property="og:url" content="http://yoursite.com/2016/02/21/stopThread/index.html">
+<meta property="og:site_name" content="DoubleChen，就这样">
+<meta property="og:description" content="日常java编程中，多线程已经司空见惯，各种Thread，Runnable横飞。那应该如何正确的停止一个线程呢？最原始的Thread类提供了一系列控制线程生命周期的方法——start()，stop()，stop(Throwable)，suspend()，destroy()和resume()。然而，现实是残酷的，现在，除了start()方法，别的都已经处于depreciated状态了！sun公司的文">
+<meta property="og:updated_time" content="2016-03-14T16:50:41.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="如何停止一个java线程 | DoubleChen，就这样">
+<meta name="twitter:description" content="日常java编程中，多线程已经司空见惯，各种Thread，Runnable横飞。那应该如何正确的停止一个线程呢？最原始的Thread类提供了一系列控制线程生命周期的方法——start()，stop()，stop(Throwable)，suspend()，destroy()和resume()。然而，现实是残酷的，现在，除了start()方法，别的都已经处于depreciated状态了！sun公司的文">
+    
+    
+    
+      <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+    
+    <link rel="stylesheet" href="/css/uno.css" type="text/css">
+    <link rel="stylesheet" href="/css/highlight.css" type="text/css">
+    <link rel="stylesheet" href="/css/archive.css" type="text/css">
+
+</head>
+<body>
+
+    <span class="mobile btn-mobile-menu">
+        <i class="icon icon-list btn-mobile-menu__icon"></i>
+        <i class="icon icon-x-circle btn-mobile-close__icon hidden"></i>
+    </span>
+
+    
+
+<header class="panel-cover panel-cover--collapsed">
+
+
+  <div class="panel-main">
+
+    <div class="panel-main__inner panel-inverted">
+    <div class="panel-main__content">
+
+        
+        <a href="/" title="link to homepage for DoubleChen，就这样"><img src="/images/avatar.png" width="80" alt="DoubleChen，就这样 logo" class="panel-cover__logo logo" /></a>
+        
+
+        <h1 class="panel-cover__title panel-title"><a href="/" title="link to homepage">DoubleChen，就这样</a></h1>
+        <hr class="panel-cover__divider" />
+
+        
+
+        <div class="navigation-wrapper">
+
+          <nav class="cover-navigation cover-navigation--primary">
+            <ul class="navigation">
+
+              
+                
+                <li class="navigation__item"><a href="/#blog" title="" class="blog-button">首页</a></li>
+              
+                
+                <li class="navigation__item"><a href="/archives" title="" class="">归档</a></li>
+              
+
+            </ul>
+          </nav>
+
+          <!-- ----------------------------
+To add a new social icon simply duplicate one of the list items from below
+and change the class in the <i> tag to match the desired social network
+and then add your link to the <a>. Here is a full list of social network
+classes that you can use:
+
+    icon-social-500px
+    icon-social-behance
+    icon-social-delicious
+    icon-social-designer-news
+    icon-social-deviant-art
+    icon-social-digg
+    icon-social-dribbble
+    icon-social-facebook
+    icon-social-flickr
+    icon-social-forrst
+    icon-social-foursquare
+    icon-social-github
+    icon-social-google-plus
+    icon-social-hi5
+    icon-social-instagram
+    icon-social-lastfm
+    icon-social-linkedin
+    icon-social-medium
+    icon-social-myspace
+    icon-social-path
+    icon-social-pinterest
+    icon-social-rdio
+    icon-social-reddit
+    icon-social-skype
+    icon-social-spotify
+    icon-social-stack-overflow
+    icon-social-steam
+    icon-social-stumbleupon
+    icon-social-treehouse
+    icon-social-tumblr
+    icon-social-twitter
+    icon-social-vimeo
+    icon-social-xbox
+    icon-social-yelp
+    icon-social-youtube
+    icon-social-zerply
+    icon-mail
+
+-------------------------------->
+
+<!-- add social info here -->
+
+
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <div class="panel-cover--overlay"></div>
+  </div>
+</header>
+
+    <div class="content-wrapper">
+        <div class="content-wrapper__inner entry">
+            
+
+<article class="post-container post-container--single">
+
+  <header class="post-header">
+    
+    <h1 class="post-title">如何停止一个java线程</h1>
+
+    
+
+    <div class="post-meta">
+      <time datetime="2016-02-21" class="post-meta__date date">2016-02-21</time> 
+
+      <span class="post-meta__tags tags">
+
+          
+
+          
+             &#8226; 标签:
+            <font class="tags">
+              <a class="tags-link" href="/tags/java/">java</a>, <a class="tags-link" href="/tags/thread/">thread</a>
+            </font>
+          
+
+      </span>
+    </div>
+    
+    
+
+  </header>
+
+  <section id="post-content" class="article-content post">
+    <p>日常java编程中，多线程已经司空见惯，各种Thread，Runnable横飞。那应该如何正确的停止一个线程呢？<br>最原始的<a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Thread.html" target="_blank" rel="external">Thread类</a>提供了一系列控制线程生命周期的方法——start()，stop()，stop(Throwable)，suspend()，destroy()和resume()。<br>然而，现实是残酷的，现在，<strong>除了start()方法，别的都已经处于depreciated状态了</strong>！<br>sun公司的文章<a href="http://docs.oracle.com/javase/1.5.0/docs/guide/misc/threadPrimitiveDeprecation.html" target="_blank" rel="external">Why Are Thread.stop, Thread.suspend,<br>Thread.resume and Runtime.runFinalizersOnExit Deprecated?</a>进行了一定的解释，当然了，现在destroy()方法也depreciated。    </p>
+<a id="more"></a>
+<h3 id="为什么不用stop()？">为什么不用stop()？</h3><p>原文如下：</p>
+<blockquote>
+<p>Because it is inherently unsafe. Stopping a thread causes it to unlock all the monitors that it has locked. (The monitors are unlocked as the ThreadDeath exception propagates up the stack.) If any of the objects previously protected by these monitors were in an inconsistent state, other threads may now view these objects in an inconsistent state. Such objects are said to be damaged. When threads operate on damaged objects, arbitrary behavior can result. This behavior may be subtle and difficult to detect, or it may be pronounced. Unlike other unchecked exceptions, ThreadDeath kills threads silently; thus, the user has no warning that his program may be corrupted. The corruption can manifest itself at any time after the actual damage occurs, even hours or days in the future.</p>
+</blockquote>
+<p>原文非常官方且绕口，简单来说，就是调用stop()会释放线程的所有锁，同时抛出一个ThreadDeath error。这个时候，锁住的变量因为突然被释放就可能导致了数据不一致，会造成其他使用这个变量的线程出现错误。<br>而且让正在被修改的数据被其他线程可见，也违反了java的沙箱模型。</p>
+<h3 id="为什么不用suspend()和resume()？">为什么不用suspend()和resume()？</h3><p>因为<strong>死锁</strong>。<br>suspend()方法就是将一个线程挂起(暂停)，resume()方法就是将一个挂起线程复活继续执行。<br>但是suspend()方法调用的时候<strong>不会释放锁</strong>，这样，如果Thread1调用了suspend()，同时hold住了一个变量，而Thread2需要使用这个变量之后才能让Thread1去resume()，死锁就形成了。</p>
+<h3 id="终止线程的推荐方法">终止线程的推荐方法</h3><p>终止一个线程的最佳方法就是让其退出它的run()方法，常见的就是使用一个<strong>volatile</strong>的终止标志：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">BestPractice</span> <span class="keyword">extends</span> <span class="title">Thread</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">volatile</span> <span class="keyword">boolean</span> finished = <span class="keyword">false</span>;   <span class="comment">// ① volatile条件变量</span></span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">stopThread</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        finished = <span class="keyword">true</span>;    <span class="comment">// ② 发出停止信号</span></span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="annotation">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">while</span> (!finished) &#123;    <span class="comment">// ③ 检测条件变量</span></span><br><span class="line">            <span class="comment">// do dirty work   // ④业务代码</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String args[])</span> <span class="keyword">throws</span>  InterruptedException </span><br><span class="line">    </span>&#123;</span><br><span class="line">        BestPractice task = <span class="keyword">new</span> BestPractice();</span><br><span class="line">        task.start();</span><br><span class="line">        ...</span><br><span class="line"></span><br><span class="line">        <span class="comment">//stop in this manner</span></span><br><span class="line">        task.stopThread();</span><br><span class="line">        t.interrupt();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>除此之外，还有几个注意点:</p>
+<ul>
+<li>使用violate boolean变量来标识线程是否停止。</li>
+<li>停止线程时，需要调用停止线程的interrupt()方法，因为线程有可能在wait()或sleep(), 提高停止线程的即时性。</li>
+<li>对于blocking IO的处理，尽量使用InterruptibleChannel来代替blocking IO。</li>
+</ul>
+<h3 id="参考">参考</h3><p><a href="http://forward.com.au/javaProgramming/HowToStopAThread.html" target="_blank" rel="external">How to Stop a Thread or a Task</a></p>
+
+  </section>
+
+  
+  
+</article>
+
+
+            <footer class="footer">
+
+    <span class="footer__copyright">&copy; 2014-2015. | 由<a href="https://hexo.io/">Hexo</a>强力驱动 | 主题<a href="https://github.com/someus/huno">Huno</a></span>
+    
+</footer>
+        </div>
+    </div>
+
+    <!-- js files -->
+    <script src="/js/jquery.min.js"></script>
+    <script src="/js/main.js"></script>
+    <script src="/js/scale.fix.js"></script>
+    
+
+    
+
+    <script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript"> 
+        $(document).ready(function(){
+            MathJax.Hub.Config({ 
+                tex2jax: {inlineMath: [['[latex]','[/latex]'], ['\\(','\\)']]} 
+            });
+        });
+    </script>
+
+
+    
+
+    <script src="/js/awesome-toc.min.js"></script>
+    <script>
+        $(document).ready(function(){
+            $.awesome_toc({
+                overlay: true,
+                contentId: "post-content",
+            });
+        });
+    </script>
+
+
+    
+    
+    <!--kill ie6 -->
+<!--[if IE 6]>
+  <script src="//letskillie6.googlecode.com/svn/trunk/2/zh_CN.js"></script>
+<![endif]-->
+
+</body>
+</html>
