@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+
+    
+
+    <title>
+      android编译及优化浅析 | DoubleChen，就这样 
+    </title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    
+      <meta name="author" content="Double Chen">
+    
+    
+
+    <meta name="description">
+<meta property="og:type" content="article">
+<meta property="og:title" content="android编译及优化浅析 | DoubleChen，就这样">
+<meta property="og:url" content="http://yoursite.com/2016/03/01/androidCompile/index.html">
+<meta property="og:site_name" content="DoubleChen，就这样">
+<meta property="og:description">
+<meta property="og:image" content="http://yoursite.com/AndroidCompile/compile_flow.png">
+<meta property="og:image" content="http://yoursite.com/AndroidCompile/res_compile.png">
+<meta property="og:image" content="http://yoursite.com/AndroidCompile/code_compile.png">
+<meta property="og:image" content="http://yoursite.com/AndroidCompile/compile_flow_2.png">
+<meta property="og:updated_time" content="2016-03-15T06:56:29.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="android编译及优化浅析 | DoubleChen，就这样">
+<meta name="twitter:description">
+    
+    
+    
+      <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+    
+    <link rel="stylesheet" href="/css/uno.css" type="text/css">
+    <link rel="stylesheet" href="/css/highlight.css" type="text/css">
+    <link rel="stylesheet" href="/css/archive.css" type="text/css">
+
+</head>
+<body>
+
+    <span class="mobile btn-mobile-menu">
+        <i class="icon icon-list btn-mobile-menu__icon"></i>
+        <i class="icon icon-x-circle btn-mobile-close__icon hidden"></i>
+    </span>
+
+    
+
+<header class="panel-cover panel-cover--collapsed">
+
+
+  <div class="panel-main">
+
+    <div class="panel-main__inner panel-inverted">
+    <div class="panel-main__content">
+
+        
+        <a href="/" title="link to homepage for DoubleChen，就这样"><img src="/images/avatar.png" width="80" alt="DoubleChen，就这样 logo" class="panel-cover__logo logo" /></a>
+        
+
+        <h1 class="panel-cover__title panel-title"><a href="/" title="link to homepage">DoubleChen，就这样</a></h1>
+        <hr class="panel-cover__divider" />
+
+        
+
+        <div class="navigation-wrapper">
+
+          <nav class="cover-navigation cover-navigation--primary">
+            <ul class="navigation">
+
+              
+                
+                <li class="navigation__item"><a href="/#blog" title="" class="blog-button">首页</a></li>
+              
+                
+                <li class="navigation__item"><a href="/archives" title="" class="">归档</a></li>
+              
+
+            </ul>
+          </nav>
+
+          <!-- ----------------------------
+To add a new social icon simply duplicate one of the list items from below
+and change the class in the <i> tag to match the desired social network
+and then add your link to the <a>. Here is a full list of social network
+classes that you can use:
+
+    icon-social-500px
+    icon-social-behance
+    icon-social-delicious
+    icon-social-designer-news
+    icon-social-deviant-art
+    icon-social-digg
+    icon-social-dribbble
+    icon-social-facebook
+    icon-social-flickr
+    icon-social-forrst
+    icon-social-foursquare
+    icon-social-github
+    icon-social-google-plus
+    icon-social-hi5
+    icon-social-instagram
+    icon-social-lastfm
+    icon-social-linkedin
+    icon-social-medium
+    icon-social-myspace
+    icon-social-path
+    icon-social-pinterest
+    icon-social-rdio
+    icon-social-reddit
+    icon-social-skype
+    icon-social-spotify
+    icon-social-stack-overflow
+    icon-social-steam
+    icon-social-stumbleupon
+    icon-social-treehouse
+    icon-social-tumblr
+    icon-social-twitter
+    icon-social-vimeo
+    icon-social-xbox
+    icon-social-yelp
+    icon-social-youtube
+    icon-social-zerply
+    icon-mail
+
+-------------------------------->
+
+<!-- add social info here -->
+
+
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <div class="panel-cover--overlay"></div>
+  </div>
+</header>
+
+    <div class="content-wrapper">
+        <div class="content-wrapper__inner entry">
+            
+
+<article class="post-container post-container--single">
+
+  <header class="post-header">
+    
+    <h1 class="post-title">android编译及优化浅析</h1>
+
+    
+
+    <div class="post-meta">
+      <time datetime="2016-03-01" class="post-meta__date date">2016-03-01</time> 
+
+      <span class="post-meta__tags tags">
+
+          
+
+          
+             &#8226; 标签:
+            <font class="tags">
+              <a class="tags-link" href="/tags/android/">android</a>, <a class="tags-link" href="/tags/compile/">compile</a>
+            </font>
+          
+
+      </span>
+    </div>
+    
+    
+
+  </header>
+
+  <section id="post-content" class="article-content post">
+    <p><img src="/AndroidCompile/compile_flow.png" alt="CompileFlow">    </p>
+<a id="more"></a>
+<h2 id="Android编译流程">Android编译流程</h2><p>上图是官方给出的Android编译流程（其中绿色椭圆的都是Android-SDK中自带的工具）：</p>
+<ol>
+<li>调用aapt工具生成R.java文件</li>
+<li>调用javac将java文件编译成java字节码（.class文件）</li>
+<li>调用dx.bat将.class文件和其他调用到的第三方库文件编译成.dex文件。（.dex文件是可以在dalvik虚拟机上直接运行文件格式，可以理解为对java字节码做的针对嵌入式设备的优化）</li>
+<li>再次调用aapt工具来编译项目中的资源文件</li>
+<li>调用apkbuilder工具将.dex文件和bin目录下的资源文件编译成APK</li>
+<li>调用jarsigner进行签名</li>
+<li>调用zipalign进行性能提升</li>
+</ol>
+<h3 id="资源文件">资源文件</h3><p>资源文件一般包括：</p>
+<ul>
+<li>res目录：里面包含了图片资源，布局文件，字符串定义文件等等。里面的资源通过Resource.getXXX(R.xxx.xxx)可以直接获取</li>
+<li>asset目录：里面的资源文件通过assetmanager打开一个stream来进行读取的</li>
+<li>AndroidManifest：里面包含了应用的信息</li>
+</ul>
+<p>我们将apk解压缩，会发现解压后的文件夹中也有类似的结构：</p>
+<ul>
+<li>res目录：和工程目录的res文件的结构保持一致</li>
+<li>asset目录：和项目的asset目录文件结构保持一致</li>
+<li>AndroidManifeset文件</li>
+</ul>
+<p>经过对比，可以发现：</p>
+<ul>
+<li>asset目录保持了一致，可以猜想<strong>android打包的时候，只是把这些文件单纯的压缩到apk包里面而已</strong></li>
+<li>apk中的AndroidManifeset文件是一堆乱码，而apk的res文件夹中，图片是一样的，但xml文件同样也是一堆乱码</li>
+</ul>
+<p>结论就是：asset目录和图片资源都是单纯地压缩到apk文件中的，但所有的xml文件都已经进行了转换，而这个转换的过程就是<strong>将xml文件转成二进制文件，也就是上面官方流程的第4步</strong>。<br><img src="/AndroidCompile/res_compile.png" alt="CompileFlow">    </p>
+<h3 id="代码文件">代码文件</h3><p>在apk解压得到的文件夹中，还有一个classes.dex和src目录。<br>src目录存放的是java文件，而dex文件是Android虚拟机的可执行文件。<br>按照官方给出的流程，就是<strong>java文件是先使用javac工具编译成class文件，然后class文件通过dx工具转换成classes.dex文件的</strong>。<br><img src="/AndroidCompile/code_compile.png" alt="CompileFlow"><br>但这个过程中还是有几个重要的步骤的：</p>
+<ul>
+<li>依赖库，也就是android.jar。我们java代码中有很多都是<em>import android.XXX</em>，这些引入的类的来源就是android.jar。<br>但是如果用反编译工具查看apk中的android.jar，就会发现都是一些简单的接口声明，内容都是<em>throw new RuntimeException</em>，这是为什么呢？<br><strong>因为android.jar只是提供给javac编译用的，他不会被编译成classes.dex文件。因为android.jar的具体实现已经包含在了android framework中，也就是每一台手机上都有android.jar的实现了。所以sdk中的android.jar只是一个空壳，用来编译用的而已。</strong></li>
+<li>R文件，如果你想要引用apk包中的资源的话，你必须使用R.xxx.xxx，但是src里面没有R文件，那么这个R文件从哪里来的呢？这个R文件是aapt通过扫描资源文件生成的</li>
+<li>aidl，javac只支持java文件，aidl的语法和java不是一模一样，那么javac是怎么编译aidl的呢？实际上，aidl会被aidl工具转换成java文件，真正的代码不是aidl代码，而是aidl代码转变成的java代码。</li>
+</ul>
+<h3 id="其他">其他</h3><p>资源和代码打包后，就会调用apkbuilder工具生成最后的apk。<br>之后就是对apk文件进行签名。<br>签名完成后，运行zipalign进行性能提升</p>
+<h3 id="总结">总结</h3><p><img src="/AndroidCompile/compile_flow_2.png" alt="CompileFlow">    </p>
+<h2 id="APK优化">APK优化</h2><p>根据APK文件结构分析，可以看出，占用APK体积的主要部分有：classes.dex文件，lib文件夹，res目录下的 drawable（图片资源）和raw（文件资源）文件夹，assets文件夹 这几个部分。<br>对应地，优化可以分为：</p>
+<ul>
+<li>通过ProGuard代码体积优化来减小classes.dex文件的大小</li>
+<li>优化so文件体积来减小lib文件的大小</li>
+<li>优化图片，音视频的资源的体积， 并删除无效，重复，可重用的资源文件来减小res/drawable，assets等文件大小</li>
+<li>最后通过优化APK的压缩算法提升压缩率来减小APK文件的大小</li>
+</ul>
+<h3 id="ProGuard">ProGuard</h3><blockquote>
+<p>ProGuard 工具通过移除无用的代码以及使用语义隐晦的名称来重命名类、字段和方法，从而达到压缩、优化和混淆代码的目的。<br>通过ProGuard获取到的apk文件将更小并且难以被逆向工程。</p>
+</blockquote>
+<p>引自<a href="http://developer.android.com/intl/zh-cn/tools/help/proguard.html" target="_blank" rel="external">ProGuard官方文档</a><br>需要注意的是，ProGuard只能混淆Java代码，Android工程中Native代码，资源文件（图片、xml），它是无法混淆的。<br>要启动ProGuard，只需要在<project_root>/project.properties文件中设置 proguard.config 属性即可。<br>如果将 proguard.cfg 文件留在默认位置（项目的根目录中），则可以按如下格式：<br><figure class="highlight fix"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">proguard.config</span>=<span class="string">proguard.cfg</span></span><br></pre></td></tr></table></figure></project_root></p>
+<p>也可以将此文件移到任何所需的位置，然后按如下格式指定其绝对路径:<br><figure class="highlight applescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">proguard.config=/path/<span class="keyword">to</span>/proguard.cfg</span><br></pre></td></tr></table></figure></p>
+<p>某些情况下，ProGuard可能会移除它认为没用其实应用需要的代码，比如：</p>
+<ul>
+<li>一个只在 AndroidManifest.xml 文件中引用的类</li>
+<li>一个通过 JNI 调用的方法</li>
+<li>动态引用的字段和方法</li>
+</ul>
+<p>这个时候就需要进行手动配置。<br>一般情况下使用默认的配置即可，当运行中发现<em>ClassNotFoundException</em>异常，就说明那个类不应该被混淆，需要手动配置。</p>
+<h4 id="ProGuard配置">ProGuard配置</h4><h5 id="保留选项（配置不进行处理的内容）">保留选项（配置不进行处理的内容）</h5><p>-keep {Modifier} {class_specification} 保护指定的类文件和类的成员<br>-keepclassmembers {modifier} {class_specification} 保护指定类的成员，如果此类受到保护他们会保护的更好<br>-keepclasseswithmembers {class_specification} 保护指定的类和类的成员，但条件是所有指定的类和类成员是要存在<br>-keepnames {class_specification} 保护指定的类和类的成员的名称（如果他们不会压缩步骤中删除）<br>-keepclassmembernames {class_specification} 保护指定的类的成员的名称（如果他们不会压缩步骤中删除）<br>-keepclasseswithmembernames {class_specification} 保护指定的类和类的成员的名称，如果所有指定的类成员出席（在压缩步骤之后）<br>-printseeds {filename} 列出类和类的成员-keep选项的清单，标准输出到给定的文件    </p>
+<h5 id="压缩">压缩</h5><p>-dontshrink 不压缩输入的类文件<br>-printusage {filename}<br>-whyareyoukeeping {class_specification}    </p>
+<h5 id="优化">优化</h5><p>-dontoptimize 不优化输入的类文件<br>-assumenosideeffects {class_specification} 优化时假设指定的方法，没有任何副作用<br>-allowaccessmodification 优化时允许访问并修改有修饰符的类和类的成员    </p>
+<h5 id="混淆">混淆</h5><p>-dontobfuscate 不混淆输入的类文件<br>-obfuscationdictionary {filename} 使用给定文件中的关键字作为要混淆方法的名称<br>-overloadaggressively 混淆时应用侵入式重载<br>-useuniqueclassmembernames 确定统一的混淆类的成员名称来增加混淆<br>-flattenpackagehierarchy {package_name} 重新包装所有重命名的包并放在给定的单一包中<br>-repackageclass {package_name} 重新包装所有重命名的类文件中放在给定的单一包中<br>-dontusemixedcaseclassnames 混淆时不会产生形形色色的类名<br>-keepattributes {attribute_name,…} 保护给定的可选属性，例如LineNumberTable, LocalVariableTable, SourceFile, Deprecated, Synthetic, Signature, and InnerClasses.<br>-renamesourcefileattribute {string} 设置源文件中给定的字符串常量    </p>
+<p>后面的文件名，类名，或者包名等可以使用占位符代替:<br>？表示一个字符<br>.可以匹配多个字符，但是如果是一个类，不会匹配其前面的包名<br>** 可以匹配多个字符，会匹配前面的包名。    </p>
+<p>在android中在android Manifest文件中的activity，service，provider， receviter，等都不能进行混淆。一些在xml中配置的view也不能进行混淆，android提供的默认配置中都有。</p>
+<h4 id="ProGuard的输出文件及用处">ProGuard的输出文件及用处</h4><p>混淆之后，会给我们输出一些文件，在gradle方式下是在/build/proguard/目录下，ant是在/bin/proguard目录，eclipse构建在/proguard目录像。    </p>
+<ul>
+<li>dump.txt 描述apk文件中所有类文件间的内部结构。</li>
+<li>mapping.txt 列出了原始的类，方法，和字段名与混淆后代码之间的映射。</li>
+<li>seeds.txt 列出了未被混淆的类和成员</li>
+<li>usage.txt 列出了从apk中删除的代码</li>
+</ul>
+<p>当我们发布的release版本的程序出现bug时，可以通过以上文件（特别时mapping.txt）文件找到错误原始的位置，进行bug修改。<br>同时，可能一开始的proguard配置有错误，也可以通过错误日志，根据这些文件，找到哪些文件不应该混淆，从而修改proguard的配置。</p>
+<h4 id="调试Proguard混淆后的程序">调试Proguard混淆后的程序</h4><p>上面说了输出的几个文件，我们在改bug时可以使用，通过mapping.txt,通过映射关系找到对应的类，方法，字段等。<br>另外Proguard文件中包含retrace脚本，可以将一个被混淆过的堆栈跟踪信息还原成一个可读的信息，window下时retrace.bat，linux和mac是retrace.sh，在/tools/proguard/文件夹下。<br>语法为：<br><figure class="highlight accesslog"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">retrace.bat|retrace.sh <span class="string">[-verbose]</span> mapping.txt <span class="string">[]</span></span><br></pre></td></tr></table></figure></p>
+<p>例如：<br><figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">retrace<span class="class">.bat</span> -verbose mapping<span class="class">.txt</span> obfuscated_trace.txt</span><br></pre></td></tr></table></figure></p>
+<p>如果你没有指定，retrace工具会从标准输入读取。</p>
+<h3 id="图片文件体积优化">图片文件体积优化</h3><p>Android支持的图片格式一般有.png， .9.png， .jpg， .gif这样几种。<br>.9.png图片是Android特有的一种非失真性压缩位图格式，不需要再次压缩。<br>jpeg本身是一种已经被高度压缩的图片格式，对其进行再次压缩效果不佳，一般也不再压缩。<br>对于png格式的图片，有pngout，pngquant等压缩工具，pngout支持无损压缩，但压缩率一般只有5%-20%，pngquant支持有损压缩，压缩率高达30%-60%。<br>对于gif格式的图片，可以使用<a href="https://www.lcdf.org/gifsicle/" target="_blank" rel="external">gifsicle</a>进行压缩，gifsicle支持无损压缩并且压缩率达到20-50%；</p>
+<h3 id="无效，重复，可重用的资源文件优化">无效，重复，可重用的资源文件优化</h3><p>通过Android Lint工具可以扫描出一些可能从未被使用的资源，通过人工判断资源的有效性后可以对确认无效的资源进行删除。<br>可以通过设置白名单模式来指定文件不被清理，然后可以很方便地维护和清理无效资源文件。</p>
+<h2 id="日常建议">日常建议</h2><h3 id="代码">代码</h3><ul>
+<li>保持良好的编程习惯，不要重复或者不用的代码，谨慎添加libs，移除使用不到的libs。</li>
+<li>使用proguard混淆代码，它会对不用的代码做优化，并且混淆后也能够减少安装包的大小。</li>
+<li>native code的部分，大多数情况下只需要支持armabi与x86的架构即可。如果非必须，可以考虑拿掉x86的部分。</li>
+</ul>
+<h3 id="资源">资源</h3><ul>
+<li>使用Lint工具查找没有使用到的资源。去除不使用的图片，String，XML等等。</li>
+<li>assets目录下的资源请确保没有用不上的文件。</li>
+<li>生成APK的时候，aapt工具本身会对png做优化，但是在此之前还可以使用其他工具如tinypng对图片进行进一步的压缩预处理。</li>
+<li>jpeg还是png，根据需要做选择，在某些时候jpeg可以减少图片的体积。</li>
+<li>对于9.png的图片，可拉伸区域尽量切小，另外可以通过使用9.png拉伸达到大图效果的时候尽量不要使用整张大图。</li>
+</ul>
+<h3 id="技巧">技巧</h3><ul>
+<li>有选择性的提供hdpi，xhdpi，xxhdpi的图片资源。建议优先提供xhdpi的图片，对于mdpi，ldpi与xxxhdpi根据需要提供有差异的部分即可。</li>
+<li>尽可能的重用已有的图片资源。例如对称的图片，只需要提供一张，另外一张图片可以通过代码旋转的方式实现。</li>
+<li>能用代码绘制实现的功能，尽量不要使用大量的图片。例如减少使用多张图片组成animate-list的AnimationDrawable，这种方式提供了多张图片很占空间。</li>
+</ul>
+
+  </section>
+
+  
+  
+</article>
+
+
+            <footer class="footer">
+
+    <span class="footer__copyright">&copy; 2014-2015. | 由<a href="https://hexo.io/">Hexo</a>强力驱动 | 主题<a href="https://github.com/someus/huno">Huno</a></span>
+    
+</footer>
+        </div>
+    </div>
+
+    <!-- js files -->
+    <script src="/js/jquery.min.js"></script>
+    <script src="/js/main.js"></script>
+    <script src="/js/scale.fix.js"></script>
+    
+
+    
+
+    <script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript"> 
+        $(document).ready(function(){
+            MathJax.Hub.Config({ 
+                tex2jax: {inlineMath: [['[latex]','[/latex]'], ['\\(','\\)']]} 
+            });
+        });
+    </script>
+
+
+    
+
+    <script src="/js/awesome-toc.min.js"></script>
+    <script>
+        $(document).ready(function(){
+            $.awesome_toc({
+                overlay: true,
+                contentId: "post-content",
+            });
+        });
+    </script>
+
+
+    
+    
+    <!--kill ie6 -->
+<!--[if IE 6]>
+  <script src="//letskillie6.googlecode.com/svn/trunk/2/zh_CN.js"></script>
+<![endif]-->
+
+</body>
+</html>
