@@ -23,7 +23,8 @@
 <meta property="og:site_name" content="DoubleChen，就这样">
 <meta property="og:description" content="HashHash（哈希），也称为散列，是一类算法的统称。Hash函数的主要作用是将数据转换为一个Hash值，方便数据的存储，查询。因为一般Hash函数的输入是任意长度，而输出是固定长度的，所以，Hash也被认为是一种压缩映射，可以理解为Hash函数将数据压缩成了固定长度的消息摘要。Hash函数是一种典型以空间换时间的算法，一般用于快速查找和加密算法。">
 <meta property="og:image" content="http://yoursite.com/Collection/collision_1.png">
-<meta property="og:updated_time" content="2016-03-17T10:51:36.000Z">
+<meta property="og:image" content="http://yoursite.com/Collection/ConcurrentHashMap.png">
+<meta property="og:updated_time" content="2016-03-17T10:58:23.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="java中的集合浅析2——Hash与HashMap | DoubleChen，就这样">
 <meta name="twitter:description" content="HashHash（哈希），也称为散列，是一类算法的统称。Hash函数的主要作用是将数据转换为一个Hash值，方便数据的存储，查询。因为一般Hash函数的输入是任意长度，而输出是固定长度的，所以，Hash也被认为是一种压缩映射，可以理解为Hash函数将数据压缩成了固定长度的消息摘要。Hash函数是一种典型以空间换时间的算法，一般用于快速查找和加密算法。">
@@ -235,7 +236,7 @@ classes that you can use:
 <p>所以，<strong>如果要按自然顺序或自定义顺序遍历键，那么TreeMap会更好</strong>。</p>
 <h3 id="synchronizedMap">synchronizedMap</h3><p>Collections工具类提供了两个静态方法——<em>synchronizedMap</em>和<em>synchronizedList</em>，注意，这两个被称为<strong>有条件的线程安全</strong>。<br>这是因为<strong>所有单个的操作都是线程安全的，但是多个操作组成的操作序列却可能导致数据争用，因为在操作序列中控制流取决于前面操作的结果</strong>。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// shm是SynchronizedMap的一个实例</span></span><br><span class="line"><span class="keyword">if</span>(shm.containsKey(<span class="string">'key'</span>)) &#123;</span><br><span class="line">	shm.remove(key);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
 <p>这段代码用于从map中删除一个元素之前判断是否存在这个元素。<br>这里的containsKey和reomve方法都是同步的，但是整段代码却不是。<br>有这么一个场景：线程A执行了containsKey方法返回 true，准备执行remove操作；这时另一个线程B开始执行，同样执行了containsKey方法返回true，并接着执行了remove操作；然 后线程A接着执行remove操作时发现此时已经没有这个元素了。<br>要保证这段代码按我们的意愿工作，一个办法就是对这段代码进行同步控制，但是这么做付出的代价太大。</p>
-<h3 id="更好的选择：ConcurrentHashMap">更好的选择：ConcurrentHashMap</h3><p>util.concurrent包中的ConcurrentHashMap类（也将出现在JDK 1.5中的java.util.concurrent包中）是对Map的线程安全的实现，比起Hashtable以及synchronizedMap来，它提供了好得多的并发性。<br>Hashtable中采用的锁机制是一次锁住整个hash表，从而同一时刻只能由一个线程对其进行操作；而ConcurrentHashMap中则是<strong>一次锁住一个桶</strong>。<br>ConcurrentHashMap默认将hash表分为16个桶，诸如get,put,remove等常用操作只锁当前需要用到的桶。<br>这样，原来只能一个线程进入，现在却能同时有16个写线程执行，并发性能的提升是显而易见的。<br>上面说到的16个线程指的是写线程，而读操作大部分时候都不需要用到锁。<br>只有在size等操作时才需要锁住整个hash表。<br>在迭代方面，ConcurrentHashMap使用了一种不同的迭代方式。<br>在这种迭代方式中，当iterator被创建后集合再发生改变就不再是抛出ConcurrentModificationException，取而代之的是在改变时new新的数据从而不影响原有的数据，iterator完成后再将头指针替换为新的数据，这样iterator线程可以使用原来老的数据，而写线程也可以并发的完成改变。</p>
+<h3 id="更好的选择：ConcurrentHashMap">更好的选择：ConcurrentHashMap</h3><p>util.concurrent包中的ConcurrentHashMap类（也将出现在JDK 1.5中的java.util.concurrent包中）是对Map的线程安全的实现，比起Hashtable以及synchronizedMap来，它提供了好得多的并发性。<br>Hashtable中采用的锁机制是一次锁住整个hash表，从而同一时刻只能由一个线程对其进行操作；而ConcurrentHashMap中则是<strong>一次锁住一个桶</strong>。<br>ConcurrentHashMap默认将hash表分为16个桶，诸如get,put,remove等常用操作只锁当前需要用到的桶。<br>这样，原来只能一个线程进入，现在却能同时有16个写线程执行，并发性能的提升是显而易见的。<br><img src="/Collection/ConcurrentHashMap.png" alt="ConcurrentHashMap"><br>上面说到的16个线程指的是写线程，而读操作大部分时候都不需要用到锁。<br>只有在size等操作时才需要锁住整个hash表。<br>在迭代方面，ConcurrentHashMap使用了一种不同的迭代方式。<br>在这种迭代方式中，当iterator被创建后集合再发生改变就不再是抛出ConcurrentModificationException，取而代之的是在改变时new新的数据从而不影响原有的数据，iterator完成后再将头指针替换为新的数据，这样iterator线程可以使用原来老的数据，而写线程也可以并发的完成改变。</p>
 
   </section>
 
