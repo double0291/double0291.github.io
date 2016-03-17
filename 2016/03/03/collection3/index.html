@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+
+    
+
+    <title>
+      java中的集合浅析3——番外篇 | DoubleChen，就这样 
+    </title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    
+      <meta name="author" content="Double Chen">
+    
+    
+
+    <meta name="description" content="equals()与hashCode()我们知道，java中所有的类都有一个父类，就是Object类。Object类中有两个方法：12boolean equals(Object obj);int hashCode();
+equals()方法equals()方法的源码如下:123public boolean equals(Object obj) &amp;#123;	return (this == obj);">
+<meta property="og:type" content="article">
+<meta property="og:title" content="java中的集合浅析3——番外篇 | DoubleChen，就这样">
+<meta property="og:url" content="http://yoursite.com/2016/03/03/collection3/index.html">
+<meta property="og:site_name" content="DoubleChen，就这样">
+<meta property="og:description" content="equals()与hashCode()我们知道，java中所有的类都有一个父类，就是Object类。Object类中有两个方法：12boolean equals(Object obj);int hashCode();
+equals()方法equals()方法的源码如下:123public boolean equals(Object obj) &amp;#123;	return (this == obj);">
+<meta property="og:updated_time" content="2016-03-17T13:50:12.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="java中的集合浅析3——番外篇 | DoubleChen，就这样">
+<meta name="twitter:description" content="equals()与hashCode()我们知道，java中所有的类都有一个父类，就是Object类。Object类中有两个方法：12boolean equals(Object obj);int hashCode();
+equals()方法equals()方法的源码如下:123public boolean equals(Object obj) &amp;#123;	return (this == obj);">
+    
+    
+    
+      <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+    
+    <link rel="stylesheet" href="/css/uno.css" type="text/css">
+    <link rel="stylesheet" href="/css/highlight.css" type="text/css">
+    <link rel="stylesheet" href="/css/archive.css" type="text/css">
+
+</head>
+<body>
+
+    <span class="mobile btn-mobile-menu">
+        <i class="icon icon-list btn-mobile-menu__icon"></i>
+        <i class="icon icon-x-circle btn-mobile-close__icon hidden"></i>
+    </span>
+
+    
+
+<header class="panel-cover panel-cover--collapsed">
+
+
+  <div class="panel-main">
+
+    <div class="panel-main__inner panel-inverted">
+    <div class="panel-main__content">
+
+        
+        <a href="/" title="link to homepage for DoubleChen，就这样"><img src="/images/avatar.png" width="80" alt="DoubleChen，就这样 logo" class="panel-cover__logo logo" /></a>
+        
+
+        <h1 class="panel-cover__title panel-title"><a href="/" title="link to homepage">DoubleChen，就这样</a></h1>
+        <hr class="panel-cover__divider" />
+
+        
+
+        <div class="navigation-wrapper">
+
+          <nav class="cover-navigation cover-navigation--primary">
+            <ul class="navigation">
+
+              
+                
+                <li class="navigation__item"><a href="/#blog" title="" class="blog-button">首页</a></li>
+              
+                
+                <li class="navigation__item"><a href="/archives" title="" class="">归档</a></li>
+              
+
+            </ul>
+          </nav>
+
+          <!-- ----------------------------
+To add a new social icon simply duplicate one of the list items from below
+and change the class in the <i> tag to match the desired social network
+and then add your link to the <a>. Here is a full list of social network
+classes that you can use:
+
+    icon-social-500px
+    icon-social-behance
+    icon-social-delicious
+    icon-social-designer-news
+    icon-social-deviant-art
+    icon-social-digg
+    icon-social-dribbble
+    icon-social-facebook
+    icon-social-flickr
+    icon-social-forrst
+    icon-social-foursquare
+    icon-social-github
+    icon-social-google-plus
+    icon-social-hi5
+    icon-social-instagram
+    icon-social-lastfm
+    icon-social-linkedin
+    icon-social-medium
+    icon-social-myspace
+    icon-social-path
+    icon-social-pinterest
+    icon-social-rdio
+    icon-social-reddit
+    icon-social-skype
+    icon-social-spotify
+    icon-social-stack-overflow
+    icon-social-steam
+    icon-social-stumbleupon
+    icon-social-treehouse
+    icon-social-tumblr
+    icon-social-twitter
+    icon-social-vimeo
+    icon-social-xbox
+    icon-social-yelp
+    icon-social-youtube
+    icon-social-zerply
+    icon-mail
+
+-------------------------------->
+
+<!-- add social info here -->
+
+
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <div class="panel-cover--overlay"></div>
+  </div>
+</header>
+
+    <div class="content-wrapper">
+        <div class="content-wrapper__inner entry">
+            
+
+<article class="post-container post-container--single">
+
+  <header class="post-header">
+    
+    <h1 class="post-title">java中的集合浅析3——番外篇</h1>
+
+    
+
+    <div class="post-meta">
+      <time datetime="2016-03-03" class="post-meta__date date">2016-03-03</time> 
+
+      <span class="post-meta__tags tags">
+
+          
+
+          
+             &#8226; 标签:
+            <font class="tags">
+              <a class="tags-link" href="/tags/collection/">collection</a>, <a class="tags-link" href="/tags/java/">java</a>
+            </font>
+          
+
+      </span>
+    </div>
+    
+    
+
+  </header>
+
+  <section id="post-content" class="article-content post">
+    <h2 id="equals()与hashCode()">equals()与hashCode()</h2><p>我们知道，java中所有的类都有一个父类，就是Object类。<br>Object类中有两个方法：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">boolean</span> <span class="title">equals</span><span class="params">(Object obj)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">hashCode</span><span class="params">()</span></span>;</span><br></pre></td></tr></table></figure></p>
+<h3 id="equals()方法">equals()方法</h3><p>equals()方法的源码如下:<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">equals</span><span class="params">(Object obj)</span> </span>&#123;</span><br><span class="line">	<span class="keyword">return</span> (<span class="keyword">this</span> == obj);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>可以看到，默认的equals()方法就是比较两个对象的内存地址。<br>若object1.equals(object2)为true，则表示equals1和equals2实际上是引用同一个对象。<br>Object的equals()方法能满足我们的基本需求，但如果我们需要比较一些自定义的对象的时候，就需要对其进行重写了。<br>JDK中的String，Math等封装类都对equals()进行了重写。<br>下面是String的equals()方法：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">equals</span><span class="params">(Object anObject)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">this</span> == anObject) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (anObject <span class="keyword">instanceof</span> String) &#123;</span><br><span class="line">        String anotherString = (String)anObject;</span><br><span class="line">        <span class="keyword">int</span> n = count;</span><br><span class="line">        <span class="keyword">if</span> (n == anotherString.count) &#123;</span><br><span class="line">        <span class="keyword">char</span> v1[] = value;</span><br><span class="line">        <span class="keyword">char</span> v2[] = anotherString.value;</span><br><span class="line">        <span class="keyword">int</span> i = offset;</span><br><span class="line">        <span class="keyword">int</span> j = anotherString.offset;</span><br><span class="line">        <span class="keyword">while</span> (n-- != <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="keyword">if</span> (v1[i++] != v2[j++])</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>可以看到，String的equals()方法在引用比较的基础上，还进行了内容的比较。<br>在Java规范中，它对equals()方法的使用必须要遵循如下几个规则：</p>
+<ol>
+<li>自反性：对于任何非空引用值 x，x.equals(x) 都应返回 true。</li>
+<li>对称性：对于任何非空引用值 x 和 y，当且仅当 y.equals(x) 返回 true 时，x.equals(y) 才应返回 true。</li>
+<li>传递性：对于任何非空引用值 x、y 和 z，如果 x.equals(y) 返回 true，并且 y.equals(z) 返回 true，那么 x.equals(z) 应返回 true。</li>
+<li>一致性：对于任何非空引用值 x 和 y，多次调用 x.equals(y) 始终返回 true 或始终返回 false，前提是对象上 equals 比较中所用的信息没有被修改。</li>
+<li>非空性：对于任何非空引用值 x，x.equals(null) 都应返回 false。</li>
+</ol>
+<p>还有一个注意点，<strong>涉及到继承时，覆写equals时推荐使用getClass进行类型判断，而不是使用instanceof。</strong></p>
+<h3 id="hashCode()方法">hashCode()方法</h3><p>hashCode()方法返回了一个Object的哈希值。<br>这个值可以被java中的哈希数据结构利用（HashMap和HashTable等），用来在散列存储结构中确定对象的存储地址。<br>一个好的hash函数应该是这样的：<strong>为不相同的对象产生不相等的hashCode。</strong><br>Object的hashCode()方法默认是native方法。<br>默认的hashCode实现一般是内存地址对应的数字，所以不同的对象，hashCode（）的返回值是不一样的。<br>String类中定义的hashcode()方法如下：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">hashCode</span><span class="params">()</span> </span>&#123;  </span><br><span class="line">    <span class="keyword">int</span> h = hash;  </span><br><span class="line">    <span class="keyword">if</span> (h == <span class="number">0</span>) &#123;  </span><br><span class="line">        <span class="keyword">int</span> off = offset;  </span><br><span class="line">        <span class="keyword">char</span> val[] = value;  </span><br><span class="line">        <span class="keyword">int</span> len = count;  </span><br><span class="line">  </span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; len; i++) &#123;  </span><br><span class="line">            h = <span class="number">31</span> * h + val[off++];  </span><br><span class="line">        &#125;  </span><br><span class="line">        hash = h;  </span><br><span class="line">    &#125;  </span><br><span class="line">    <span class="keyword">return</span> h;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="equals()与hashCode()关系">equals()与hashCode()关系</h3><p>按照java设计要求：</p>
+<ul>
+<li>当equals(object)相同时，hashCode()的返回值也要尽量相同；</li>
+<li>当equals(object)不相同时，hashCode()的返回没有特别的要求，但是也是尽量不相同以获取好的性能。</li>
+</ul>
+<p><strong>推荐是修改equals()的同时也修改hashCode()。</strong><br>看一下HashMap中的比对两个对象的算法就明白了：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">final</span> Entry&lt;K,V&gt; More ...getEntry(Object key) &#123;</span><br><span class="line">	<span class="keyword">int</span> hash = (key == <span class="keyword">null</span>) ? <span class="number">0</span> : hash(key.hashCode());</span><br><span class="line">	<span class="keyword">for</span> (Entry&lt;K,V&gt; e = table[indexFor(hash, table.length)];</span><br><span class="line">		e != <span class="keyword">null</span>;</span><br><span class="line">		e = e.next) &#123;</span><br><span class="line">		Object k;</span><br><span class="line">		<span class="keyword">if</span> (e.hash == hash &amp;&amp;</span><br><span class="line">			((k = e.key) == key || (key != <span class="keyword">null</span> &amp;&amp; key.equals(k))))</span><br><span class="line">			<span class="keyword">return</span> e;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="浅拷贝深拷贝">浅拷贝深拷贝</h2><ul>
+<li>浅拷贝：被复制对象的所有变量都含有与原来的对象相同的值，而所有的对其他对象的引用仍然指向原来的对象。<br>换言之，浅拷贝仅仅复制所拷贝的对象，而不复制它所引用的对象。</li>
+<li>深拷贝：被复制对象所有非引用变量都含有与原来的对象相同的值，同时所有引用类型的成员变量指向了新创建的实例，这些实例被初始化为形式参数实例值。<br>换言之，深拷贝把要复制的对象所引用的对象都复制了一遍。</li>
+</ul>
+<p>也就是说浅拷贝只复制一个对象，传递引用；而深拷贝对对象内部的引用均复制，它是创建一个新的实例，并且复制实例。</p>
+<h3 id="Object的clone()方法">Object的clone()方法</h3><p>在运行时刻，Object中的clone()识别出你要复制的是哪一个对象，然后为此对象分配空间，并进行对象的复制，将原始对象的内容一一复制到新对象的存储空间中。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Person p = <span class="keyword">new</span> Person();  </span><br><span class="line">Person p1 = p; <span class="comment">// p与p1的地址完全相同，指向的是同一个对象</span></span><br><span class="line"></span><br><span class="line">Person p = <span class="keyword">new</span> Person();  </span><br><span class="line">Person p1 = (Person) p.clone(); <span class="comment">// p与p1的地址不同，指向两个不同的对象</span></span><br></pre></td></tr></table></figure></p>
+<p><strong>继承自java.lang.Object类的clone()方法是浅复制</strong></p>
+<h3 id="实现深拷贝">实现深拷贝</h3><h4 id="实现Cloneable接口">实现Cloneable接口</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Employer</span> <span class="keyword">implements</span> <span class="title">Cloneable</span></span>&#123;</span><br><span class="line">    <span class="keyword">private</span> String username;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getUsername</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> username;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setUsername</span><span class="params">(String username)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.username = username;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="annotation">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Object <span class="title">clone</span><span class="params">()</span> <span class="keyword">throws</span> CloneNotSupportedException </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">super</span>.clone();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Employee</span> <span class="keyword">implements</span> <span class="title">Cloneable</span></span>&#123;</span><br><span class="line">    <span class="keyword">private</span> String username;</span><br><span class="line">    <span class="keyword">private</span> Employer employer;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getUsername</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> username;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setUsername</span><span class="params">(String username)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.username = username;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> Employer <span class="title">getEmployer</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> employer;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setEmployer</span><span class="params">(Employer employer)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.employer = employer;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="annotation">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Object <span class="title">clone</span><span class="params">()</span> <span class="keyword">throws</span> CloneNotSupportedException </span>&#123;</span><br><span class="line">        <span class="comment">//克隆Employee对象并手动的进一步克隆Employee对象中包含的Employer对象</span></span><br><span class="line">        Employee employee = (Employee)<span class="keyword">super</span>.clone();</span><br><span class="line">        employee.setEmployer((Employer) employee.getEmployer().clone());</span><br><span class="line">        <span class="keyword">return</span> employee;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>注意，<strong>如果要实现彻底的深拷贝，就要将引用链上的每一级对象都进行深拷贝。</strong><br>比如，类C中有类B的引用，类B中有类A的引用，类A中只有非引用变量，这个时候，要实现彻底的对C类的深拷贝，除了C类实现Cloneable，B类也要实现Cloneable，A类可以不实现。</p>
+<h4 id="实现Serializable接口">实现Serializable接口</h4><p>序列化即是把对象写到流里面的过程；反序列化即是把对象从流中读取出来的过程。<br>写在流里的是对象的一个拷贝，而原来的对象仍然在JVM里面。<br>实现Serializable的前提是对象以及对象内部所有用到的对象都是可序列化的，否则就需要考虑把那些不可序列化的对象标记为transient，从而把它排除到复制范围之外。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Employer2</span> <span class="keyword">implements</span> <span class="title">Serializable</span></span>&#123;</span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">long</span> serialVersionUID = <span class="number">1L</span>;</span><br><span class="line">	<span class="keyword">private</span> String name;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> String <span class="title">getName</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		<span class="keyword">return</span> name;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setName</span><span class="params">(String name)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">this</span>.name = name;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Employee2</span> <span class="keyword">implements</span> <span class="title">Serializable</span></span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">long</span> serialVersionUID = <span class="number">3969438177161438988L</span>;</span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line">    <span class="keyword">private</span> Employer2 employer;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getName</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> name;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setName</span><span class="params">(String name)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.name = name;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> Employer2 <span class="title">getEmployer</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> employer;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setEmployer</span><span class="params">(Employer2 employer)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.employer = employer;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">/**</span><br><span class="line">     * 实现深复制的方法</span><br><span class="line">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Object <span class="title">deepCopy</span><span class="params">()</span> <span class="keyword">throws</span> IOException, ClassNotFoundException</span>&#123;</span><br><span class="line">        <span class="comment">//字节数组输出流，暂存到内存中</span></span><br><span class="line">        ByteArrayOutputStream bos = <span class="keyword">new</span> ByteArrayOutputStream();</span><br><span class="line">        <span class="comment">//序列化</span></span><br><span class="line">        ObjectOutputStream oos = <span class="keyword">new</span> ObjectOutputStream(bos);</span><br><span class="line">        oos.writeObject(<span class="keyword">this</span>);</span><br><span class="line">        ByteArrayInputStream bis = <span class="keyword">new</span> ByteArrayInputStream(bos.toByteArray());</span><br><span class="line">        ObjectInputStream ois = <span class="keyword">new</span> ObjectInputStream(bis);</span><br><span class="line">        <span class="comment">//反序列化</span></span><br><span class="line">        <span class="keyword">return</span> ois.readObject();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> IOException, ClassNotFoundException </span>&#123;</span><br><span class="line">    Employer2 employer = <span class="keyword">new</span> Employer2();</span><br><span class="line">    employer.setName(<span class="string">"arthinking"</span>);</span><br><span class="line">    Employee2 employee = <span class="keyword">new</span> Employee2();</span><br><span class="line">    employee.setName(<span class="string">"Jason"</span>);</span><br><span class="line">    employee.setEmployer(employer);</span><br><span class="line">    <span class="comment">//通过深复制创建employee2</span></span><br><span class="line">    Employee2 employee2 = (Employee2) employee.deepCopy();</span><br><span class="line">    employee2.getEmployer().setName(<span class="string">"Jason"</span>);</span><br><span class="line"></span><br><span class="line">    System.out.println(employee.getEmployer().getName());</span><br><span class="line">    System.out.println(employee2.getEmployer().getName());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h5 id="关于serialVersionUID">关于serialVersionUID</h5><p>serialVersionUID主要是为了解决对象反序列化的兼容性问题。<br>如果没有提供serialVersionUID，对象序列化后存到硬盘上之后，再增加或减少类的filed，当反序列化时，就会出现Exception，造成不兼容问题。<br>但当serialVersionUID相同时，它就会将不一样的field以type的缺省值反序列化。这样就可以避开不兼容问题了。<br>serialVersionUID是long类型的，一般有两种方式生成。    </p>
+<ul>
+<li><p>默认的是1L：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">long</span> serialVersionUID = <span class="number">1L</span>;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>另外一个则是根据类名、接口名、成员方法以及属性等生成一个64位的哈希字段：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">long</span> serialVersionUID = <span class="number">3969438177161438988L</span>;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h2 id="fail-fast机制">fail-fast机制</h2><p>fail-fast机制是java集合(Collection)中的一种错误机制。<br>当多个线程对同一个集合的内容进行操作时，就可能会产生fail-fast事件。<br>例如当某一个线程A通过iterator去遍历某集合的过程中，若该集合的内容被其他线程所改变了，那么线程A访问集合时，就会抛出ConcurrentModificationException异常，产生fail-fast事件。</p>
+<h3 id="原理">原理</h3><p>我们来看看ArrayList如何抛出ConcurrentModificationException异常。<br>ConcurrentModificationException是在操作Iterator时抛出的异常。<br>ArrayList的Iterator是在父类AbstractList.java中实现的：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> java.util;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">AbstractList</span>&lt;<span class="title">E</span>&gt; <span class="keyword">extends</span> <span class="title">AbstractCollection</span>&lt;<span class="title">E</span>&gt; <span class="keyword">implements</span> <span class="title">List</span>&lt;<span class="title">E</span>&gt; </span>&#123;</span><br><span class="line"></span><br><span class="line">    ...</span><br><span class="line"></span><br><span class="line">    <span class="comment">// AbstractList中唯一的属性</span></span><br><span class="line">    <span class="comment">// 用来记录List修改的次数：每修改一次(添加/删除等操作)，将modCount+1</span></span><br><span class="line">    <span class="keyword">protected</span> <span class="keyword">transient</span> <span class="keyword">int</span> modCount = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 返回List对应迭代器。实际上，是返回Itr对象。</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Iterator&lt;E&gt; <span class="title">iterator</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> Itr();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Itr是Iterator(迭代器)的实现类</span></span><br><span class="line">    <span class="keyword">private</span> <span class="class"><span class="keyword">class</span> <span class="title">Itr</span> <span class="keyword">implements</span> <span class="title">Iterator</span>&lt;<span class="title">E</span>&gt; </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> cursor = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">int</span> lastRet = -<span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 修改数的记录值。</span></span><br><span class="line">        <span class="comment">// 每次新建Itr()对象时，都会保存新建该对象时对应的modCount；</span></span><br><span class="line">        <span class="comment">// 以后每次遍历List中的元素的时候，都会比较expectedModCount和modCount是否相等；</span></span><br><span class="line">        <span class="comment">// 若不相等，则抛出ConcurrentModificationException异常，产生fail-fast事件。</span></span><br><span class="line">        <span class="keyword">int</span> expectedModCount = modCount;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">hasNext</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> cursor != size();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> E <span class="title">next</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="comment">// 获取下一个元素之前，都会判断“新建Itr对象时保存的modCount”和“当前的modCount”是否相等；</span></span><br><span class="line">            <span class="comment">// 若不相等，则抛出ConcurrentModificationException异常，产生fail-fast事件。</span></span><br><span class="line">            checkForComodification();</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                E next = get(cursor);</span><br><span class="line">                lastRet = cursor++;</span><br><span class="line">                <span class="keyword">return</span> next;</span><br><span class="line">            &#125; <span class="keyword">catch</span> (IndexOutOfBoundsException e) &#123;</span><br><span class="line">                checkForComodification();</span><br><span class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> NoSuchElementException();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">remove</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">if</span> (lastRet == -<span class="number">1</span>)</span><br><span class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> IllegalStateException();</span><br><span class="line">            checkForComodification();</span><br><span class="line"></span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                AbstractList.<span class="keyword">this</span>.remove(lastRet);</span><br><span class="line">                <span class="keyword">if</span> (lastRet &lt; cursor)</span><br><span class="line">                    cursor--;</span><br><span class="line">                lastRet = -<span class="number">1</span>;</span><br><span class="line">                expectedModCount = modCount;</span><br><span class="line">            &#125; <span class="keyword">catch</span> (IndexOutOfBoundsException e) &#123;</span><br><span class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> ConcurrentModificationException();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">final</span> <span class="keyword">void</span> <span class="title">checkForComodification</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">if</span> (modCount != expectedModCount)</span><br><span class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> ConcurrentModificationException();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>可以发现在调用next()和remove()时，都会执行checkForComodification()。<br><strong>若 “modCount不等于expectedModCount”，则抛出ConcurrentModificationException异常</strong>，产生fail-fast事件。<br>而在ArrayList中，无论是add()、remove()，还是clear()，只要涉及到修改集合中的元素个数时，都会改变modCount的值。    </p>
+<h3 id="解决方案">解决方案</h3><p>在多线程环境下使用fail-fast机制的集合，建议使用“java.util.concurrent包下的类”去取代“java.util包下的类”。<br>例如ArrayList对应的就是CopyOnWriteArrayList。<br>而HashMap则是用上文提过的ConcurrentHashMap。</p>
+<h2 id="Iterator和Enumeration">Iterator和Enumeration</h2><p>在Java集合中，我们通常都通过 “Iterator(迭代器)” 或 “Enumeration(枚举类)” 去遍历集合。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> java.util;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">Enumeration</span>&lt;<span class="title">E</span>&gt; </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">boolean</span> <span class="title">hasMoreElements</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="function">E <span class="title">nextElement</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">package</span> java.util;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">Iterator</span>&lt;<span class="title">E</span>&gt; </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">boolean</span> <span class="title">hasNext</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="function">E <span class="title">next</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">remove</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>它们有什么区别呢？    </p>
+<ul>
+<li>Enumeration 是JDK 1.0添加的接口。<br>使用到它的函数包括Vector、Hashtable等类，这些类都是JDK 1.0中加入的，Enumeration存在的目的就是为它们提供遍历接口。<br>Enumeration本身并没有支持同步，而在Vector、Hashtable实现Enumeration时，添加了同步。    </li>
+<li>Iterator 是JDK 1.2才添加的接口，它是为了HashMap、ArrayList等集合提供遍历接口。<br>Iterator是支持fail-fast机制的：当多个线程对同一个集合的内容进行操作时，就可能会产生fail-fast事件。</li>
+</ul>
+
+  </section>
+
+  
+  
+</article>
+
+
+            <footer class="footer">
+
+    <span class="footer__copyright">&copy; 2014-2015. | 由<a href="https://hexo.io/">Hexo</a>强力驱动 | 主题<a href="https://github.com/someus/huno">Huno</a></span>
+    
+</footer>
+        </div>
+    </div>
+
+    <!-- js files -->
+    <script src="/js/jquery.min.js"></script>
+    <script src="/js/main.js"></script>
+    <script src="/js/scale.fix.js"></script>
+    
+
+    
+
+    <script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript"> 
+        $(document).ready(function(){
+            MathJax.Hub.Config({ 
+                tex2jax: {inlineMath: [['[latex]','[/latex]'], ['\\(','\\)']]} 
+            });
+        });
+    </script>
+
+
+    
+
+    <script src="/js/awesome-toc.min.js"></script>
+    <script>
+        $(document).ready(function(){
+            $.awesome_toc({
+                overlay: true,
+                contentId: "post-content",
+            });
+        });
+    </script>
+
+
+    
+    
+    <!--kill ie6 -->
+<!--[if IE 6]>
+  <script src="//letskillie6.googlecode.com/svn/trunk/2/zh_CN.js"></script>
+<![endif]-->
+
+</body>
+</html>
