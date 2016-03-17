@@ -16,19 +16,16 @@
     
     
 
-    <meta name="description" content="equals()与hashCode()我们知道，java中所有的类都有一个父类，就是Object类。Object类中有两个方法：12boolean equals(Object obj);int hashCode();
-equals()方法equals()方法的源码如下:123public boolean equals(Object obj) &amp;#123;	return (this == obj);">
+    <meta name="description" content="equals()与hashCode()我们知道，java中所有的类都有一个父类，就是Object类。Object类中有两个方法：12boolean equals(Object obj);int hashCode();">
 <meta property="og:type" content="article">
 <meta property="og:title" content="java中的集合浅析3——番外篇 | DoubleChen，就这样">
 <meta property="og:url" content="http://yoursite.com/2016/03/03/collection3/index.html">
 <meta property="og:site_name" content="DoubleChen，就这样">
-<meta property="og:description" content="equals()与hashCode()我们知道，java中所有的类都有一个父类，就是Object类。Object类中有两个方法：12boolean equals(Object obj);int hashCode();
-equals()方法equals()方法的源码如下:123public boolean equals(Object obj) &amp;#123;	return (this == obj);">
-<meta property="og:updated_time" content="2016-03-17T13:53:32.000Z">
+<meta property="og:description" content="equals()与hashCode()我们知道，java中所有的类都有一个父类，就是Object类。Object类中有两个方法：12boolean equals(Object obj);int hashCode();">
+<meta property="og:updated_time" content="2016-03-17T13:56:34.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="java中的集合浅析3——番外篇 | DoubleChen，就这样">
-<meta name="twitter:description" content="equals()与hashCode()我们知道，java中所有的类都有一个父类，就是Object类。Object类中有两个方法：12boolean equals(Object obj);int hashCode();
-equals()方法equals()方法的源码如下:123public boolean equals(Object obj) &amp;#123;	return (this == obj);">
+<meta name="twitter:description" content="equals()与hashCode()我们知道，java中所有的类都有一个父类，就是Object类。Object类中有两个方法：12boolean equals(Object obj);int hashCode();">
     
     
     
@@ -176,6 +173,7 @@ classes that you can use:
 
   <section id="post-content" class="article-content post">
     <h2 id="equals()与hashCode()">equals()与hashCode()</h2><p>我们知道，java中所有的类都有一个父类，就是Object类。<br>Object类中有两个方法：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">boolean</span> <span class="title">equals</span><span class="params">(Object obj)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">hashCode</span><span class="params">()</span></span>;</span><br></pre></td></tr></table></figure></p>
+<a id="more"></a>
 <h3 id="equals()方法">equals()方法</h3><p>equals()方法的源码如下:<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">equals</span><span class="params">(Object obj)</span> </span>&#123;</span><br><span class="line">	<span class="keyword">return</span> (<span class="keyword">this</span> == obj);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
 <p>可以看到，默认的equals()方法就是比较两个对象的内存地址。<br>若object1.equals(object2)为true，则表示equals1和equals2实际上是引用同一个对象。<br>Object的equals()方法能满足我们的基本需求，但如果我们需要比较一些自定义的对象的时候，就需要对其进行重写了。<br>JDK中的String，Math等封装类都对equals()进行了重写。<br>下面是String的equals()方法：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">equals</span><span class="params">(Object anObject)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">this</span> == anObject) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (anObject <span class="keyword">instanceof</span> String) &#123;</span><br><span class="line">        String anotherString = (String)anObject;</span><br><span class="line">        <span class="keyword">int</span> n = count;</span><br><span class="line">        <span class="keyword">if</span> (n == anotherString.count) &#123;</span><br><span class="line">        <span class="keyword">char</span> v1[] = value;</span><br><span class="line">        <span class="keyword">char</span> v2[] = anotherString.value;</span><br><span class="line">        <span class="keyword">int</span> i = offset;</span><br><span class="line">        <span class="keyword">int</span> j = anotherString.offset;</span><br><span class="line">        <span class="keyword">while</span> (n-- != <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="keyword">if</span> (v1[i++] != v2[j++])</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
 <p>可以看到，String的equals()方法在引用比较的基础上，还进行了内容的比较。<br>在Java规范中，它对equals()方法的使用必须要遵循如下几个规则：</p>
