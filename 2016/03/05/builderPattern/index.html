@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+
+    
+
+    <title>
+      Android设计模式浅析——Builder模式 | DoubleChen，就这样 
+    </title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    
+      <meta name="author" content="Double Chen">
+    
+    
+
+    <meta name="description" content="模式简介《Effective java》一书2.2节介绍了当类的构造器包含多个参数时常用的一种构造器模式——Builder模式。不直接生成对象，而是利用所有必要的参数调用构造器（或者静态工厂），得到一个builder对象。然后在builder对象上调用类似setter的方法，来设置每个相关的可选参数。最后，客户端调用无参的build方法生成不可变的对象。这个builder是它构建的类的静态成员类。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android设计模式浅析——Builder模式 | DoubleChen，就这样">
+<meta property="og:url" content="http://yoursite.com/2016/03/05/builderPattern/index.html">
+<meta property="og:site_name" content="DoubleChen，就这样">
+<meta property="og:description" content="模式简介《Effective java》一书2.2节介绍了当类的构造器包含多个参数时常用的一种构造器模式——Builder模式。不直接生成对象，而是利用所有必要的参数调用构造器（或者静态工厂），得到一个builder对象。然后在builder对象上调用类似setter的方法，来设置每个相关的可选参数。最后，客户端调用无参的build方法生成不可变的对象。这个builder是它构建的类的静态成员类。">
+<meta property="og:updated_time" content="2016-03-21T19:05:07.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Android设计模式浅析——Builder模式 | DoubleChen，就这样">
+<meta name="twitter:description" content="模式简介《Effective java》一书2.2节介绍了当类的构造器包含多个参数时常用的一种构造器模式——Builder模式。不直接生成对象，而是利用所有必要的参数调用构造器（或者静态工厂），得到一个builder对象。然后在builder对象上调用类似setter的方法，来设置每个相关的可选参数。最后，客户端调用无参的build方法生成不可变的对象。这个builder是它构建的类的静态成员类。">
+    
+    
+    
+      <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+    
+    <link rel="stylesheet" href="/css/uno.css" type="text/css">
+    <link rel="stylesheet" href="/css/highlight.css" type="text/css">
+    <link rel="stylesheet" href="/css/archive.css" type="text/css">
+
+</head>
+<body>
+
+    <span class="mobile btn-mobile-menu">
+        <i class="icon icon-list btn-mobile-menu__icon"></i>
+        <i class="icon icon-x-circle btn-mobile-close__icon hidden"></i>
+    </span>
+
+    
+
+<header class="panel-cover panel-cover--collapsed">
+
+
+  <div class="panel-main">
+
+    <div class="panel-main__inner panel-inverted">
+    <div class="panel-main__content">
+
+        
+        <a href="/" title="link to homepage for DoubleChen，就这样"><img src="/images/avatar.png" width="80" alt="DoubleChen，就这样 logo" class="panel-cover__logo logo" /></a>
+        
+
+        <h1 class="panel-cover__title panel-title"><a href="/" title="link to homepage">DoubleChen，就这样</a></h1>
+        <hr class="panel-cover__divider" />
+
+        
+
+        <div class="navigation-wrapper">
+
+          <nav class="cover-navigation cover-navigation--primary">
+            <ul class="navigation">
+
+              
+                
+                <li class="navigation__item"><a href="/#blog" title="" class="blog-button">首页</a></li>
+              
+                
+                <li class="navigation__item"><a href="/archives" title="" class="">归档</a></li>
+              
+
+            </ul>
+          </nav>
+
+          <!-- ----------------------------
+To add a new social icon simply duplicate one of the list items from below
+and change the class in the <i> tag to match the desired social network
+and then add your link to the <a>. Here is a full list of social network
+classes that you can use:
+
+    icon-social-500px
+    icon-social-behance
+    icon-social-delicious
+    icon-social-designer-news
+    icon-social-deviant-art
+    icon-social-digg
+    icon-social-dribbble
+    icon-social-facebook
+    icon-social-flickr
+    icon-social-forrst
+    icon-social-foursquare
+    icon-social-github
+    icon-social-google-plus
+    icon-social-hi5
+    icon-social-instagram
+    icon-social-lastfm
+    icon-social-linkedin
+    icon-social-medium
+    icon-social-myspace
+    icon-social-path
+    icon-social-pinterest
+    icon-social-rdio
+    icon-social-reddit
+    icon-social-skype
+    icon-social-spotify
+    icon-social-stack-overflow
+    icon-social-steam
+    icon-social-stumbleupon
+    icon-social-treehouse
+    icon-social-tumblr
+    icon-social-twitter
+    icon-social-vimeo
+    icon-social-xbox
+    icon-social-yelp
+    icon-social-youtube
+    icon-social-zerply
+    icon-mail
+
+-------------------------------->
+
+<!-- add social info here -->
+
+
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <div class="panel-cover--overlay"></div>
+  </div>
+</header>
+
+    <div class="content-wrapper">
+        <div class="content-wrapper__inner entry">
+            
+
+<article class="post-container post-container--single">
+
+  <header class="post-header">
+    
+    <h1 class="post-title">Android设计模式浅析——Builder模式</h1>
+
+    
+
+    <div class="post-meta">
+      <time datetime="2016-03-05" class="post-meta__date date">2016-03-05</time> 
+
+      <span class="post-meta__tags tags">
+
+          
+
+          
+             &#8226; 标签:
+            <font class="tags">
+              <a class="tags-link" href="/tags/android/">android</a>, <a class="tags-link" href="/tags/design-pattern/">design pattern</a>, <a class="tags-link" href="/tags/java/">java</a>
+            </font>
+          
+
+      </span>
+    </div>
+    
+    
+
+  </header>
+
+  <section id="post-content" class="article-content post">
+    <h2 id="模式简介">模式简介</h2><p>《Effective java》一书2.2节介绍了当类的构造器包含多个参数时常用的一种构造器模式——Builder模式。<br><strong>不直接生成对象，而是利用所有必要的参数调用构造器（或者静态工厂），得到一个builder对象。然后在builder对象上调用类似setter的方法，来设置每个相关的可选参数。最后，客户端调用无参的build方法生成不可变的对象。这个builder是它构建的类的静态成员类。</strong>    </p>
+<a id="more"></a>
+<p>《Effective java》中给出的完整示例如下：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Builder Pattern</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">NutritionFacts</span> </span>&#123;</span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">int</span> servingSize;</span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">int</span> servings;</span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">int</span> calories;</span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">int</span> fat;</span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">int</span> sodium;</span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">int</span> carbohydrate;</span><br><span class="line">	</span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Builder</span> </span>&#123;</span><br><span class="line">		<span class="comment">// Required parameters</span></span><br><span class="line">		<span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">int</span> servingSize;</span><br><span class="line">		<span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">int</span> servings;</span><br><span class="line">		</span><br><span class="line">		<span class="comment">// Optional parameters - initialized to default valuess</span></span><br><span class="line">		<span class="keyword">private</span> <span class="keyword">int</span> calories = <span class="number">0</span>;</span><br><span class="line">		<span class="keyword">private</span> <span class="keyword">int</span> fat = <span class="number">0</span>;</span><br><span class="line">		<span class="keyword">private</span> <span class="keyword">int</span> sodium = <span class="number">0</span>;</span><br><span class="line">		<span class="keyword">private</span> <span class="keyword">int</span> carbohydrate = <span class="number">0</span>;</span><br><span class="line">		</span><br><span class="line">		<span class="function"><span class="keyword">public</span> <span class="title">Builder</span><span class="params">(<span class="keyword">int</span> servingSize, <span class="keyword">int</span> servings)</span> </span>&#123;</span><br><span class="line">			<span class="keyword">this</span>.servingSize = servingSize;</span><br><span class="line">			<span class="keyword">this</span>.servings = servings;</span><br><span class="line">		&#125;</span><br><span class="line">		</span><br><span class="line">		<span class="function"><span class="keyword">public</span> Builder <span class="title">calories</span><span class="params">(<span class="keyword">int</span> val)</span> </span>&#123;</span><br><span class="line">			calories = val;</span><br><span class="line">			<span class="keyword">return</span> <span class="keyword">this</span>;</span><br><span class="line">		&#125;</span><br><span class="line">		</span><br><span class="line">		<span class="function"><span class="keyword">public</span> Builder <span class="title">fat</span><span class="params">(<span class="keyword">int</span> val)</span> </span>&#123;</span><br><span class="line">			fat = val;</span><br><span class="line">			<span class="keyword">return</span> <span class="keyword">this</span>;</span><br><span class="line">		&#125;</span><br><span class="line">		</span><br><span class="line">		<span class="function"><span class="keyword">public</span> Builder <span class="title">sodium</span><span class="params">(<span class="keyword">int</span> val)</span> </span>&#123;</span><br><span class="line">			sodium = val;</span><br><span class="line">			<span class="keyword">return</span> <span class="keyword">this</span>;</span><br><span class="line">		&#125;</span><br><span class="line">		</span><br><span class="line">		<span class="function"><span class="keyword">public</span> Builder <span class="title">carbohydrate</span><span class="params">(<span class="keyword">int</span> val)</span> </span>&#123;</span><br><span class="line">			carbohydrate = val;</span><br><span class="line">			<span class="keyword">return</span> <span class="keyword">this</span>;</span><br><span class="line">		&#125;</span><br><span class="line">		</span><br><span class="line">		<span class="function"><span class="keyword">public</span> NutritionFacts <span class="title">build</span><span class="params">()</span> </span>&#123;</span><br><span class="line">			<span class="keyword">return</span> <span class="keyword">new</span> NutritionFacts(<span class="keyword">this</span>);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	<span class="function"><span class="keyword">private</span> <span class="title">NutritionFacts</span><span class="params">(Builder builder)</span> </span>&#123;</span><br><span class="line">		servingSize = builder.servingSize;</span><br><span class="line">		servings = builder.servings;</span><br><span class="line">		calories = builder.calories;</span><br><span class="line">		fat = builder.fat;</span><br><span class="line">		sodium = builder.sodium;</span><br><span class="line">		carbohydrate = builder.carbohydrate;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">		NutritionFacts cocaCola = <span class="keyword">new</span> NutritionFacts.Builder(<span class="number">240</span>, <span class="number">8</span>).</span><br><span class="line">			calories(<span class="number">100</span>).sodium(<span class="number">35</span>).carbohydrate(<span class="number">27</span>).build();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>Builder模式十分灵活，可以利用单个Builder构建多个对象。<br>Builder的参数可以在创建对象期间进行调整，也可以随不同对象而改变。<br>builder可以自动填充某些域，例如每次创建对象时自动生成序列号。</p>
+<h2 id="Android源码中相关实现">Android源码中相关实现</h2><p>在Android源码中，我们最常用到的Builder模式就是AlertDialog.Builder， 使用该Builder来构建复杂的AlertDialog对象。<br>举个例子：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//显示基本的AlertDialog  </span></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">showDialog</span><span class="params">(Context context)</span> </span>&#123;  </span><br><span class="line">	AlertDialog.Builder builder = <span class="keyword">new</span> AlertDialog.Builder(context);  </span><br><span class="line">	builder.setIcon(R.drawable.icon);  </span><br><span class="line">	builder.setTitle(<span class="string">"Title"</span>);  </span><br><span class="line">	builder.setMessage(<span class="string">"Message"</span>);  </span><br><span class="line">	builder.setPositiveButton(<span class="string">"Button1"</span>,  </span><br><span class="line">			<span class="keyword">new</span> DialogInterface.OnClickListener() &#123;  </span><br><span class="line">				<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onClick</span><span class="params">(DialogInterface dialog, <span class="keyword">int</span> whichButton)</span> </span>&#123;  </span><br><span class="line">					setTitle(<span class="string">"点击了对话框上的Button1"</span>);  </span><br><span class="line">				&#125;  </span><br><span class="line">			&#125;);  </span><br><span class="line">	builder.setNeutralButton(<span class="string">"Button2"</span>,  </span><br><span class="line">			<span class="keyword">new</span> DialogInterface.OnClickListener() &#123;  </span><br><span class="line">				<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onClick</span><span class="params">(DialogInterface dialog, <span class="keyword">int</span> whichButton)</span> </span>&#123;  </span><br><span class="line">					setTitle(<span class="string">"点击了对话框上的Button2"</span>);  </span><br><span class="line">				&#125;  </span><br><span class="line">			&#125;);  </span><br><span class="line">	builder.setNegativeButton(<span class="string">"Button3"</span>,  </span><br><span class="line">			<span class="keyword">new</span> DialogInterface.OnClickListener() &#123;  </span><br><span class="line">				<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onClick</span><span class="params">(DialogInterface dialog, <span class="keyword">int</span> whichButton)</span> </span>&#123;  </span><br><span class="line">					setTitle(<span class="string">"点击了对话框上的Button3"</span>);  </span><br><span class="line">				&#125;  </span><br><span class="line">			&#125;);  </span><br><span class="line">	builder.create().show();  <span class="comment">// 构建AlertDialog， 并且显示</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>下面我们看看AlertDialog的相关源码 :<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// AlertDialog</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">AlertDialog</span> <span class="keyword">extends</span> <span class="title">Dialog</span> <span class="keyword">implements</span> <span class="title">DialogInterface</span> </span>&#123;</span><br><span class="line">    <span class="comment">// Controller, 接受Builder成员变量P中的各个参数</span></span><br><span class="line">    <span class="keyword">private</span> AlertController mAlert;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 构造函数</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="title">AlertDialog</span><span class="params">(Context context, <span class="keyword">int</span> theme)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>(context, theme, <span class="keyword">true</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 4 : 构造AlertDialog</span></span><br><span class="line">    AlertDialog(Context context, <span class="keyword">int</span> theme, <span class="keyword">boolean</span> createContextWrapper) &#123;</span><br><span class="line">        <span class="keyword">super</span>(context, resolveDialogTheme(context, theme), createContextWrapper);</span><br><span class="line">        mWindow.alwaysReadCloseOnTouchAttr();</span><br><span class="line">        mAlert = <span class="keyword">new</span> AlertController(getContext(), <span class="keyword">this</span>, getWindow());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 实际上调用的是mAlert的setTitle方法</span></span><br><span class="line">    <span class="annotation">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setTitle</span><span class="params">(CharSequence title)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>.setTitle(title);</span><br><span class="line">        mAlert.setTitle(title);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 实际上调用的是mAlert的setCustomTitle方法</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setCustomTitle</span><span class="params">(View customTitleView)</span> </span>&#123;</span><br><span class="line">        mAlert.setCustomTitle(customTitleView);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setMessage</span><span class="params">(CharSequence message)</span> </span>&#123;</span><br><span class="line">        mAlert.setMessage(message);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// AlertDialog其他的代码省略</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// ************  Builder为AlertDialog的内部类   *******************</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Builder</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 1 : 存储AlertDialog的各个参数, 例如title, message, icon等.</span></span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">final</span> AlertController.AlertParams P;</span><br><span class="line">        <span class="comment">// 属性省略</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">/**</span><br><span class="line">         * Constructor using a context for this builder and the &#123;<span class="doctag">@link</span> AlertDialog&#125; it creates.</span><br><span class="line">         */</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="title">Builder</span><span class="params">(Context context)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">this</span>(context, resolveDialogTheme(context, <span class="number">0</span>));</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="title">Builder</span><span class="params">(Context context, <span class="keyword">int</span> theme)</span> </span>&#123;</span><br><span class="line">            P = <span class="keyword">new</span> AlertController.AlertParams(<span class="keyword">new</span> ContextThemeWrapper(</span><br><span class="line">                    context, resolveDialogTheme(context, theme)));</span><br><span class="line">            mTheme = theme;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Builder的其他代码省略 ......</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">// 2 : 设置各种参数</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> Builder <span class="title">setTitle</span><span class="params">(CharSequence title)</span> </span>&#123;</span><br><span class="line">            P.mTitle = title;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">this</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> Builder <span class="title">setMessage</span><span class="params">(CharSequence message)</span> </span>&#123;</span><br><span class="line">            P.mMessage = message;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">this</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> Builder <span class="title">setIcon</span><span class="params">(<span class="keyword">int</span> iconId)</span> </span>&#123;</span><br><span class="line">            P.mIconId = iconId;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">this</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> Builder <span class="title">setPositiveButton</span><span class="params">(CharSequence text, <span class="keyword">final</span> OnClickListener listener)</span> </span>&#123;</span><br><span class="line">            P.mPositiveButtonText = text;</span><br><span class="line">            P.mPositiveButtonListener = listener;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">this</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> Builder <span class="title">setView</span><span class="params">(View view)</span> </span>&#123;</span><br><span class="line">            P.mView = view;</span><br><span class="line">            P.mViewSpacingSpecified = <span class="keyword">false</span>;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">this</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 3 : 构建AlertDialog, 传递参数</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> AlertDialog <span class="title">create</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="comment">// 调用new AlertDialog构造对象， 并且将参数传递个体AlertDialog </span></span><br><span class="line">            <span class="keyword">final</span> AlertDialog dialog = <span class="keyword">new</span> AlertDialog(P.mContext, mTheme, <span class="keyword">false</span>);</span><br><span class="line">            <span class="comment">// 5 : 将P中的参数应用的dialog中的mAlert对象中</span></span><br><span class="line">            P.apply(dialog.mAlert);</span><br><span class="line">            dialog.setCancelable(P.mCancelable);</span><br><span class="line">            <span class="keyword">if</span> (P.mCancelable) &#123;</span><br><span class="line">                dialog.setCanceledOnTouchOutside(<span class="keyword">true</span>);</span><br><span class="line">            &#125;</span><br><span class="line">            dialog.setOnCancelListener(P.mOnCancelListener);</span><br><span class="line">            <span class="keyword">if</span> (P.mOnKeyListener != <span class="keyword">null</span>) &#123;</span><br><span class="line">                dialog.setOnKeyListener(P.mOnKeyListener);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">return</span> dialog;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>可以看到，通过Builder来设置AlertDialog中的title, message, button等参数， 这些参数都存储在类型为AlertController.AlertParams的成员变量P中，AlertController.AlertParams中包含了与之对应的成员变量。<br>在调用Builder类的create函数时才创建AlertDialog, 并且将Builder成员变量P中保存的参数应用到AlertDialog的mAlert对象中，即P.apply(dialog.mAlert)代码段。<br>我们看看apply函数的实现 :<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">apply</span><span class="params">(AlertController dialog)</span> </span>&#123;</span><br><span class="line">	<span class="keyword">if</span> (mCustomTitleView != <span class="keyword">null</span>) &#123;</span><br><span class="line">		dialog.setCustomTitle(mCustomTitleView);</span><br><span class="line">	&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">		<span class="keyword">if</span> (mTitle != <span class="keyword">null</span>) &#123;</span><br><span class="line">			dialog.setTitle(mTitle);</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">if</span> (mIcon != <span class="keyword">null</span>) &#123;</span><br><span class="line">			dialog.setIcon(mIcon);</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">if</span> (mIconId &gt;= <span class="number">0</span>) &#123;</span><br><span class="line">			dialog.setIcon(mIconId);</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">if</span> (mIconAttrId &gt; <span class="number">0</span>) &#123;</span><br><span class="line">			dialog.setIcon(dialog.getIconAttributeResId(mIconAttrId));</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">if</span> (mMessage != <span class="keyword">null</span>) &#123;</span><br><span class="line">		dialog.setMessage(mMessage);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">if</span> (mPositiveButtonText != <span class="keyword">null</span>) &#123;</span><br><span class="line">		dialog.setButton(DialogInterface.BUTTON_POSITIVE, mPositiveButtonText,</span><br><span class="line">				mPositiveButtonListener, <span class="keyword">null</span>);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">if</span> (mNegativeButtonText != <span class="keyword">null</span>) &#123;</span><br><span class="line">		dialog.setButton(DialogInterface.BUTTON_NEGATIVE, mNegativeButtonText,</span><br><span class="line">				mNegativeButtonListener, <span class="keyword">null</span>);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">if</span> (mNeutralButtonText != <span class="keyword">null</span>) &#123;</span><br><span class="line">		dialog.setButton(DialogInterface.BUTTON_NEUTRAL, mNeutralButtonText,</span><br><span class="line">				mNeutralButtonListener, <span class="keyword">null</span>);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">if</span> (mForceInverseBackground) &#123;</span><br><span class="line">		dialog.setInverseBackgroundForced(<span class="keyword">true</span>);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="comment">// For a list, the client can either supply an array of items or an</span></span><br><span class="line">	<span class="comment">// adapter or a cursor</span></span><br><span class="line">	<span class="keyword">if</span> ((mItems != <span class="keyword">null</span>) || (mCursor != <span class="keyword">null</span>) || (mAdapter != <span class="keyword">null</span>)) &#123;</span><br><span class="line">		createListView(dialog);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">if</span> (mView != <span class="keyword">null</span>) &#123;</span><br><span class="line">		<span class="keyword">if</span> (mViewSpacingSpecified) &#123;</span><br><span class="line">			dialog.setView(mView, mViewSpacingLeft, mViewSpacingTop, mViewSpacingRight,</span><br><span class="line">					mViewSpacingBottom);</span><br><span class="line">		&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">			dialog.setView(mView);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>实际上就是把P中的参数挨个的设置到AlertController中， 也就是AlertDialog中的mAlert对象。<br>从AlertDialog的各个setter方法中我们也可以看到，实际上也都是调用了mAlert对应的setter方法。</p>
+<h2 id="优缺点">优缺点</h2><h3 id="优点">优点</h3><ul>
+<li>良好的封装性， 使用建造者模式可以使客户端不必知道产品内部组成的细节；</li>
+<li>建造者独立，容易扩展；</li>
+<li>在对象创建过程中会使用到系统中的一些其它对象，这些对象在产品对象的创建过程中不易得到。</li>
+</ul>
+<h3 id="缺点">缺点</h3><ul>
+<li>会产生多余的Builder对象以及Director对象，消耗内存；</li>
+<li>对象的构建过程暴露。</li>
+</ul>
+
+  </section>
+
+  
+  
+</article>
+
+
+            <footer class="footer">
+
+    <span class="footer__copyright">&copy; 2014-2015. | 由<a href="https://hexo.io/">Hexo</a>强力驱动 | 主题<a href="https://github.com/someus/huno">Huno</a></span>
+    
+</footer>
+        </div>
+    </div>
+
+    <!-- js files -->
+    <script src="/js/jquery.min.js"></script>
+    <script src="/js/main.js"></script>
+    <script src="/js/scale.fix.js"></script>
+    
+
+    
+
+    <script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript"> 
+        $(document).ready(function(){
+            MathJax.Hub.Config({ 
+                tex2jax: {inlineMath: [['[latex]','[/latex]'], ['\\(','\\)']]} 
+            });
+        });
+    </script>
+
+
+    
+
+    <script src="/js/awesome-toc.min.js"></script>
+    <script>
+        $(document).ready(function(){
+            $.awesome_toc({
+                overlay: true,
+                contentId: "post-content",
+            });
+        });
+    </script>
+
+
+    
+    
+    <!--kill ie6 -->
+<!--[if IE 6]>
+  <script src="//letskillie6.googlecode.com/svn/trunk/2/zh_CN.js"></script>
+<![endif]-->
+
+</body>
+</html>
