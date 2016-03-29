@@ -16,46 +16,43 @@
     
     
 
-    <meta name="description" content="动画分类Android3.0之前提供了两种动画：
+    <meta name="description" content="动画分类Android3.0之前提供了两种动画：    
 
 补间动画 Tween Animation
 帧动画 Frame Animation
 
-Android3.0之后又增加了新的属性动画（Property Animation）。按照官方分类，现在Android的动画包括：
+Android3.0之后又增加了新的属性动画（Property Animation）。按照官方分类，现在Android的动画包括：    
 
 属性动画 Property Animation
 View动画 View Animation
-
-补间动画 Tween Animati">
+补间动画 Tween">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Android动画浅析1——View动画 | DoubleChen，就这样">
 <meta property="og:url" content="http://yoursite.com/2016/03/07/animation1/index.html">
 <meta property="og:site_name" content="DoubleChen，就这样">
-<meta property="og:description" content="动画分类Android3.0之前提供了两种动画：
+<meta property="og:description" content="动画分类Android3.0之前提供了两种动画：    
 
 补间动画 Tween Animation
 帧动画 Frame Animation
 
-Android3.0之后又增加了新的属性动画（Property Animation）。按照官方分类，现在Android的动画包括：
+Android3.0之后又增加了新的属性动画（Property Animation）。按照官方分类，现在Android的动画包括：    
 
 属性动画 Property Animation
 View动画 View Animation
-
-补间动画 Tween Animati">
-<meta property="og:updated_time" content="2016-03-28T13:14:35.000Z">
+补间动画 Tween">
+<meta property="og:updated_time" content="2016-03-29T05:34:32.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Android动画浅析1——View动画 | DoubleChen，就这样">
-<meta name="twitter:description" content="动画分类Android3.0之前提供了两种动画：
+<meta name="twitter:description" content="动画分类Android3.0之前提供了两种动画：    
 
 补间动画 Tween Animation
 帧动画 Frame Animation
 
-Android3.0之后又增加了新的属性动画（Property Animation）。按照官方分类，现在Android的动画包括：
+Android3.0之后又增加了新的属性动画（Property Animation）。按照官方分类，现在Android的动画包括：    
 
 属性动画 Property Animation
 View动画 View Animation
-
-补间动画 Tween Animati">
+补间动画 Tween">
     
     
     
@@ -202,23 +199,22 @@ classes that you can use:
   </header>
 
   <section id="post-content" class="article-content post">
-    <h2 id="动画分类">动画分类</h2><p>Android3.0之前提供了两种动画：</p>
+    <h2 id="动画分类">动画分类</h2><p>Android3.0之前提供了两种动画：    </p>
 <ul>
 <li>补间动画 Tween Animation</li>
 <li>帧动画 Frame Animation</li>
 </ul>
-<p>Android3.0之后又增加了新的属性动画（Property Animation）。<br>按照官方分类，现在Android的动画包括：</p>
+<p>Android3.0之后又增加了新的属性动画（Property Animation）。<br>按照官方分类，现在Android的动画包括：    </p>
 <ul>
 <li>属性动画 Property Animation</li>
-<li><p>View动画 View Animation</p>
-<ul>
+<li>View动画 View Animation<ul>
 <li>补间动画 Tween Animation</li>
 <li>帧动画 Frame Animation</li>
 </ul>
 </li>
 </ul>
 <p>因为补间动画和帧动画只能用于View，所以统称为View动画。    </p>
-<h2 id="补间动画">补间动画</h2><p>补间动画主要用于View，实现一些简单的动画效果。<br>补间动画主要分为四类：</p>
+<h2 id="补间动画">补间动画</h2><p>补间动画主要用于View，实现一些简单的动画效果。<br>补间动画主要分为四类：    </p>
 <ul>
 <li>AlphaAnimation 渐变透明度</li>
 <li>RotateAnimation 画面旋转</li>
@@ -236,14 +232,14 @@ classes that you can use:
 <p>TranslateAnimation构造函数中：<br>第一个参数fromXDelta，第二个参数toXDelta：分别是动画起始、结束时X坐标；<br>第三个参数fromYDelta，第四个参数toYDelta：分别是动画起始、结束时Y坐标。</p>
 <h3 id="XML形式">XML形式</h3><p>XML文件可以用来定义动画，文件放于 <strong>res/anim/</strong> 目录下。<br>根元素包括：     </p>
 <ul>
-<li>\<alpha\></alpha\></li>
-<li>\<scale\></scale\></li>
-<li>\<translate\></translate\></li>
-<li>\<rotate\></rotate\></li>
-<li>\<set\></set\></li>
+<li>&lt;alpha&gt;</li>
+<li>&lt;scale&gt;</li>
+<li>&lt;translate&gt;</li>
+<li>&lt;rotate&gt;</li>
+<li>&lt;set&gt;</li>
 </ul>
-<p>很明显，前四个对应了四种补间动画。<br>而最后一个 <strong><set></set></strong> 则是动画集，它可以包含多个其他标签，也可以嵌套 <strong><set></set></strong> 标签。<br>使用 <strong><set></set></strong> 的默认情况下，所有动画会同时播放。<br>如果想按顺序播放，则需要制定 <strong>startOffset</strong> 属性。<br>此外，还可以通过设置 <strong>interpolator</strong> 控制动画变化的速率，比如匀速、加减速等等。</p>
-<h4 id=""><alpha></alpha></h4><p><strong><alpha></alpha></strong> 可以实现透明度渐变的动画效果，也就是淡入淡出的效果，可通过设置下面三个属性来设置淡入或淡出效果：</p>
+<p>很明显，前四个对应了四种补间动画。<br>而最后一个 <strong>&lt;set&gt;</strong> 则是动画集，它可以包含多个其他标签，也可以嵌套 <strong>&lt;set&gt;</strong> 标签。<br>使用 <strong>&lt;set&gt;</strong> 的默认情况下，所有动画会同时播放。<br>如果想按顺序播放，则需要制定 <strong>startOffset</strong> 属性。<br>此外，还可以通过设置 <strong>interpolator</strong> 控制动画变化的速率，比如匀速、加减速等等。</p>
+<h4 id="&lt;alpha&gt;">&lt;alpha&gt;</h4><p><strong>&lt;alpha&gt;</strong> 可以实现透明度渐变的动画效果，也就是淡入淡出的效果，可通过设置下面三个属性来设置淡入或淡出效果：    </p>
 <ul>
 <li>android:duration 动画从开始到结束持续的时长，单位为毫秒</li>
 <li>android:fromAlpha 动画开始时的透明度，0.0为全透明，1.0为不透明，默认为1.0</li>
@@ -252,7 +248,7 @@ classes that you can use:
 <p>当设置开始时透明度为0.0，结束时为1.0，就能实现淡入效果；<br>相反，当设置开始时透明度为1.0，结束时为0.0，那就能实现淡出效果。<br>示例如下：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&lt;!-- res/anim/fade_in.xml --&gt;</span><br><span class="line">&lt;?xml version=<span class="string">"1.0"</span> encoding=<span class="string">"utf-8"</span>?&gt;</span><br><span class="line">&lt;alpha xmlns:android=<span class="string">"http://schemas.android.com/apk/res/android"</span></span><br><span class="line">    android:duration=<span class="string">"1000"</span></span><br><span class="line">    android:fromAlpha=<span class="string">"0.0"</span></span><br><span class="line">    android:toAlpha=<span class="string">"1.0"</span> /&gt;</span><br></pre></td></tr></table></figure></p>
 <p>将这动画效果添加到View上也只需要一行代码：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">view.startAnimation(AnimationUtils.loadAnimation(<span class="keyword">this</span>, R.anim.fade_in));</span><br></pre></td></tr></table></figure></p>
 <p>如果需要重用这个动画，也可以将其抽离出来，对应的类是AlphaAnimation类：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">AlphaAnimation fadeInAnimation = (AlphaAnimation) AnimationUtils.loadAnimation(<span class="keyword">this</span>, R.anim.fade_in);</span><br><span class="line">view.startAnimation(fadeInAnimation);</span><br></pre></td></tr></table></figure></p>
-<h4 id="-1"><scale></scale></h4><p><strong><scale></scale></strong> 可以实现缩放的动画效果，主要的属性如下：    </p>
+<h4 id="&lt;scale&gt;">&lt;scale&gt;</h4><p><strong>&lt;scale&gt;</strong> 可以实现缩放的动画效果，主要的属性如下：     </p>
 <ul>
 <li>android:fromXScale 动画开始时X坐标上的缩放尺寸</li>
 <li>android:toXScale 动画结束时X坐标上的缩放尺寸</li>
@@ -263,8 +259,8 @@ classes that you can use:
 <li>android:pivotY 缩放时的固定不变的Y坐标，一般用百分比表示，0%表示顶部边缘，100%表示底部边缘</li>
 </ul>
 <p>示例如下：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">&lt;!-- res/anim/zoom_out.xml --&gt;</span><br><span class="line">&lt;?xml version=<span class="string">"1.0"</span> encoding=<span class="string">"utf-8"</span>?&gt;</span><br><span class="line">&lt;scale xmlns:android=<span class="string">"http://schemas.android.com/apk/res/android"</span></span><br><span class="line">    android:duration=<span class="string">"1000"</span></span><br><span class="line">    android:fromXScale=<span class="string">"1.0"</span></span><br><span class="line">    android:fromYScale=<span class="string">"1.0"</span></span><br><span class="line">    android:pivotX=<span class="string">"0%"</span></span><br><span class="line">    android:pivotY=<span class="string">"100%"</span></span><br><span class="line">    android:toXScale=<span class="string">"1.5"</span></span><br><span class="line">    android:toYScale=<span class="string">"1.5"</span> /&gt;</span><br></pre></td></tr></table></figure></p>
-<p><strong><scale></scale></strong> 标签对应的类为ScaleAnimation，添加到View上的用法和AlphaAnimation一样，代码如下：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ScaleAnimation zoomOutAnimation = (ScaleAnimation) AnimationUtils.loadAnimation(<span class="keyword">this</span>, R.anim.zoom_out);</span><br><span class="line">view.startAnimation(zoomOutAnimation);</span><br></pre></td></tr></table></figure></p>
-<h4 id="-2"><translate></translate></h4><p><strong><translate></translate></strong> 可以实现位置移动的动画效果，可以是垂直方向的移动，也可以是水平方向的移动。<br>坐标的值可以有三种格式：    </p>
+<p><strong>&lt;scale&gt;</strong> 标签对应的类为ScaleAnimation，添加到View上的用法和AlphaAnimation一样，代码如下：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ScaleAnimation zoomOutAnimation = (ScaleAnimation) AnimationUtils.loadAnimation(<span class="keyword">this</span>, R.anim.zoom_out);</span><br><span class="line">view.startAnimation(zoomOutAnimation);</span><br></pre></td></tr></table></figure></p>
+<h4 id="&lt;translate&gt;">&lt;translate&gt;</h4><p><strong>&lt;translate&gt;</strong> 可以实现位置移动的动画效果，可以是垂直方向的移动，也可以是水平方向的移动。<br>坐标的值可以有三种格式：    </p>
 <ul>
 <li>从-100到100，以”%”结束，表示相对于View本身的百分比位置；</li>
 <li>如果以”%p”结束，表示相对于View的父View的百分比位置；</li>
@@ -279,8 +275,8 @@ classes that you can use:
 <li>android:toYDelta 结束位置的Y坐标的偏移量</li>
 </ul>
 <p>以下代码实现的是从左到右的移动效果，起始位置为相对于控件本身-100%的位置，即在控件左边，与控件本身宽度一致的位置；结束位置为相对于父控件100%的位置，即会移出父控件右边缘的位置:<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&lt;!-- res/anim/move_left_to_right.xml --&gt;</span><br><span class="line">&lt;?xml version=<span class="string">"1.0"</span> encoding=<span class="string">"utf-8"</span>?&gt;</span><br><span class="line">&lt;translate xmlns:android=<span class="string">"http://schemas.android.com/apk/res/android"</span></span><br><span class="line">    android:duration=<span class="string">"2000"</span></span><br><span class="line">    android:fromXDelta=<span class="string">"-100%"</span></span><br><span class="line">    android:fromYDelta=<span class="string">"0"</span></span><br><span class="line">    android:toXDelta=<span class="string">"100%p"</span></span><br><span class="line">    android:toYDelta=<span class="string">"0"</span> /&gt;</span><br></pre></td></tr></table></figure></p>
-<p><strong><translate></translate></strong> 标签对应的类为TranslateAnimation:<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">TranslateAnimation moveAnimation = (TranslateAnimation) AnimationUtils.loadAnimation(<span class="keyword">this</span>, R.anim.move_left_to_right);</span><br><span class="line">view.startAnimation(moveAnimation);</span><br></pre></td></tr></table></figure></p>
-<h4 id="-3"><rotate></rotate></h4><p><strong><rotate></rotate></strong> 可以实现旋转的动画效果，主要的属性如下：</p>
+<p><strong>&lt;translate&gt;</strong> 标签对应的类为TranslateAnimation:<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">TranslateAnimation moveAnimation = (TranslateAnimation) AnimationUtils.loadAnimation(<span class="keyword">this</span>, R.anim.move_left_to_right);</span><br><span class="line">view.startAnimation(moveAnimation);</span><br></pre></td></tr></table></figure></p>
+<h4 id="&lt;rotate&gt;">&lt;rotate&gt;</h4><p><strong>&lt;rotate&gt;</strong> 可以实现旋转的动画效果，主要的属性如下：    </p>
 <ul>
 <li>android:duration 动画从开始到结束持续的时长，单位为毫秒</li>
 <li>android:fromDegrees 旋转开始的角度</li>
@@ -289,11 +285,80 @@ classes that you can use:
 <li>android:pivotY 旋转中心点的Y坐标，纯数字表示相对于View本身顶部边缘的像素偏移量；带”%”后缀时表示相对于View本身顶部边缘的百分比偏移量；带”%p”后缀时表示相对于父View顶部边缘的百分比偏移量</li>
 </ul>
 <p>以下示例代码旋转角度从0到360，即旋转了一圈，旋转的中心点都设为了50%，即是View本身中点的位置:<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&lt;!-- res/anim/rotate_one.xml --&gt;</span><br><span class="line">&lt;?xml version=<span class="string">"1.0"</span> encoding=<span class="string">"utf-8"</span>?&gt;</span><br><span class="line">&lt;rotate xmlns:android=<span class="string">"http://schemas.android.com/apk/res/android"</span></span><br><span class="line">    android:duration=<span class="string">"2000"</span></span><br><span class="line">    android:fromDegrees=<span class="string">"0"</span></span><br><span class="line">    android:toDegrees=<span class="string">"360"</span></span><br><span class="line">    android:pivotX=<span class="string">"50%"</span></span><br><span class="line">    android:pivotY=<span class="string">"50%"</span> /&gt;</span><br></pre></td></tr></table></figure></p>
-<p><strong><rotate></rotate></strong> 标签对应的类为RotateAnimation:<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">RotateAnimation rotateAnimation = (RotateAnimation) AnimationUtils.loadAnimation(<span class="keyword">this</span>, R.anim.rotate_one);</span><br><span class="line">view.startAnimation(rotateAnimation);</span><br></pre></td></tr></table></figure></p>
-<h4 id="-4"><set></set></h4><p><strong><set></set></strong> 标签可以将多个动画组合起来，变成一个动画集。<br>比如想将一张图片缩放的同时也做移动，这时候就要用<set>标签组合缩放动画和移动动画了。<br><figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">&lt;!-- res/anim/move_and_scale.xml --&gt;</span><br><span class="line">&lt;?xml version="1.0" encoding="utf-8"?&gt;</span><br><span class="line">&lt;set xmlns:android="http://schemas.android.com/apk/res/android"</span><br><span class="line">    android:duration="2000"&gt;</span><br><span class="line">    &lt;translate</span><br><span class="line">        android:fromXDelta="0"</span><br><span class="line">        android:fromYDelta="0"</span><br><span class="line">        android:toXDelta="200%"</span><br><span class="line">        android:toYDelta="0" /&gt;</span><br><span class="line">    &lt;scale</span><br><span class="line">        android:fromXScale="1.0"</span><br><span class="line">        android:fromYScale="1.0"</span><br><span class="line">        android:pivotX="0%"</span><br><span class="line">        android:pivotY="100%"</span><br><span class="line">        android:toXScale="1.5"</span><br><span class="line">        android:toYScale="1.5" /&gt;</span><br><span class="line">&lt;/set&gt;</span><br></pre></td></tr></table></figure></set></p>
-<p>以上代码实现的动画效果为向右移动的同时也同步放大。    </p>
-<p><set>标签在视图动画中除了可以组合<alpha>, <scale>, <translate>, <rotate>这四种标签，也可以嵌套其他<set>标签。<br>另外，<set>标签可嵌套的标签元素并不只有这几个，后面谈到属性动画时会再讲其他的标签及用法。</set></set></rotate></translate></scale></alpha></set></p>
-<h2 id="帧动画">帧动画</h2>
+<p><strong>&lt;rotate&gt;</strong> 标签对应的类为RotateAnimation:<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">RotateAnimation rotateAnimation = (RotateAnimation) AnimationUtils.loadAnimation(<span class="keyword">this</span>, R.anim.rotate_one);</span><br><span class="line">view.startAnimation(rotateAnimation);</span><br></pre></td></tr></table></figure></p>
+<h4 id="&lt;set&gt;">&lt;set&gt;</h4><p><strong>&lt;set&gt;</strong> 标签可以将多个动画组合起来，变成一个动画集。<br>比如想将一张图片缩放的同时也做移动，这时候就要用&lt;set&gt;标签组合缩放动画和移动动画了。<br><figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">&lt;!-- res/anim/move_and_scale.xml --&gt;</span><br><span class="line">&lt;?xml version="1.0" encoding="utf-8"?&gt;</span><br><span class="line">&lt;set xmlns:android="http://schemas.android.com/apk/res/android"</span><br><span class="line">    android:duration="2000"&gt;</span><br><span class="line">    &lt;translate</span><br><span class="line">        android:fromXDelta="0"</span><br><span class="line">        android:fromYDelta="0"</span><br><span class="line">        android:toXDelta="200%"</span><br><span class="line">        android:toYDelta="0" /&gt;</span><br><span class="line">    &lt;scale</span><br><span class="line">        android:fromXScale="1.0"</span><br><span class="line">        android:fromYScale="1.0"</span><br><span class="line">        android:pivotX="0%"</span><br><span class="line">        android:pivotY="100%"</span><br><span class="line">        android:toXScale="1.5"</span><br><span class="line">        android:toYScale="1.5" /&gt;</span><br><span class="line">&lt;/set&gt;</span><br></pre></td></tr></table></figure></p>
+<p>以上代码实现的动画效果为向右移动的同时也同步放大。<br>&lt;set&gt; 标签在视图动画中除了可以组合&lt;alpha&gt;, &lt;scale&gt;, &lt;translate&gt;, &lt;rotate&gt;这四种标签，也可以嵌套其他&lt;set&gt;标签。<br>另外，&lt;set&gt; 标签可嵌套的标签元素并不只有这几个，后面谈到属性动画时会再讲其他的标签及用法。</p>
+<h4 id="通用属性">通用属性</h4><p>除了android:duration，补间动画还有很多通用属性：    </p>
+<ul>
+<li>android:duration 动画从开始到结束持续的时长，单位为毫秒</li>
+<li>android:detachWallpaper 设置是否在壁纸上运行，只对设置了壁纸背景的窗口动画(window animation)有效。设为true，则动画只在窗口运行，壁纸背景保持不变</li>
+<li>android:fillAfter 设置为true时，动画执行完后，View会停留在动画的最后一帧；默认为false；如果是动画集，需在<set>标签中设置该属性才有效</set></li>
+<li>android:fillBefore 设置为true时，动画执行完后，View回到动画执行前的状态，默认即为true</li>
+<li>android:fillEnabled 设置为true时，android:fillBefore的值才有效，否则android:fillBefore会被忽略</li>
+<li>android:repeatCount 设置动画重复执行的次数，默认为0，即不重复；可设为-1或infinite，表示无限重复</li>
+<li>android:repeatMode 设置动画重复执行的模式，可设为以下两个值其中之一：    <ul>
+<li><em>restart</em> 动画重复执行时从起点开始，默认为该值</li>
+<li><em>reverse</em> 动画会反方向执行</li>
+</ul>
+</li>
+<li>android:startOffset 设置动画执行之前的等待时长，毫秒为单位；重复执行时，每次执行前同样也会等待一段时间</li>
+<li>android:zAdjustment 表示被设置动画的内容在动画运行时在Z轴上的位置，取值为以下三个值之一：    <ul>
+<li><em>normal</em> 默认值，保持内容在Z轴上的位置不变</li>
+<li><em>top</em> 保持在Z周最上层</li>
+<li><em>bottom</em> 保持在Z轴最下层</li>
+</ul>
+</li>
+<li>android:interpolator 设置动画速率的变化，比如加速、减速、匀速等，需要指定Interpolator资源</li>
+<li>&lt;set&gt;标签还有个android:shareInterpolator属性，设置为true时则可将interpolator应用到所有子元素中</li>
+</ul>
+<h4 id="Interpolator">Interpolator</h4><p>通过interpolator可以定义动画速率变化的方式，比如加速、减速、匀速等。<br>下面列出了Android本身提供的各类Interpolator。    </p>
+<ul>
+<li>AccelerateDecelerateInterpolator<br>@android:anim/accelerate_decelerate_interpolator<br>在动画开始与结束时速率改变比较慢，在中间的时候加速</li>
+<li>AccelerateInterpolator<br>@android:anim/accelerate_interpolator<br>在动画开始时速率改变比较慢，然后开始加速</li>
+<li>AnticipateInterpolator<br>@android:anim/anticipate_interpolator<br>动画开始的时候向后然后往前抛</li>
+<li>AnticipateOvershootInterpolator<br>@android:anim/anticipate_overshoot_interpolator<br>动画开始的时候向后然后向前抛，会抛超过目标值后再返回到最后的值</li>
+<li>BounceInterpolator<br>@android:anim/bounce_interpolator<br>动画结束的时候会弹跳</li>
+<li>CycleInterpolator<br>@android:anim/bounce_interpolator<br>动画循环做周期运动，速率改变沿着正弦曲线</li>
+<li>DecelerateInterpolator<br>@android:anim/decelerate_interpolator<br>在动画开始时速率改变比较快，然后开始减速</li>
+<li>LinearInterpolator<br>@android:anim/decelerate_interpolator<br>动画匀速播放</li>
+<li>OvershootInterpolator<br>@android:anim/overshoot_interpolator<br>动画向前抛，会抛超过最后值，然后再返回</li>
+</ul>
+<h5 id="自定义Interpolator">自定义Interpolator</h5><p>如果系统提供的以上Interpolator还不符合你的效果，也可以自定义。<br>自定义的方式有两种：    </p>
+<ul>
+<li>一种是通过继承 Interpolator 父类或其子类；</li>
+<li>另一种是通过自定义的xml文件，可以更改上表中Interpolator的属性</li>
+</ul>
+<p>自定义的xml文件需存放于res/anim/目录下，根标签与上面列出的Interpolator相对应。<br>注意，<strong>&lt;accelerateDecelerateInterpolator&gt;</strong>、<strong>&lt;bounceInterpolator&gt;</strong>和<strong>&lt;linearInterpolator&gt;</strong>没有可变的属性。    </p>
+<ul>
+<li>&lt;accelerateInterpolator&gt;<ul>
+<li>android:factor 浮点值，加速的速率，默认为1</li>
+</ul>
+</li>
+<li>&lt;anticipateInterpolator&gt;<ul>
+<li>android:tension 浮点值，向后的拉力，默认为2，当设为0时，则不会有向后的动画了</li>
+</ul>
+</li>
+<li>&lt;anticipateOvershootInterpolator&gt;<ul>
+<li>android:tension 浮点值，向后的拉力，默认为2，当设为0时，则不会有向后的动画了</li>
+<li>android:extraTension 浮点值，拉力的倍数，默认为1.5(2*1.5)，当设为0时，则不会有拉力了</li>
+</ul>
+</li>
+<li>&lt;cycleInterpolator&gt;<ul>
+<li>android:cycles 整数值，循环的次数，默认为1</li>
+</ul>
+</li>
+<li>&lt;decelerateInterpolator&gt;<ul>
+<li>android:factor 浮点值，减速的速率，默认为1</li>
+</ul>
+</li>
+<li>&lt;overshootInterpolator&gt;<ul>
+<li>android:tension 浮点值，超出终点后的拉力，默认为2</li>
+</ul>
+</li>
+</ul>
+<p>举例如下：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&lt;!-- res/anim/my_interpolator.xml --&gt;</span><br><span class="line">&lt;?xml version=<span class="string">"1.0"</span> encoding=<span class="string">"utf-8"</span>?&gt;</span><br><span class="line">&lt;anticipateOvershootInterpolator </span><br><span class="line">    xmlns:android=<span class="string">"http://schemas.android.com/apk/res/android"</span></span><br><span class="line">    android:tension=<span class="string">"3"</span></span><br><span class="line">    android:extraTension=<span class="string">"2"</span> /&gt;</span><br></pre></td></tr></table></figure></p>
+<p>接着，将其设置到要应用的动画的android:interpolator属性即可，代码如下：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&lt;!-- res/anim/rotate_one.xml --&gt;</span><br><span class="line">&lt;?xml version=<span class="string">"1.0"</span> encoding=<span class="string">"utf-8"</span>?&gt;</span><br><span class="line">&lt;rotate xmlns:android=<span class="string">"http://schemas.android.com/apk/res/android"</span></span><br><span class="line">    android:duration=<span class="string">"2000"</span></span><br><span class="line">    android:fromDegrees=<span class="string">"0"</span></span><br><span class="line">    android:toDegrees=<span class="string">"360"</span></span><br><span class="line">    android:pivotX=<span class="string">"50%"</span></span><br><span class="line">    android:pivotY=<span class="string">"50%"</span></span><br><span class="line">    android:interpolator=<span class="string">"@anim/my_interpolator"</span> /&gt;</span><br></pre></td></tr></table></figure></p>
+
   </section>
 
   
