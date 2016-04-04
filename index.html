@@ -152,6 +152,47 @@ classes that you can use:
     <li>
 
       <h2 class="post-list__post-title post-title">
+        <a href="/2016/03/09/animation2/" title="link to Android动画浅析2——属性动画">Android动画浅析2——属性动画</a>
+      </h2>
+
+      <div class="post-list__meta">
+
+        <time datetime="2016-03-09" class="post-list__meta--date date">2016-03-09</time> 
+      </div>
+
+      <div class="excerpt">
+        
+          <h2 id="简介">简介</h2><p>上篇介绍了View动画。<br>View动画只能作用于View，而且改变的只是View的绘制效果，View真正的属性并没有改变。<br>举个例子，如果一个按钮做了平移的动画，虽然其位置改变了，但是这个按钮的点击区域并没有随平移改变，还在原来的位置。<br>相比之下，属性动画就实现了真正属性的改变，上面例子中的按钮如果使用了属性动画，其平移点击区域也会相应的改变。<br>属性动画是Android3.0引入的，同View动画一样，可以用xml文件定义。<br>区别在于，view动画的xml文件放在 <strong>/res/anim/</strong> 目录，而属性动画的则放在 <strong>/res/animator/</strong> 目录下。<br>同样，在java代码中引入属性动画的xml文件时，则用 <strong>R.animator.xxx</strong>，不同于View动画的 <strong>R.anim.xxx</strong>。<br>属性动画主要有三个重要的元素：</p>
+<ul>
+<li>&lt;animator&gt;，对应的类 ValueAnimator，基本的动画类，处理值动画，通过监听某一值的变化，进行相应的操作</li>
+<li>&lt;objectAnimator&gt;，对应的类 ObjectAnimator，是ValueAnimator的子类，处理对象动画</li>
+<li>&lt;&lt;set&gt;，对应的类 AnimatorSet，动画集，可以组合另外两种动画或动画集</li>
+</ul>
+        
+      </div>
+
+      <div class="post-meta">
+
+        <span class="post-meta__tags tags">
+
+            
+
+            
+               &#8226; 标签:
+              <font class="tags">
+                <a class="tags-link" href="/tags/android/">android</a>, <a class="tags-link" href="/tags/animation/">animation</a>
+              </font>
+            
+
+        </span>
+      </div>
+
+      <hr class="post-list__divider" />
+    </li>
+    
+    <li>
+
+      <h2 class="post-list__post-title post-title">
         <a href="/2016/03/07/animation1/" title="link to Android动画浅析1——View动画">Android动画浅析1——View动画</a>
       </h2>
 
@@ -469,42 +510,6 @@ classes that you can use:
                &#8226; 标签:
               <font class="tags">
                 <a class="tags-link" href="/tags/android/">android</a>, <a class="tags-link" href="/tags/decompile/">decompile</a>
-              </font>
-            
-
-        </span>
-      </div>
-
-      <hr class="post-list__divider" />
-    </li>
-    
-    <li>
-
-      <h2 class="post-list__post-title post-title">
-        <a href="/2016/01/18/explosion/" title="link to 绚丽的爆炸动画——ExplosionField">绚丽的爆炸动画——ExplosionField</a>
-      </h2>
-
-      <div class="post-list__meta">
-
-        <time datetime="2016-01-18" class="post-list__meta--date date">2016-01-18</time> 
-      </div>
-
-      <div class="excerpt">
-        
-          <h2 id="简介">简介</h2><p>Github上有一个很炫酷的动画开源项目——<a href="https://github.com/Love5209/ExplosionField">ExplosionField</a>。<br><img src="/Explosion/explosion.gif" alt="explosion">    </p>
-        
-      </div>
-
-      <div class="post-meta">
-
-        <span class="post-meta__tags tags">
-
-            
-
-            
-               &#8226; 标签:
-              <font class="tags">
-                <a class="tags-link" href="/tags/Explosion/">Explosion</a>, <a class="tags-link" href="/tags/android/">android</a>, <a class="tags-link" href="/tags/animation/">animation</a>
               </font>
             
 
