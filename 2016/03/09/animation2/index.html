@@ -22,7 +22,7 @@
 <meta property="og:url" content="http://yoursite.com/2016/03/09/animation2/index.html">
 <meta property="og:site_name" content="DoubleChen，就这样">
 <meta property="og:description" content="简介上篇介绍了View动画。View动画只能作用于View，而且改变的只是View的绘制效果，View真正的属性并没有改变。举个例子，如果一个按钮做了平移的动画，虽然其位置改变了，但是这个按钮的点击区域并没有随平移改变，还在原来的位置。相比之下，属性动画就实现了真正属性的改变，上面例子中的按钮如果使用了属性动画，其平移点击区域也会相应的改变。属性动画是Android3.0引入的，同View动画一样">
-<meta property="og:updated_time" content="2016-04-04T08:46:41.000Z">
+<meta property="og:updated_time" content="2016-04-04T13:03:06.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Android动画浅析2——属性动画 | DoubleChen，就这样">
 <meta name="twitter:description" content="简介上篇介绍了View动画。View动画只能作用于View，而且改变的只是View的绘制效果，View真正的属性并没有改变。举个例子，如果一个按钮做了平移的动画，虽然其位置改变了，但是这个按钮的点击区域并没有随平移改变，还在原来的位置。相比之下，属性动画就实现了真正属性的改变，上面例子中的按钮如果使用了属性动画，其平移点击区域也会相应的改变。属性动画是Android3.0引入的，同View动画一样">
@@ -176,7 +176,7 @@ classes that you can use:
 <ul>
 <li>&lt;animator&gt;，对应的类 ValueAnimator，基本的动画类，处理值动画，通过监听某一值的变化，进行相应的操作</li>
 <li>&lt;objectAnimator&gt;，对应的类 ObjectAnimator，是ValueAnimator的子类，处理对象动画</li>
-<li>&lt;&lt;set&gt;，对应的类 AnimatorSet，动画集，可以组合另外两种动画或动画集</li>
+<li>&lt;set&gt;，对应的类 AnimatorSet，动画集，可以组合另外两种动画或动画集</li>
 </ul>
 <a id="more"></a>
 <h2 id="&lt;animator&gt;">&lt;animator&gt;</h2><p><strong>&lt;animator&gt;</strong> 标签与对应的<strong>ValueAnimator</strong>类提供了属性动画的核心功能，包括计算动画值、动画时间细节、是否重复等。<br>执行属性动画分两个步骤：    </p>
